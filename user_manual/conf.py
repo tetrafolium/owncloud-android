@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import sys, os, inspect
+from datetime import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -43,13 +44,13 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # The short X.Y.Z version.
-version = '2.0.0'
+version = '2.7.0'
 # The full version, including alpha/beta/rc tags.
-release = '2.0.0'
+release = '2.7.0'
 
 # General information about the project.
 project = u'ownCloud Android App %s Manual' % (version)
-copyright = u'2013-2016, The ownCloud developers'
+copyright = u'2013-{:%Y}, The ownCloud developers'.format(datetime.now())
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -253,7 +254,7 @@ texinfo_documents = [
 epub_title = u'ownCloud Android App Manual'
 epub_author = u'The ownCloud developers'
 epub_publisher = u'The ownCloud developers'
-epub_copyright = u'2013-2015, The ownCloud developers'
+epub_copyright = u'2013-{:%Y}, The ownCloud developers'.format(datetime.now())
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

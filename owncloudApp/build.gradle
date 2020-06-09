@@ -1,0 +1,250 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-allopen'
+apply plugin: 'kotlin-android-extensions'
+
+def commitSHA1 = 'COMMIT_SHA1'
+def gitRemote = 'GIT_REMOTE'
+
+dependencies {
+    // Data and domain modules
+    implementation project(':owncloudDomain')
+    implementation project(':owncloudData')
+
+    // Dependencies for app building
+    implementation "androidx.legacy:legacy-support-v4:$androidX"
+    implementation "androidx.annotation:annotation:1.1.0"
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.jakewharton:disklrucache:2.0.2'
+    implementation 'com.google.android.exoplayer:exoplayer:r2.2.0'
+    implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
+    implementation "androidx.appcompat:appcompat:$appCompat"
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation "androidx.browser:browser:1.2.0"
+    implementation 'commons-io:commons-io:2.6'
+    implementation "androidx.sqlite:sqlite:$sqliteVersion"
+    implementation "androidx.biometric:biometric:$biometricVersion"
+
+    // Tests
+    testImplementation project(':owncloudTestUtil')
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "androidx.arch.core:core-testing:$archLifecycleVersion"
+    testImplementation "io.mockk:mockk:$mockkVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
+    // Instrumented tests
+    androidTestImplementation project(':owncloudTestUtil')
+    androidTestImplementation "androidx.test:core:$androidTestVersion"
+    androidTestImplementation "androidx.test:rules:$androidTestVersion"
+    androidTestImplementation "androidx.test:runner:$androidTestVersion"
+    androidTestImplementation "androidx.test:runner:$androidTestVersion"
+    androidTestImplementation "androidx.test.ext:junit:$extJunitVersion"
+    androidTestImplementation "androidx.test:core-ktx:$androidTestVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoTestVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoTestVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoTestVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-web:$espressoTestVersion"
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:$uiAutomatorTestVersion"
+    androidTestImplementation "androidx.annotation:annotation:$annotationTestVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$archLifecycleVersion"
+    androidTestImplementation("io.mockk:mockk-android:$mockkVersion") {
+        exclude module: 'objenesis'
+    }
+    androidTestImplementation 'com.github.tmurakami:dexopener:2.0.4'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+
+    // Image loading
+    implementation('com.github.bumptech.glide:glide:4.6.1') {
+        exclude group: "com.android.support"
+    }
+
+    //Zooming Android ImageView.
+    implementation 'com.github.chrisbanes:PhotoView:2.1.4'
+
+    implementation "androidx.multidex:multidex:2.0.1"
+
+    // Convert Java Objects into JSON and back
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$archLifecycleVersion"
+    kapt "androidx.lifecycle:lifecycle-common-java8:$archLifecycleVersion"
+
+    implementation "androidx.room:room-runtime:$roomVersion"
+
+    // Koin dependency injector
+    implementation "org.koin:koin-androidx-viewmodel:$koinVersion"
+
+    // KTX extensions, see https://developer.android.com/kotlin/ktx.html
+    implementation "androidx.core:core-ktx:$ktxCoreVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxViewModelVersion"
+    implementation "androidx.fragment:fragment-ktx:$ktxFragmentVersion"
+}
+
+tasks.withType(Test) {
+    /// increased logging for tests
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+allOpen {
+    // allows mocking for classes w/o directly opening them for release builds
+    annotation 'com.owncloud.android.testing.OpenClass'
+}
+
+android {
+    compileSdkVersion sdkCompileVersion
+
+    defaultConfig {
+        minSdkVersion sdkMinVersion
+        targetSdkVersion sdkTargetVersion
+
+        testInstrumentationRunner "com.owncloud.android.utils.OCTestAndroidJUnitRunner"
+
+        versionCode = 21500000
+        versionName = "2.15"
+
+        buildConfigField "String", gitRemote, "\"" + getGitOriginRemote() + "\""
+        buildConfigField "String", commitSHA1, "\"" + getLatestGitHash() + "\""
+
+        multiDexEnabled true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+
+        manifestPlaceholders = [appAuthRedirectScheme: 'oc']
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    sourceSets {
+        androidTest.java.srcDirs += "src/test-common/java"
+        test.java.srcDirs += "src/test-common/java"
+    }
+
+    lintOptions {
+        abortOnError true
+        ignoreWarnings false
+
+        xmlReport false
+        htmlOutput file("../lint-app-report.html")
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
+
+    adbOptions {
+        timeOutInMs(20 * 60 * 1000)
+    }
+
+    signingConfigs {
+        release {
+            if (System.env.OC_RELEASE_KEYSTORE) {
+                storeFile file(System.env.OC_RELEASE_KEYSTORE)  // use an absolute path
+                storePassword System.env.OC_RELEASE_KEYSTORE_PASSWORD
+                keyAlias System.env.OC_RELEASE_KEY_ALIAS
+                keyPassword System.env.OC_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+
+    buildTypes {
+
+        release {
+            if (System.env.OC_RELEASE_KEYSTORE) {
+                signingConfig signingConfigs.release
+            }
+        }
+
+        debug {
+            applicationIdSuffix ".debug"
+        }
+    }
+
+    applicationVariants.all { variant ->
+        def appName = System.env.OC_APP_NAME
+        setOutputFileName(variant, appName, project)
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+        animationsDisabled = true
+    }
+}
+
+// Updates output file names of a given variant to format
+// [appName].[variant.versionName].[OC_BUILD_NUMBER]-[variant.name].apk.
+//
+// OC_BUILD_NUMBER is an environment variable read directly in this method. If undefined, it's not added.
+//
+// @param variant           Build variant instance which output file name will be updated.
+// @param appName           String to use as first part of the new file name. May be undefined, the original
+//                          project.archivesBaseName property will be used instead.
+// @param callerProject     Caller project.
+
+def setOutputFileName(variant, appName, callerProject) {
+    logger.info("Setting new name for output of variant $variant.name")
+
+    def originalFile = variant.outputs[0].outputFile
+    def originalName = originalFile.name
+    println "originalName is $originalName"
+
+    def newName = ""
+
+    if (appName) {
+        newName += appName
+    } else {
+        newName += "owncloud"
+    }
+
+    def versionName = "$variant.mergedFlavor.versionName"
+    if (variant.mergedFlavor.manifestPlaceholders.versionName != null) {
+        versionName = "$variant.mergedFlavor.manifestPlaceholders.versionName"
+    }
+    if (variant.buildType.manifestPlaceholders.versionName != null) {
+        versionName = "$variant.buildType.manifestPlaceholders.versionName"
+    }
+    newName += "_$versionName"
+
+    def buildNumber = System.env.OC_BUILD_NUMBER
+    if (buildNumber) {
+        newName += ".$buildNumber"
+    }
+
+    newName += originalName.substring(callerProject.archivesBaseName.length())
+
+    println "$variant.name: newName is $newName"
+
+    variant.outputs.all {
+        outputFileName = new File(".", newName)
+    }
+}
+
+static def getLatestGitHash() {
+    def process = "git rev-parse --short HEAD".execute()
+    return process.text.toString().trim()
+}
+
+static def getGitOriginRemote() {
+    def process = "git remote -v".execute()
+    def values = process.text.toString().trim().split("\\r\\n|\\n|\\r")
+
+    def found = values.find { it.startsWith("origin") && it.endsWith("(push)") }
+    return found.replace("origin", "").replace("(push)", "").replace(".git", "").trim()
+}

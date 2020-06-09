@@ -34,77 +34,77 @@ import com.owncloud.android.datamodel.OCFile;
  */
 public abstract class ToolbarActivity extends BaseActivity {
 
-  @Override
-  protected void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-  }
+@Override
+protected void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+}
 
-  /**
-   * Toolbar setup that must be called in implementer's {@link #onCreate} after
-   * {@link #setContentView} if they want to use the toolbar.
-   */
-  protected void setupToolbar() {
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-  }
+/**
+ * Toolbar setup that must be called in implementer's {@link #onCreate} after
+ * {@link #setContentView} if they want to use the toolbar.
+ */
+protected void setupToolbar() {
+	Toolbar toolbar = findViewById(R.id.toolbar);
+	setSupportActionBar(toolbar);
+}
 
-  /**
-   * Updates title bar and home buttons (state and icon).
-   */
-  protected void updateActionBarTitleAndHomeButton(final OCFile chosenFile) {
-    String title =
-        getString(R.string.default_display_name_for_root_folder); // default
-    boolean inRoot;
+/**
+ * Updates title bar and home buttons (state and icon).
+ */
+protected void updateActionBarTitleAndHomeButton(final OCFile chosenFile) {
+	String title =
+		getString(R.string.default_display_name_for_root_folder); // default
+	boolean inRoot;
 
-    // choose the appropriate title
-    inRoot =
-        (chosenFile == null ||
-         (chosenFile.isFolder() &&
-          chosenFile.getParentId() == FileDataStorageManager.ROOT_PARENT_ID));
-    if (!inRoot) {
-      title = chosenFile.getFileName();
-    }
+	// choose the appropriate title
+	inRoot =
+		(chosenFile == null ||
+		 (chosenFile.isFolder() &&
+		  chosenFile.getParentId() == FileDataStorageManager.ROOT_PARENT_ID));
+	if (!inRoot) {
+		title = chosenFile.getFileName();
+	}
 
-    updateActionBarTitleAndHomeButtonByString(title);
-  }
+	updateActionBarTitleAndHomeButtonByString(title);
+}
 
-  /**
-   * Updates title bar and home buttons (state and icon).
-   */
-  protected void updateActionBarTitleAndHomeButtonByString(final String title) {
-    String titleToSet = getString(R.string.app_name); // default
+/**
+ * Updates title bar and home buttons (state and icon).
+ */
+protected void updateActionBarTitleAndHomeButtonByString(final String title) {
+	String titleToSet = getString(R.string.app_name); // default
 
-    if (title != null) {
-      titleToSet = title;
-    }
+	if (title != null) {
+		titleToSet = title;
+	}
 
-    // set the chosen title
-    ActionBar actionBar = getSupportActionBar();
-    actionBar.setTitle(titleToSet);
+	// set the chosen title
+	ActionBar actionBar = getSupportActionBar();
+	actionBar.setTitle(titleToSet);
 
-    // also as content description
-    View actionBarTitleView = getWindow().getDecorView().findViewById(
-        getResources().getIdentifier("action_bar_title", "id", "android"));
-    // TODO remove legacy code
-    if (actionBarTitleView != null) { // it's null in Android 2.x
-      actionBarTitleView.setContentDescription(titleToSet);
-    }
+	// also as content description
+	View actionBarTitleView = getWindow().getDecorView().findViewById(
+		getResources().getIdentifier("action_bar_title", "id", "android"));
+	// TODO remove legacy code
+	if (actionBarTitleView != null) { // it's null in Android 2.x
+		actionBarTitleView.setContentDescription(titleToSet);
+	}
 
-    // set home button properties
-    actionBar.setDisplayHomeAsUpEnabled(true);
-    actionBar.setDisplayShowTitleEnabled(true);
-  }
+	// set home button properties
+	actionBar.setDisplayHomeAsUpEnabled(true);
+	actionBar.setDisplayShowTitleEnabled(true);
+}
 
-  /**
-   * checks if the given file is the root folder.
-   *
-   * @param file file to be checked if it is the root folder
-   * @return <code>true</code> if it is <code>null</code> or the root folder,
-   *     else returns <code>false</code>
-   */
-  public boolean isRoot(final OCFile file) {
-    return file == null ||
-        (file.isFolder() &&
-         file.getParentId() == FileDataStorageManager.ROOT_PARENT_ID);
-  }
+/**
+ * checks if the given file is the root folder.
+ *
+ * @param file file to be checked if it is the root folder
+ * @return <code>true</code> if it is <code>null</code> or the root folder,
+ *     else returns <code>false</code>
+ */
+public boolean isRoot(final OCFile file) {
+	return file == null ||
+	       (file.isFolder() &&
+	        file.getParentId() == FileDataStorageManager.ROOT_PARENT_ID);
+}
 }

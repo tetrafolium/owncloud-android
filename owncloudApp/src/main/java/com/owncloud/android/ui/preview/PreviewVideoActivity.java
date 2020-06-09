@@ -51,226 +51,228 @@ import timber.log.Timber;
  * An activity that plays media using {@link SimpleExoPlayer}.
  */
 public class PreviewVideoActivity extends FileActivity
-    implements ExoPlayer.EventListener,
-               PrepareVideoPlayerAsyncTask.OnPrepareVideoPlayerTaskListener {
+	implements ExoPlayer.EventListener,
+	                                  PrepareVideoPlayerAsyncTask.OnPrepareVideoPlayerTaskListener {
 
-  /**
-   * Key to receive a flag signaling if the video should be started immediately
-   */
-  public static final String EXTRA_AUTOPLAY = "AUTOPLAY";
+/**
+ * Key to receive a flag signaling if the video should be started immediately
+ */
+public static final String EXTRA_AUTOPLAY = "AUTOPLAY";
 
-  /**
-   * Key to receive the position of the playback where the video should be put
-   * at start
-   */
-  public static final String EXTRA_START_POSITION = "START_POSITION";
+/**
+ * Key to receive the position of the playback where the video should be put
+ * at start
+ */
+public static final String EXTRA_START_POSITION = "START_POSITION";
 
-  private final DefaultBandwidthMeter BANDWIDTH_METER =
-      new DefaultBandwidthMeter();
+private final DefaultBandwidthMeter BANDWIDTH_METER =
+	new DefaultBandwidthMeter();
 
-  private Handler mainHandler;
-  private SimpleExoPlayerView simpleExoPlayerView;
+private Handler mainHandler;
+private SimpleExoPlayerView simpleExoPlayerView;
 
-  private SimpleExoPlayer player;
-  private DefaultTrackSelector trackSelector;
+private SimpleExoPlayer player;
+private DefaultTrackSelector trackSelector;
 
-  private boolean mAutoplay; // when 'true', the playback starts immediately
+private boolean mAutoplay;   // when 'true', the playback starts immediately
                              // with the activity
-  private long
-      mPlaybackPosition; // continue the playback in the specified position
+private long
+        mPlaybackPosition; // continue the playback in the specified position
 
-  private static final int NOT_FOUND_ERROR = 404;
+private static final int NOT_FOUND_ERROR = 404;
 
-  // Activity lifecycle
+// Activity lifecycle
 
-  @Override
-  public void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    Timber.v("onCreate");
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	Timber.v("onCreate");
 
-    clearResumePosition();
+	clearResumePosition();
 
-    setContentView(R.layout.video_preview);
+	setContentView(R.layout.video_preview);
 
-    simpleExoPlayerView = findViewById(R.id.video_player);
+	simpleExoPlayerView = findViewById(R.id.video_player);
 
-    // Hide sync bar
-    ProgressBar syncProgressBar = findViewById(R.id.syncProgressBar);
-    syncProgressBar.setVisibility(View.GONE);
+	// Hide sync bar
+	ProgressBar syncProgressBar = findViewById(R.id.syncProgressBar);
+	syncProgressBar.setVisibility(View.GONE);
 
-    // Hide full screen button
-    ImageButton fullScreen = findViewById(R.id.fullscreen_button);
-    fullScreen.setVisibility(View.GONE);
+	// Hide full screen button
+	ImageButton fullScreen = findViewById(R.id.fullscreen_button);
+	fullScreen.setVisibility(View.GONE);
 
-    // Show exit full screen button
-    ImageButton exitFullScreen = findViewById(R.id.exit_fullscreen_button);
-    exitFullScreen.setVisibility(View.VISIBLE);
+	// Show exit full screen button
+	ImageButton exitFullScreen = findViewById(R.id.exit_fullscreen_button);
+	exitFullScreen.setVisibility(View.VISIBLE);
 
-    exitFullScreen.setOnClickListener(v -> onBackPressed());
+	exitFullScreen.setOnClickListener(v->onBackPressed());
 
-    Bundle extras = getIntent().getExtras();
+	Bundle extras = getIntent().getExtras();
 
-    mAutoplay = extras.getBoolean(EXTRA_AUTOPLAY);
-    mPlaybackPosition = extras.getLong(EXTRA_START_POSITION);
-  }
+	mAutoplay = extras.getBoolean(EXTRA_AUTOPLAY);
+	mPlaybackPosition = extras.getLong(EXTRA_START_POSITION);
+}
 
-  @Override
-  public void onStart() {
-    super.onStart();
-    Timber.v("onStart");
-  }
+@Override
+public void onStart() {
+	super.onStart();
+	Timber.v("onStart");
+}
 
-  @Override
-  public void onResume() {
-    super.onResume();
-    Timber.v("onResume");
-    preparePlayer();
-  }
+@Override
+public void onResume() {
+	super.onResume();
+	Timber.v("onResume");
+	preparePlayer();
+}
 
-  @Override
-  public void onPause() {
-    super.onPause();
-    Timber.v("onPause");
-    releasePlayer();
-  }
+@Override
+public void onPause() {
+	super.onPause();
+	Timber.v("onPause");
+	releasePlayer();
+}
 
-  @Override
-  public void onStop() {
-    super.onStop();
-    Timber.v("onStop");
-  }
+@Override
+public void onStop() {
+	super.onStop();
+	Timber.v("onStop");
+}
 
-  // Handle full screen modes
-  @Override
-  public void onWindowFocusChanged(final boolean hasFocus) {
-    super.onWindowFocusChanged(hasFocus);
-    if (hasFocus) {
-      // Let app go truly full screen using immersive mode, user swipes to
-      // display the system bars
-      getWindow().getDecorView().setSystemUiVisibility(
-          View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-          View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-          View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-          View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN |
-          View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-    }
-  }
+// Handle full screen modes
+@Override
+public void onWindowFocusChanged(final boolean hasFocus) {
+	super.onWindowFocusChanged(hasFocus);
+	if (hasFocus) {
+		// Let app go truly full screen using immersive mode, user swipes to
+		// display the system bars
+		getWindow().getDecorView().setSystemUiVisibility(
+			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+	}
+}
 
-  // Video player internal methods
+// Video player internal methods
 
-  private void preparePlayer() {
+private void preparePlayer() {
 
-    // Create a default TrackSelector
-    mainHandler = new Handler();
-    TrackSelection.Factory videoTrackSelectionFactory =
-        new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
-    trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
-    player = ExoPlayerFactory.newSimpleInstance(this, trackSelector,
-                                                new DefaultLoadControl());
-    player.addListener(this);
-    simpleExoPlayerView.setPlayer(player);
-    player.seekTo(mPlaybackPosition);
-    player.setPlayWhenReady(mAutoplay);
+	// Create a default TrackSelector
+	mainHandler = new Handler();
+	TrackSelection.Factory videoTrackSelectionFactory =
+		new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
+	trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+	player = ExoPlayerFactory.newSimpleInstance(this, trackSelector,
+	                                            new DefaultLoadControl());
+	player.addListener(this);
+	simpleExoPlayerView.setPlayer(player);
+	player.seekTo(mPlaybackPosition);
+	player.setPlayWhenReady(mAutoplay);
 
-    // Prepare video player asynchronously
-    new PrepareVideoPlayerAsyncTask(getApplicationContext(), this, getFile(),
-                                    getAccount(), mainHandler)
-        .execute();
-  }
+	// Prepare video player asynchronously
+	new PrepareVideoPlayerAsyncTask(getApplicationContext(), this, getFile(),
+	                                getAccount(), mainHandler)
+	.execute();
+}
 
-  /**
-   * Called after preparing the player asynchronously
-   * @param mediaSource media to be played
-   */
-  @Override
-  public void OnPrepareVideoPlayerTaskCallback(final MediaSource mediaSource) {
-    Timber.v("playerPrepared");
-    player.prepare(mediaSource);
-  }
+/**
+ * Called after preparing the player asynchronously
+ * @param mediaSource media to be played
+ */
+@Override
+public void OnPrepareVideoPlayerTaskCallback(final MediaSource mediaSource) {
+	Timber.v("playerPrepared");
+	player.prepare(mediaSource);
+}
 
-  private void releasePlayer() {
-    if (player != null) {
-      mAutoplay = player.getPlayWhenReady();
-      updateResumePosition();
-      player.release();
-      player = null;
-      trackSelector = null;
-      Timber.v("playerReleased");
-    }
-  }
+private void releasePlayer() {
+	if (player != null) {
+		mAutoplay = player.getPlayWhenReady();
+		updateResumePosition();
+		player.release();
+		player = null;
+		trackSelector = null;
+		Timber.v("playerReleased");
+	}
+}
 
-  private void updateResumePosition() {
-    mPlaybackPosition = player.isCurrentWindowSeekable()
-                            ? Math.max(0, player.getCurrentPosition())
-                            : C.TIME_UNSET;
-  }
+private void updateResumePosition() {
+	mPlaybackPosition = player.isCurrentWindowSeekable()
+	                    ? Math.max(0, player.getCurrentPosition())
+	                    : C.TIME_UNSET;
+}
 
-  private void clearResumePosition() { mPlaybackPosition = C.TIME_UNSET; }
+private void clearResumePosition() {
+	mPlaybackPosition = C.TIME_UNSET;
+}
 
-  // Video player eventListener implementation
+// Video player eventListener implementation
 
-  @Override
-  public void onPlayerError(final ExoPlaybackException error) {
+@Override
+public void onPlayerError(final ExoPlaybackException error) {
 
-    Timber.e(error, "Error in video player");
+	Timber.e(error, "Error in video player");
 
-    showAlertDialog(
-        PreviewVideoErrorAdapter.handlePreviewVideoError(error, this));
-  }
+	showAlertDialog(
+		PreviewVideoErrorAdapter.handlePreviewVideoError(error, this));
+}
 
-  /**
-   * Show an alert dialog with the error produced while playing the video
-   *
-   * @param previewVideoError player error with the needed info
-   */
-  private void showAlertDialog(final PreviewVideoError previewVideoError) {
+/**
+ * Show an alert dialog with the error produced while playing the video
+ *
+ * @param previewVideoError player error with the needed info
+ */
+private void showAlertDialog(final PreviewVideoError previewVideoError) {
 
-    new AlertDialog.Builder(this)
-        .setMessage(previewVideoError.getErrorMessage())
-        .setPositiveButton(android.R.string.VideoView_error_button,
-                           (dialog, whichButton) -> finish())
-        .setCancelable(false)
-        .show();
-  }
+	new AlertDialog.Builder(this)
+	.setMessage(previewVideoError.getErrorMessage())
+	.setPositiveButton(android.R.string.VideoView_error_button,
+	                   (dialog, whichButton)->finish())
+	.setCancelable(false)
+	.show();
+}
 
-  @Override
-  public void onLoadingChanged(final boolean isLoading) {
-    // Do nothing.
-  }
+@Override
+public void onLoadingChanged(final boolean isLoading) {
+	// Do nothing.
+}
 
-  @Override
-  public void onPlayerStateChanged(final boolean playWhenReady,
-                                   final int playbackState) {
-    // Do nothing.
-  }
+@Override
+public void onPlayerStateChanged(final boolean playWhenReady,
+                                 final int playbackState) {
+	// Do nothing.
+}
 
-  @Override
-  public void onPositionDiscontinuity() {
-    // Do nothing
-  }
+@Override
+public void onPositionDiscontinuity() {
+	// Do nothing
+}
 
-  @Override
-  public void onTimelineChanged(final Timeline timeline,
-                                final Object manifest) {
-    // Do nothing
-  }
+@Override
+public void onTimelineChanged(final Timeline timeline,
+                              final Object manifest) {
+	// Do nothing
+}
 
-  @Override
-  public void onTracksChanged(final TrackGroupArray trackGroups,
-                              final TrackSelectionArray trackSelections) {
-    // Do nothing
-  }
+@Override
+public void onTracksChanged(final TrackGroupArray trackGroups,
+                            final TrackSelectionArray trackSelections) {
+	// Do nothing
+}
 
-  // Back button behaviour
+// Back button behaviour
 
-  @Override
-  public void onBackPressed() {
-    Timber.v("onBackPressed");
-    Intent i = new Intent();
-    i.putExtra(EXTRA_AUTOPLAY, player.getPlayWhenReady());
-    i.putExtra(EXTRA_START_POSITION, player.getCurrentPosition());
-    player.release();
-    setResult(RESULT_OK, i);
-    super.onBackPressed();
-  }
+@Override
+public void onBackPressed() {
+	Timber.v("onBackPressed");
+	Intent i = new Intent();
+	i.putExtra(EXTRA_AUTOPLAY, player.getPlayWhenReady());
+	i.putExtra(EXTRA_START_POSITION, player.getCurrentPosition());
+	player.release();
+	setResult(RESULT_OK, i);
+	super.onBackPressed();
+}
 }

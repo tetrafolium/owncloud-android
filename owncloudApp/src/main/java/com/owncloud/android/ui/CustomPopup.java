@@ -36,110 +36,118 @@ import android.widget.PopupWindow;
  * Represents a custom PopupWindows
  */
 public class CustomPopup {
-  protected final View mAnchor;
-  protected final PopupWindow mWindow;
-  private View root;
-  private Drawable background = null;
-  protected final WindowManager mWManager;
+protected final View mAnchor;
+protected final PopupWindow mWindow;
+private View root;
+private Drawable background = null;
+protected final WindowManager mWManager;
 
-  public CustomPopup(final View anchor) {
-    mAnchor = anchor;
-    mWindow = new PopupWindow(anchor.getContext());
+public CustomPopup(final View anchor) {
+	mAnchor = anchor;
+	mWindow = new PopupWindow(anchor.getContext());
 
-    mWindow.setTouchInterceptor(new OnTouchListener() {
-      public boolean onTouch(final View v, final MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-          CustomPopup.this.dismiss();
-          return true;
-        }
-        return false;
-      }
-    });
+	mWindow.setTouchInterceptor(new OnTouchListener() {
+			public boolean onTouch(final View v, final MotionEvent event) {
+			        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+			                CustomPopup.this.dismiss();
+			                return true;
+				}
+			        return false;
+			}
+		});
 
-    mWManager = (WindowManager)anchor.getContext().getSystemService(
-        Context.WINDOW_SERVICE);
-    onCreate();
-  }
+	mWManager = (WindowManager)anchor.getContext().getSystemService(
+		Context.WINDOW_SERVICE);
+	onCreate();
+}
 
-  public void onCreate() {}
+public void onCreate() {
+}
 
-  public void onShow() {}
+public void onShow() {
+}
 
-  public void preShow() {
-    if (root == null) {
-      throw new IllegalStateException(
-          "setContentView called with a view to display");
-    }
+public void preShow() {
+	if (root == null) {
+		throw new IllegalStateException(
+			      "setContentView called with a view to display");
+	}
 
-    onShow();
+	onShow();
 
-    if (background == null) {
-      mWindow.setBackgroundDrawable(new BitmapDrawable());
-    } else {
-      mWindow.setBackgroundDrawable(background);
-    }
+	if (background == null) {
+		mWindow.setBackgroundDrawable(new BitmapDrawable());
+	} else {
+		mWindow.setBackgroundDrawable(background);
+	}
 
-    mWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-    mWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-    mWindow.setTouchable(true);
-    mWindow.setFocusable(true);
-    mWindow.setOutsideTouchable(true);
+	mWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+	mWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+	mWindow.setTouchable(true);
+	mWindow.setFocusable(true);
+	mWindow.setOutsideTouchable(true);
 
-    mWindow.setContentView(root);
-  }
+	mWindow.setContentView(root);
+}
 
-  public void setBackgroundDrawable(final Drawable background) {
-    this.background = background;
-  }
+public void setBackgroundDrawable(final Drawable background) {
+	this.background = background;
+}
 
-  public void setContentView(final View root) {
-    this.root = root;
-    mWindow.setContentView(root);
-  }
+public void setContentView(final View root) {
+	this.root = root;
+	mWindow.setContentView(root);
+}
 
-  public void setContentView(final int layoutResId) {
-    LayoutInflater inflater =
-        (LayoutInflater)mAnchor.getContext().getSystemService(
-            Context.LAYOUT_INFLATER_SERVICE);
-    setContentView(inflater.inflate(layoutResId, null));
-  }
+public void setContentView(final int layoutResId) {
+	LayoutInflater inflater =
+		(LayoutInflater)mAnchor.getContext().getSystemService(
+			Context.LAYOUT_INFLATER_SERVICE);
+	setContentView(inflater.inflate(layoutResId, null));
+}
 
-  public void showDropDown() { showDropDown(0, 0); }
+public void showDropDown() {
+	showDropDown(0, 0);
+}
 
-  public void showDropDown(final int x, final int y) {
-    preShow();
-    mWindow.setAnimationStyle(android.R.style.Animation_Dialog);
-    mWindow.showAsDropDown(mAnchor, x, y);
-  }
+public void showDropDown(final int x, final int y) {
+	preShow();
+	mWindow.setAnimationStyle(android.R.style.Animation_Dialog);
+	mWindow.showAsDropDown(mAnchor, x, y);
+}
 
-  public void showLikeQuickAction() { showLikeQuickAction(0, 0); }
+public void showLikeQuickAction() {
+	showLikeQuickAction(0, 0);
+}
 
-  public void showLikeQuickAction(final int x, final int y) {
-    preShow();
+public void showLikeQuickAction(final int x, final int y) {
+	preShow();
 
-    mWindow.setAnimationStyle(android.R.style.Animation_Dialog);
-    int[] location = new int[2];
-    mAnchor.getLocationOnScreen(location);
+	mWindow.setAnimationStyle(android.R.style.Animation_Dialog);
+	int[] location = new int[2];
+	mAnchor.getLocationOnScreen(location);
 
-    Rect anchorRect =
-        new Rect(location[0], location[1], location[0] + mAnchor.getWidth(),
-                 location[1] + mAnchor.getHeight());
+	Rect anchorRect =
+		new Rect(location[0], location[1], location[0] + mAnchor.getWidth(),
+		         location[1] + mAnchor.getHeight());
 
-    root.setLayoutParams(
-        new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-    root.measure(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	root.setLayoutParams(
+		new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	root.measure(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-    int rootW = root.getWidth(), rootH = root.getHeight();
-    int screenW = mWManager.getDefaultDisplay().getWidth();
+	int rootW = root.getWidth(), rootH = root.getHeight();
+	int screenW = mWManager.getDefaultDisplay().getWidth();
 
-    int xpos = ((screenW - rootW) / 2) + x;
-    int ypos = anchorRect.top - rootH + y;
+	int xpos = ((screenW - rootW) / 2) + x;
+	int ypos = anchorRect.top - rootH + y;
 
-    if (rootH > anchorRect.top) {
-      ypos = anchorRect.bottom + y;
-    }
-    mWindow.showAtLocation(mAnchor, Gravity.NO_GRAVITY, xpos, ypos);
-  }
+	if (rootH > anchorRect.top) {
+		ypos = anchorRect.bottom + y;
+	}
+	mWindow.showAtLocation(mAnchor, Gravity.NO_GRAVITY, xpos, ypos);
+}
 
-  public void dismiss() { mWindow.dismiss(); }
+public void dismiss() {
+	mWindow.dismiss();
+}
 }

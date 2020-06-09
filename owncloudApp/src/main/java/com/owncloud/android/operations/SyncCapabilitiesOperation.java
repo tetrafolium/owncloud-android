@@ -34,57 +34,57 @@ import timber.log.Timber;
  */
 public class SyncCapabilitiesOperation extends SyncOperation<RemoteCapability> {
 
-  @Override
-  protected RemoteOperationResult<RemoteCapability>
-  run(final OwnCloudClient client) {
-    RemoteCapability capabilities = null;
-    OwnCloudVersion serverVersion = null;
+@Override
+protected RemoteOperationResult<RemoteCapability>
+run(final OwnCloudClient client) {
+	RemoteCapability capabilities = null;
+	OwnCloudVersion serverVersion = null;
 
-    /// Get current value for capabilities from server
-    GetRemoteCapabilitiesOperation getCapabilities =
-        new GetRemoteCapabilitiesOperation();
-    RemoteOperationResult<RemoteCapability> result =
-        getCapabilities.execute(client);
-    if (result.isSuccess()) {
-      // Read data from the result
-      if (result.getData() != null) {
-        capabilities = result.getData();
-        serverVersion = new OwnCloudVersion(capabilities.getVersionString());
-      }
+	/// Get current value for capabilities from server
+	GetRemoteCapabilitiesOperation getCapabilities =
+		new GetRemoteCapabilitiesOperation();
+	RemoteOperationResult<RemoteCapability> result =
+		getCapabilities.execute(client);
+	if (result.isSuccess()) {
+		// Read data from the result
+		if (result.getData() != null) {
+			capabilities = result.getData();
+			serverVersion = new OwnCloudVersion(capabilities.getVersionString());
+		}
 
-    } else {
-      Timber.w("Remote capabilities not available");
+	} else {
+		Timber.w("Remote capabilities not available");
 
-      // server version is important; this fallback will try to get it from
-      // status.php if capabilities API is not available.
-      GetRemoteStatusOperation getStatus = new GetRemoteStatusOperation();
-      RemoteOperationResult<OwnCloudVersion> statusResult =
-          getStatus.execute(client);
-      if (statusResult.isSuccess()) {
-        serverVersion = statusResult.getData();
-      }
-    }
+		// server version is important; this fallback will try to get it from
+		// status.php if capabilities API is not available.
+		GetRemoteStatusOperation getStatus = new GetRemoteStatusOperation();
+		RemoteOperationResult<OwnCloudVersion> statusResult =
+			getStatus.execute(client);
+		if (statusResult.isSuccess()) {
+			serverVersion = statusResult.getData();
+		}
+	}
 
-    /// save data - capabilities in database
-    if (capabilities != null) {
-      getStorageManager().saveCapabilities(capabilities);
-    }
+	/// save data - capabilities in database
+	if (capabilities != null) {
+		getStorageManager().saveCapabilities(capabilities);
+	}
 
-    /// save data - OC version
-    // need to save separately version in AccountManager, due to bad dependency
-    // in library:
-    // com.owncloud.android.lib.common.accounts.AccountUtils#getCredentialsForAccount(...)
-    // and
-    // com.owncloud.android.lib.common.accounts.AccountUtils#getServerVersionForAccount(...)
-    if (serverVersion != null) {
-      AccountManager accountMngr =
-          AccountManager.get(MainApp.Companion.getAppContext());
-      accountMngr.setUserData(getStorageManager().getAccount(),
-                              com.owncloud.android.lib.common.accounts
-                                  .AccountUtils.Constants.KEY_OC_VERSION,
-                              serverVersion.getVersion());
-    }
+	/// save data - OC version
+	// need to save separately version in AccountManager, due to bad dependency
+	// in library:
+	// com.owncloud.android.lib.common.accounts.AccountUtils#getCredentialsForAccount(...)
+	// and
+	// com.owncloud.android.lib.common.accounts.AccountUtils#getServerVersionForAccount(...)
+	if (serverVersion != null) {
+		AccountManager accountMngr =
+			AccountManager.get(MainApp.Companion.getAppContext());
+		accountMngr.setUserData(getStorageManager().getAccount(),
+		                        com.owncloud.android.lib.common.accounts
+		                        .AccountUtils.Constants.KEY_OC_VERSION,
+		                        serverVersion.getVersion());
+	}
 
-    return result;
-  }
+	return result;
+}
 }

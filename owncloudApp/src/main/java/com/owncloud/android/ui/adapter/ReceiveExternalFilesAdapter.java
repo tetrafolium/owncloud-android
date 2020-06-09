@@ -46,124 +46,124 @@ import java.util.List;
 import java.util.Vector;
 
 public class ReceiveExternalFilesAdapter
-    extends BaseAdapter implements ListAdapter {
+	extends BaseAdapter implements ListAdapter {
 
-  private List<OCFile> mFiles;
-  private Context mContext;
-  private Account mAccount;
-  private FileDataStorageManager mStorageManager;
-  private LayoutInflater mInflater;
+private List<OCFile> mFiles;
+private Context mContext;
+private Account mAccount;
+private FileDataStorageManager mStorageManager;
+private LayoutInflater mInflater;
 
-  public ReceiveExternalFilesAdapter(
-      final Context context, final List<OCFile> files,
-      final FileDataStorageManager storageManager, final Account account) {
-    mFiles = files;
-    mAccount = account;
-    mStorageManager = storageManager;
-    mContext = context;
-    mInflater = (LayoutInflater)mContext.getSystemService(
-        Context.LAYOUT_INFLATER_SERVICE);
-  }
+public ReceiveExternalFilesAdapter(
+	final Context context, final List<OCFile> files,
+	final FileDataStorageManager storageManager, final Account account) {
+	mFiles = files;
+	mAccount = account;
+	mStorageManager = storageManager;
+	mContext = context;
+	mInflater = (LayoutInflater)mContext.getSystemService(
+		Context.LAYOUT_INFLATER_SERVICE);
+}
 
-  @Override
-  public int getCount() {
-    return (mFiles == null) ? 0 : mFiles.size();
-  }
+@Override
+public int getCount() {
+	return (mFiles == null) ? 0 : mFiles.size();
+}
 
-  @Override
-  public Object getItem(final int position) {
-    if (mFiles == null || position < 0 || position >= mFiles.size()) {
-      return null;
-    } else {
-      return mFiles.get(position);
-    }
-  }
+@Override
+public Object getItem(final int position) {
+	if (mFiles == null || position < 0 || position >= mFiles.size()) {
+		return null;
+	} else {
+		return mFiles.get(position);
+	}
+}
 
-  @Override
-  public long getItemId(final int position) {
-    if (mFiles == null || position < 0 || position >= mFiles.size()) {
-      return -1;
-    } else {
-      return mFiles.get(position).getFileId();
-    }
-  }
+@Override
+public long getItemId(final int position) {
+	if (mFiles == null || position < 0 || position >= mFiles.size()) {
+		return -1;
+	} else {
+		return mFiles.get(position).getFileId();
+	}
+}
 
-  @Override
-  public View getView(final int position, final View convertView,
-                      final ViewGroup parent) {
-    View vi = convertView;
-    if (convertView == null) {
-      vi = mInflater.inflate(R.layout.uploader_list_item_layout, parent, false);
+@Override
+public View getView(final int position, final View convertView,
+                    final ViewGroup parent) {
+	View vi = convertView;
+	if (convertView == null) {
+		vi = mInflater.inflate(R.layout.uploader_list_item_layout, parent, false);
 
-      // Allow or disallow touches with other visible windows
-      vi.setFilterTouchesWhenObscured(
-          PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
-              mContext));
-    }
+		// Allow or disallow touches with other visible windows
+		vi.setFilterTouchesWhenObscured(
+			PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
+				mContext));
+	}
 
-    OCFile file = mFiles.get(position);
+	OCFile file = mFiles.get(position);
 
-    TextView filename = vi.findViewById(R.id.filename);
-    filename.setText(file.getFileName());
+	TextView filename = vi.findViewById(R.id.filename);
+	filename.setText(file.getFileName());
 
-    ImageView fileIcon = vi.findViewById(R.id.thumbnail);
-    fileIcon.setTag(file.getFileId());
+	ImageView fileIcon = vi.findViewById(R.id.thumbnail);
+	fileIcon.setTag(file.getFileId());
 
-    TextView lastModV = vi.findViewById(R.id.last_mod);
-    lastModV.setText(DisplayUtils.getRelativeTimestamp(
-        mContext, file.getModificationTimestamp()));
+	TextView lastModV = vi.findViewById(R.id.last_mod);
+	lastModV.setText(DisplayUtils.getRelativeTimestamp(
+				 mContext, file.getModificationTimestamp()));
 
-    TextView fileSizeV = vi.findViewById(R.id.file_size);
-    TextView fileSizeSeparatorV = vi.findViewById(R.id.file_separator);
+	TextView fileSizeV = vi.findViewById(R.id.file_size);
+	TextView fileSizeSeparatorV = vi.findViewById(R.id.file_separator);
 
-    fileSizeV.setVisibility(View.VISIBLE);
-    fileSizeSeparatorV.setVisibility(View.VISIBLE);
-    fileSizeV.setText(
-        DisplayUtils.bytesToHumanReadable(file.getFileLength(), mContext));
+	fileSizeV.setVisibility(View.VISIBLE);
+	fileSizeSeparatorV.setVisibility(View.VISIBLE);
+	fileSizeV.setText(
+		DisplayUtils.bytesToHumanReadable(file.getFileLength(), mContext));
 
-    // get Thumbnail if file is image
-    if (file.isImage() && file.getRemoteId() != null) {
-      // Thumbnail in Cache?
-      Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
-          String.valueOf(file.getRemoteId()));
-      if (thumbnail != null && !file.needsUpdateThumbnail()) {
-        fileIcon.setImageBitmap(thumbnail);
-      } else {
-        // generate new Thumbnail
-        if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(file,
-                                                                fileIcon)) {
-          final ThumbnailsCacheManager.ThumbnailGenerationTask task =
-              new ThumbnailsCacheManager.ThumbnailGenerationTask(
-                  fileIcon, mStorageManager, mAccount);
-          if (thumbnail == null) {
-            thumbnail = ThumbnailsCacheManager.mDefaultImg;
-          }
-          final AsyncThumbnailDrawable asyncDrawable =
-              new AsyncThumbnailDrawable(mContext.getResources(), thumbnail,
-                                         task);
-          fileIcon.setImageDrawable(asyncDrawable);
-          task.execute(file);
-        }
-      }
-    } else {
-      fileIcon.setImageResource(MimetypeIconUtil.getFileTypeIconId(
-          file.getMimetype(), file.getFileName()));
-    }
-    return vi;
-  }
+	// get Thumbnail if file is image
+	if (file.isImage() && file.getRemoteId() != null) {
+		// Thumbnail in Cache?
+		Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
+			String.valueOf(file.getRemoteId()));
+		if (thumbnail != null && !file.needsUpdateThumbnail()) {
+			fileIcon.setImageBitmap(thumbnail);
+		} else {
+			// generate new Thumbnail
+			if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(file,
+			                                                        fileIcon)) {
+				final ThumbnailsCacheManager.ThumbnailGenerationTask task =
+					new ThumbnailsCacheManager.ThumbnailGenerationTask(
+						fileIcon, mStorageManager, mAccount);
+				if (thumbnail == null) {
+					thumbnail = ThumbnailsCacheManager.mDefaultImg;
+				}
+				final AsyncThumbnailDrawable asyncDrawable =
+					new AsyncThumbnailDrawable(mContext.getResources(), thumbnail,
+					                           task);
+				fileIcon.setImageDrawable(asyncDrawable);
+				task.execute(file);
+			}
+		}
+	} else {
+		fileIcon.setImageResource(MimetypeIconUtil.getFileTypeIconId(
+						  file.getMimetype(), file.getFileName()));
+	}
+	return vi;
+}
 
-  public void setSortOrder(final Integer order, final boolean isAscending) {
-    PreferenceManager.setSortOrder(order, mContext,
-                                   FileStorageUtils.FILE_DISPLAY_SORT);
-    PreferenceManager.setSortAscending(isAscending, mContext,
-                                       FileStorageUtils.FILE_DISPLAY_SORT);
-    FileStorageUtils.mSortOrderFileDisp = order;
-    FileStorageUtils.mSortAscendingFileDisp = isAscending;
-    if (mFiles != null && mFiles.size() > 0) {
-      FileStorageUtils.sortFolder((Vector<OCFile>)mFiles,
-                                  FileStorageUtils.mSortOrderFileDisp,
-                                  FileStorageUtils.mSortAscendingFileDisp);
-    }
-    notifyDataSetChanged();
-  }
+public void setSortOrder(final Integer order, final boolean isAscending) {
+	PreferenceManager.setSortOrder(order, mContext,
+	                               FileStorageUtils.FILE_DISPLAY_SORT);
+	PreferenceManager.setSortAscending(isAscending, mContext,
+	                                   FileStorageUtils.FILE_DISPLAY_SORT);
+	FileStorageUtils.mSortOrderFileDisp = order;
+	FileStorageUtils.mSortAscendingFileDisp = isAscending;
+	if (mFiles != null && mFiles.size() > 0) {
+		FileStorageUtils.sortFolder((Vector<OCFile>)mFiles,
+		                            FileStorageUtils.mSortOrderFileDisp,
+		                            FileStorageUtils.mSortAscendingFileDisp);
+	}
+	notifyDataSetChanged();
+}
 }

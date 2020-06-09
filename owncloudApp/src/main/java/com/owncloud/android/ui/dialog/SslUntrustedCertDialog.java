@@ -54,205 +54,205 @@ import timber.log.Timber;
  */
 public class SslUntrustedCertDialog extends DialogFragment {
 
-  protected View mView = null;
-  protected SslErrorHandler mHandler = null;
-  protected X509Certificate m509Certificate = null;
+protected View mView = null;
+protected SslErrorHandler mHandler = null;
+protected X509Certificate m509Certificate = null;
 
-  private ErrorViewAdapter mErrorViewAdapter = null;
-  private CertificateViewAdapter mCertificateViewAdapter = null;
+private ErrorViewAdapter mErrorViewAdapter = null;
+private CertificateViewAdapter mCertificateViewAdapter = null;
 
-  public static SslUntrustedCertDialog
-  newInstanceForEmptySslError(final SslError error,
-                              final SslErrorHandler handler) {
-    if (error == null) {
-      throw new IllegalArgumentException(
-          "Trying to create instance with parameter error == null");
-    }
-    if (handler == null) {
-      throw new IllegalArgumentException(
-          "Trying to create instance with parameter handler == null");
-    }
-    SslUntrustedCertDialog dialog = new SslUntrustedCertDialog();
-    dialog.mHandler = handler;
-    dialog.mErrorViewAdapter = new SslErrorViewAdapter(error);
-    dialog.mCertificateViewAdapter =
-        new SslCertificateViewAdapter(error.getCertificate());
-    return dialog;
-  }
+public static SslUntrustedCertDialog
+newInstanceForEmptySslError(final SslError error,
+                            final SslErrorHandler handler) {
+	if (error == null) {
+		throw new IllegalArgumentException(
+			      "Trying to create instance with parameter error == null");
+	}
+	if (handler == null) {
+		throw new IllegalArgumentException(
+			      "Trying to create instance with parameter handler == null");
+	}
+	SslUntrustedCertDialog dialog = new SslUntrustedCertDialog();
+	dialog.mHandler = handler;
+	dialog.mErrorViewAdapter = new SslErrorViewAdapter(error);
+	dialog.mCertificateViewAdapter =
+		new SslCertificateViewAdapter(error.getCertificate());
+	return dialog;
+}
 
-  public static SslUntrustedCertDialog
-  newInstanceForFullSslError(final CertificateCombinedException sslException) {
-    if (sslException == null) {
-      throw new IllegalArgumentException(
-          "Trying to create instance with parameter sslException == null");
-    }
-    SslUntrustedCertDialog dialog = new SslUntrustedCertDialog();
-    dialog.m509Certificate = sslException.getServerCertificate();
-    dialog.mErrorViewAdapter =
-        new CertificateCombinedExceptionViewAdapter(sslException);
-    dialog.mCertificateViewAdapter =
-        new X509CertificateViewAdapter(sslException.getServerCertificate());
-    return dialog;
-  }
+public static SslUntrustedCertDialog
+newInstanceForFullSslError(final CertificateCombinedException sslException) {
+	if (sslException == null) {
+		throw new IllegalArgumentException(
+			      "Trying to create instance with parameter sslException == null");
+	}
+	SslUntrustedCertDialog dialog = new SslUntrustedCertDialog();
+	dialog.m509Certificate = sslException.getServerCertificate();
+	dialog.mErrorViewAdapter =
+		new CertificateCombinedExceptionViewAdapter(sslException);
+	dialog.mCertificateViewAdapter =
+		new X509CertificateViewAdapter(sslException.getServerCertificate());
+	return dialog;
+}
 
-  public static SslUntrustedCertDialog
-  newInstanceForFullSslError(final X509Certificate cert, final SslError error,
-                             final SslErrorHandler handler) {
-    if (cert == null) {
-      throw new IllegalArgumentException(
-          "Trying to create instance with parameter cert == null");
-    }
-    if (error == null) {
-      throw new IllegalArgumentException(
-          "Trying to create instance with parameter error == null");
-    }
-    if (handler == null) {
-      throw new IllegalArgumentException(
-          "Trying to create instance with parameter handler == null");
-    }
-    SslUntrustedCertDialog dialog = new SslUntrustedCertDialog();
-    dialog.m509Certificate = cert;
-    dialog.mHandler = handler;
-    dialog.mErrorViewAdapter = new SslErrorViewAdapter(error);
-    dialog.mCertificateViewAdapter = new X509CertificateViewAdapter(cert);
-    return dialog;
-  }
+public static SslUntrustedCertDialog
+newInstanceForFullSslError(final X509Certificate cert, final SslError error,
+                           final SslErrorHandler handler) {
+	if (cert == null) {
+		throw new IllegalArgumentException(
+			      "Trying to create instance with parameter cert == null");
+	}
+	if (error == null) {
+		throw new IllegalArgumentException(
+			      "Trying to create instance with parameter error == null");
+	}
+	if (handler == null) {
+		throw new IllegalArgumentException(
+			      "Trying to create instance with parameter handler == null");
+	}
+	SslUntrustedCertDialog dialog = new SslUntrustedCertDialog();
+	dialog.m509Certificate = cert;
+	dialog.mHandler = handler;
+	dialog.mErrorViewAdapter = new SslErrorViewAdapter(error);
+	dialog.mCertificateViewAdapter = new X509CertificateViewAdapter(cert);
+	return dialog;
+}
 
-  @Override
-  public void onAttach(final Activity activity) {
-    Timber.d("onAttach");
-    super.onAttach(activity);
-    if (!(activity instanceof OnSslUntrustedCertListener)) {
-      throw new IllegalArgumentException(
-          "The host activity must implement " +
-          OnSslUntrustedCertListener.class.getCanonicalName());
-    }
-  }
+@Override
+public void onAttach(final Activity activity) {
+	Timber.d("onAttach");
+	super.onAttach(activity);
+	if (!(activity instanceof OnSslUntrustedCertListener)) {
+		throw new IllegalArgumentException(
+			      "The host activity must implement " +
+			      OnSslUntrustedCertListener.class.getCanonicalName());
+	}
+}
 
-  @Override
-  public void onCreate(final Bundle savedInstanceState) {
-    Timber.d("onCreate, savedInstanceState is %s", savedInstanceState);
-    super.onCreate(savedInstanceState);
-    setRetainInstance(true); // force to keep the state of the fragment on
-                             // configuration changes (such as
-    // device rotations)
-    setCancelable(false);
-    mView = null;
-  }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	Timber.d("onCreate, savedInstanceState is %s", savedInstanceState);
+	super.onCreate(savedInstanceState);
+	setRetainInstance(true); // force to keep the state of the fragment on
+	                         // configuration changes (such as
+	// device rotations)
+	setCancelable(false);
+	mView = null;
+}
 
-  @Override
-  public View onCreateView(final LayoutInflater inflater,
-                           final ViewGroup container,
-                           final Bundle savedInstanceState) {
-    Timber.d("onCreateView, savedInstanceState is %s", savedInstanceState);
-    // Create a view by inflating desired layout
-    if (mView == null) {
-      mView = inflater.inflate(R.layout.ssl_untrusted_cert_layout, container,
-                               false);
-      mView.findViewById(R.id.details_scroll).setVisibility(View.GONE);
-      mErrorViewAdapter.updateErrorView(mView);
-    } else {
-      ((ViewGroup)mView.getParent()).removeView(mView);
-    }
+@Override
+public View onCreateView(final LayoutInflater inflater,
+                         final ViewGroup container,
+                         final Bundle savedInstanceState) {
+	Timber.d("onCreateView, savedInstanceState is %s", savedInstanceState);
+	// Create a view by inflating desired layout
+	if (mView == null) {
+		mView = inflater.inflate(R.layout.ssl_untrusted_cert_layout, container,
+		                         false);
+		mView.findViewById(R.id.details_scroll).setVisibility(View.GONE);
+		mErrorViewAdapter.updateErrorView(mView);
+	} else {
+		((ViewGroup)mView.getParent()).removeView(mView);
+	}
 
-    Button ok = mView.findViewById(R.id.ok);
-    ok.setOnClickListener(new OnCertificateTrusted());
+	Button ok = mView.findViewById(R.id.ok);
+	ok.setOnClickListener(new OnCertificateTrusted());
 
-    Button cancel = mView.findViewById(R.id.cancel);
-    cancel.setOnClickListener(new OnCertificateNotTrusted());
+	Button cancel = mView.findViewById(R.id.cancel);
+	cancel.setOnClickListener(new OnCertificateNotTrusted());
 
-    Button details = mView.findViewById(R.id.details_btn);
-    details.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(final View v) {
-        View detailsScroll = mView.findViewById(R.id.details_scroll);
-        if (detailsScroll.getVisibility() == View.VISIBLE) {
-          detailsScroll.setVisibility(View.GONE);
-          ((Button)v).setText(R.string.ssl_validator_btn_details_see);
+	Button details = mView.findViewById(R.id.details_btn);
+	details.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+			        View detailsScroll = mView.findViewById(R.id.details_scroll);
+			        if (detailsScroll.getVisibility() == View.VISIBLE) {
+			                detailsScroll.setVisibility(View.GONE);
+			                ((Button)v).setText(R.string.ssl_validator_btn_details_see);
 
-        } else {
-          detailsScroll.setVisibility(View.VISIBLE);
-          ((Button)v).setText(R.string.ssl_validator_btn_details_hide);
-          mCertificateViewAdapter.updateCertificateView(mView);
-        }
-      }
-    });
+				} else {
+			                detailsScroll.setVisibility(View.VISIBLE);
+			                ((Button)v).setText(R.string.ssl_validator_btn_details_hide);
+			                mCertificateViewAdapter.updateCertificateView(mView);
+				}
+			}
+		});
 
-    return mView;
-  }
+	return mView;
+}
 
-  @Override
-  public Dialog onCreateDialog(final Bundle savedInstanceState) {
-    Timber.d("onCreateDialog, savedInstanceState is %s", savedInstanceState);
-    final Dialog dialog = super.onCreateDialog(savedInstanceState);
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-    return dialog;
-  }
+@Override
+public Dialog onCreateDialog(final Bundle savedInstanceState) {
+	Timber.d("onCreateDialog, savedInstanceState is %s", savedInstanceState);
+	final Dialog dialog = super.onCreateDialog(savedInstanceState);
+	dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	return dialog;
+}
 
-  @Override
-  public void onDestroyView() {
-    Timber.d("onDestroyView");
-    if (getDialog() != null && getRetainInstance()) {
-      getDialog().setDismissMessage(null);
-    }
-    super.onDestroyView();
-  }
+@Override
+public void onDestroyView() {
+	Timber.d("onDestroyView");
+	if (getDialog() != null && getRetainInstance()) {
+		getDialog().setDismissMessage(null);
+	}
+	super.onDestroyView();
+}
 
-  private class OnCertificateNotTrusted implements OnClickListener {
+private class OnCertificateNotTrusted implements OnClickListener {
 
-    @Override
-    public void onClick(final View v) {
-      getDialog().cancel();
-      if (mHandler != null) {
-        mHandler.cancel();
-      }
-      ((OnSslUntrustedCertListener)getActivity()).onCancelCertificate();
-    }
-  }
+@Override
+public void onClick(final View v) {
+	getDialog().cancel();
+	if (mHandler != null) {
+		mHandler.cancel();
+	}
+	((OnSslUntrustedCertListener)getActivity()).onCancelCertificate();
+}
+}
 
-  private class OnCertificateTrusted implements OnClickListener {
+private class OnCertificateTrusted implements OnClickListener {
 
-    @Override
-    public void onClick(final View v) {
-      dismiss();
-      if (mHandler != null) {
-        mHandler.proceed();
-      }
-      if (m509Certificate != null) {
-        Activity activity = getActivity();
-        try {
-          NetworkUtils.addCertToKnownServersStore(m509Certificate,
-                                                  activity); // TODO make this
-          // asynchronously, it can take some time
-          ((OnSslUntrustedCertListener)activity).onSavedCertificate();
+@Override
+public void onClick(final View v) {
+	dismiss();
+	if (mHandler != null) {
+		mHandler.proceed();
+	}
+	if (m509Certificate != null) {
+		Activity activity = getActivity();
+		try {
+			NetworkUtils.addCertToKnownServersStore(m509Certificate,
+			                                        activity); // TODO make this
+			// asynchronously, it can take some time
+			((OnSslUntrustedCertListener)activity).onSavedCertificate();
 
-        } catch (GeneralSecurityException e) {
-          ((OnSslUntrustedCertListener)activity).onFailedSavingCertificate();
-          Timber.e(
-              e,
-              "Server certificate could not be saved in the known-servers trust store ");
+		} catch (GeneralSecurityException e) {
+			((OnSslUntrustedCertListener)activity).onFailedSavingCertificate();
+			Timber.e(
+				e,
+				"Server certificate could not be saved in the known-servers trust store ");
 
-        } catch (IOException e) {
-          ((OnSslUntrustedCertListener)activity).onFailedSavingCertificate();
-          Timber.e(
-              e,
-              "Server certificate could not be saved in the known-servers trust store ");
-        }
-      }
-    }
-  }
+		} catch (IOException e) {
+			((OnSslUntrustedCertListener)activity).onFailedSavingCertificate();
+			Timber.e(
+				e,
+				"Server certificate could not be saved in the known-servers trust store ");
+		}
+	}
+}
+}
 
-  public interface OnSslUntrustedCertListener {
-    void onSavedCertificate();
+public interface OnSslUntrustedCertListener {
+void onSavedCertificate();
 
-    void onFailedSavingCertificate();
+void onFailedSavingCertificate();
 
-    void onCancelCertificate();
-  }
+void onCancelCertificate();
+}
 
-  public interface ErrorViewAdapter { void updateErrorView(View mView); }
+public interface ErrorViewAdapter { void updateErrorView(View mView); }
 
-  public interface CertificateViewAdapter {
-    void updateCertificateView(View mView);
-  }
+public interface CertificateViewAdapter {
+void updateCertificateView(View mView);
+}
 }

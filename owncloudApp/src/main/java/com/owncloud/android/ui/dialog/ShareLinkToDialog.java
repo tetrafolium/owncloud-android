@@ -51,131 +51,131 @@ import timber.log.Timber;
  */
 public class ShareLinkToDialog extends DialogFragment {
 
-  private final static String ARG_INTENT =
-      ShareLinkToDialog.class.getSimpleName() + ".ARG_INTENT";
-  private final static String ARG_PACKAGES_TO_EXCLUDE =
-      ShareLinkToDialog.class.getSimpleName() + ".ARG_PACKAGES_TO_EXCLUDE";
+private final static String ARG_INTENT =
+	ShareLinkToDialog.class.getSimpleName() + ".ARG_INTENT";
+private final static String ARG_PACKAGES_TO_EXCLUDE =
+	ShareLinkToDialog.class.getSimpleName() + ".ARG_PACKAGES_TO_EXCLUDE";
 
-  private ActivityAdapter mAdapter;
-  private Intent mIntent;
+private ActivityAdapter mAdapter;
+private Intent mIntent;
 
-  public static ShareLinkToDialog
-  newInstance(final Intent intent, final String[] packagesToExclude) {
-    ShareLinkToDialog f = new ShareLinkToDialog();
-    Bundle args = new Bundle();
-    args.putParcelable(ARG_INTENT, intent);
-    args.putStringArray(ARG_PACKAGES_TO_EXCLUDE, packagesToExclude);
-    f.setArguments(args);
-    return f;
-  }
+public static ShareLinkToDialog
+newInstance(final Intent intent, final String[] packagesToExclude) {
+	ShareLinkToDialog f = new ShareLinkToDialog();
+	Bundle args = new Bundle();
+	args.putParcelable(ARG_INTENT, intent);
+	args.putStringArray(ARG_PACKAGES_TO_EXCLUDE, packagesToExclude);
+	f.setArguments(args);
+	return f;
+}
 
-  public ShareLinkToDialog() {
-    super();
-    Timber.d("constructor");
-  }
+public ShareLinkToDialog() {
+	super();
+	Timber.d("constructor");
+}
 
-  @Override
-  public Dialog onCreateDialog(final Bundle savedInstanceState) {
-    mIntent = getArguments().getParcelable(ARG_INTENT);
-    String[] packagesToExclude =
-        getArguments().getStringArray(ARG_PACKAGES_TO_EXCLUDE);
-    List<String> packagesToExcludeList = Arrays.asList(
-        packagesToExclude != null ? packagesToExclude : new String[0]);
+@Override
+public Dialog onCreateDialog(final Bundle savedInstanceState) {
+	mIntent = getArguments().getParcelable(ARG_INTENT);
+	String[] packagesToExclude =
+		getArguments().getStringArray(ARG_PACKAGES_TO_EXCLUDE);
+	List<String> packagesToExcludeList = Arrays.asList(
+		packagesToExclude != null ? packagesToExclude : new String[0]);
 
-    PackageManager pm = getActivity().getPackageManager();
-    List<ResolveInfo> activities =
-        pm.queryIntentActivities(mIntent, PackageManager.MATCH_DEFAULT_ONLY);
-    Iterator<ResolveInfo> it = activities.iterator();
-    ResolveInfo resolveInfo;
-    while (it.hasNext()) {
-      resolveInfo = it.next();
-      if (packagesToExcludeList.contains(
-              resolveInfo.activityInfo.packageName.toLowerCase())) {
-        it.remove();
-      }
-    }
+	PackageManager pm = getActivity().getPackageManager();
+	List<ResolveInfo> activities =
+		pm.queryIntentActivities(mIntent, PackageManager.MATCH_DEFAULT_ONLY);
+	Iterator<ResolveInfo> it = activities.iterator();
+	ResolveInfo resolveInfo;
+	while (it.hasNext()) {
+		resolveInfo = it.next();
+		if (packagesToExcludeList.contains(
+			    resolveInfo.activityInfo.packageName.toLowerCase())) {
+			it.remove();
+		}
+	}
 
-    boolean sendAction = mIntent.getBooleanExtra(Intent.ACTION_SEND, false);
+	boolean sendAction = mIntent.getBooleanExtra(Intent.ACTION_SEND, false);
 
-    if (!sendAction) {
-      // add activity for copy to clipboard
-      Intent copyToClipboardIntent =
-          new Intent(getActivity(), CopyToClipboardActivity.class);
-      List<ResolveInfo> copyToClipboard =
-          pm.queryIntentActivities(copyToClipboardIntent, 0);
-      if (!copyToClipboard.isEmpty()) {
-        activities.add(copyToClipboard.get(0));
-      }
-    }
+	if (!sendAction) {
+		// add activity for copy to clipboard
+		Intent copyToClipboardIntent =
+			new Intent(getActivity(), CopyToClipboardActivity.class);
+		List<ResolveInfo> copyToClipboard =
+			pm.queryIntentActivities(copyToClipboardIntent, 0);
+		if (!copyToClipboard.isEmpty()) {
+			activities.add(copyToClipboard.get(0));
+		}
+	}
 
-    Collections.sort(activities, new ResolveInfo.DisplayNameComparator(pm));
-    mAdapter = new ActivityAdapter(getActivity(), pm, activities);
+	Collections.sort(activities, new ResolveInfo.DisplayNameComparator(pm));
+	mAdapter = new ActivityAdapter(getActivity(), pm, activities);
 
-    return createSelector(sendAction);
-  }
+	return createSelector(sendAction);
+}
 
-  private AlertDialog createSelector(final boolean sendAction) {
+private AlertDialog createSelector(final boolean sendAction) {
 
-    int titleId;
-    if (sendAction) {
-      titleId = R.string.activity_chooser_send_file_title;
-    } else {
-      titleId = R.string.activity_chooser_title;
-    }
+	int titleId;
+	if (sendAction) {
+		titleId = R.string.activity_chooser_send_file_title;
+	} else {
+		titleId = R.string.activity_chooser_title;
+	}
 
-    return new AlertDialog.Builder(getActivity())
-        .setTitle(titleId)
-        .setAdapter(mAdapter,
-                    new DialogInterface.OnClickListener() {
-                      @Override
-                      public void onClick(final DialogInterface dialog,
-                                          final int which) {
-                        // Add the information of the chosen activity to the
-                        // intent to send
-                        ResolveInfo chosen = mAdapter.getItem(which);
-                        ActivityInfo actInfo = chosen.activityInfo;
-                        ComponentName name = new ComponentName(
-                            actInfo.applicationInfo.packageName, actInfo.name);
-                        mIntent.setComponent(name);
+	return new AlertDialog.Builder(getActivity())
+	       .setTitle(titleId)
+	       .setAdapter(mAdapter,
+	                   new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(final DialogInterface dialog,
+			                    final int which) {
+			        // Add the information of the chosen activity to the
+			        // intent to send
+			        ResolveInfo chosen = mAdapter.getItem(which);
+			        ActivityInfo actInfo = chosen.activityInfo;
+			        ComponentName name = new ComponentName(
+					actInfo.applicationInfo.packageName, actInfo.name);
+			        mIntent.setComponent(name);
 
-                        // Send the file
-                        getActivity().startActivity(mIntent);
-                      }
-                    })
-        .create();
-  }
+			        // Send the file
+			        getActivity().startActivity(mIntent);
+			}
+		})
+	       .create();
+}
 
-  class ActivityAdapter extends ArrayAdapter<ResolveInfo> {
+class ActivityAdapter extends ArrayAdapter<ResolveInfo> {
 
-    private PackageManager mPackageManager;
+private PackageManager mPackageManager;
 
-    ActivityAdapter(final Context context, final PackageManager pm,
-                    final List<ResolveInfo> apps) {
-      super(context, R.layout.activity_row, apps);
-      this.mPackageManager = pm;
-    }
+ActivityAdapter(final Context context, final PackageManager pm,
+                final List<ResolveInfo> apps) {
+	super(context, R.layout.activity_row, apps);
+	this.mPackageManager = pm;
+}
 
-    @Override
-    public View getView(final int position, final View convertView,
-                        final ViewGroup parent) {
-      if (convertView == null) {
-        convertView = newView(parent);
-      }
-      bindView(position, convertView);
-      return convertView;
-    }
+@Override
+public View getView(final int position, final View convertView,
+                    final ViewGroup parent) {
+	if (convertView == null) {
+		convertView = newView(parent);
+	}
+	bindView(position, convertView);
+	return convertView;
+}
 
-    private View newView(final ViewGroup parent) {
-      return (((LayoutInflater)getContext().getSystemService(
-                   Context.LAYOUT_INFLATER_SERVICE))
-                  .inflate(R.layout.activity_row, parent, false));
-    }
+private View newView(final ViewGroup parent) {
+	return (((LayoutInflater)getContext().getSystemService(
+			 Context.LAYOUT_INFLATER_SERVICE))
+	        .inflate(R.layout.activity_row, parent, false));
+}
 
-    private void bindView(final int position, final View row) {
-      TextView label = row.findViewById(R.id.title);
-      label.setText(getItem(position).loadLabel(mPackageManager));
-      ImageView icon = row.findViewById(R.id.icon);
-      icon.setImageDrawable(getItem(position).loadIcon(mPackageManager));
-    }
-  }
+private void bindView(final int position, final View row) {
+	TextView label = row.findViewById(R.id.title);
+	label.setText(getItem(position).loadLabel(mPackageManager));
+	ImageView icon = row.findViewById(R.id.icon);
+	icon.setImageDrawable(getItem(position).loadIcon(mPackageManager));
+}
+}
 }

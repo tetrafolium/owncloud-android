@@ -27,19 +27,19 @@ import java.util.Date;
  */
 public class DateUtils {
 
-  /**
-   * Add a number of days to a specific date
-   * @param defaultDate
-   * @param days
-   * @return
-   */
-  public static Date addDaysToDate(final Date defaultDate, final int days) {
+/**
+ * Add a number of days to a specific date
+ * @param defaultDate
+ * @param days
+ * @return
+ */
+public static Date addDaysToDate(final Date defaultDate, final int days) {
 
-    Calendar c = Calendar.getInstance();
-    c.setTime(defaultDate);
-    c.add(Calendar.DATE, days);
-    defaultDate = c.getTime();
+	Calendar c = Calendar.getInstance();
+	c.setTime(defaultDate);
+	c.add(Calendar.DATE, days);
+	defaultDate = c.getTime();
 
-    return defaultDate;
-  }
+	return defaultDate;
+}
 }

@@ -46,81 +46,81 @@ import java.util.ArrayList;
  */
 public class GenericExplanationActivity extends AppCompatActivity {
 
-  public static final String EXTRA_LIST =
-      GenericExplanationActivity.class.getCanonicalName() + ".EXTRA_LIST";
-  public static final String EXTRA_LIST_2 =
-      GenericExplanationActivity.class.getCanonicalName() + ".EXTRA_LIST_2";
-  public static final String MESSAGE =
-      GenericExplanationActivity.class.getCanonicalName() + ".MESSAGE";
+public static final String EXTRA_LIST =
+	GenericExplanationActivity.class.getCanonicalName() + ".EXTRA_LIST";
+public static final String EXTRA_LIST_2 =
+	GenericExplanationActivity.class.getCanonicalName() + ".EXTRA_LIST_2";
+public static final String MESSAGE =
+	GenericExplanationActivity.class.getCanonicalName() + ".MESSAGE";
 
-  @Override
-  protected void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+@Override
+protected void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-    Intent intent = getIntent();
-    String message = intent.getStringExtra(MESSAGE);
-    ArrayList<String> list = intent.getStringArrayListExtra(EXTRA_LIST);
-    ArrayList<String> list2 = intent.getStringArrayListExtra(EXTRA_LIST_2);
+	Intent intent = getIntent();
+	String message = intent.getStringExtra(MESSAGE);
+	ArrayList<String> list = intent.getStringArrayListExtra(EXTRA_LIST);
+	ArrayList<String> list2 = intent.getStringArrayListExtra(EXTRA_LIST_2);
 
-    setContentView(R.layout.generic_explanation);
+	setContentView(R.layout.generic_explanation);
 
-    if (message != null) {
-      TextView textView = findViewById(R.id.message);
-      textView.setText(message);
-      textView.setMovementMethod(new ScrollingMovementMethod());
-    }
+	if (message != null) {
+		TextView textView = findViewById(R.id.message);
+		textView.setText(message);
+		textView.setMovementMethod(new ScrollingMovementMethod());
+	}
 
-    // Allow or disallow touches with other visible windows
-    LinearLayout alertDialogListViewLayout =
-        findViewById(R.id.alertDialogListViewLayout);
-    alertDialogListViewLayout.setFilterTouchesWhenObscured(
-        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
+	// Allow or disallow touches with other visible windows
+	LinearLayout alertDialogListViewLayout =
+		findViewById(R.id.alertDialogListViewLayout);
+	alertDialogListViewLayout.setFilterTouchesWhenObscured(
+		PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
 
-    ListView listView = findViewById(R.id.list);
-    if (list != null && list.size() > 0) {
-      // ListAdapter adapter = new ArrayAdapter<String>(this,
-      // android.R.layout.simple_list_item_1, list);
-      ListAdapter adapter = new ExplanationListAdapterView(this, list, list2);
-      listView.setAdapter(adapter);
-    } else {
-      listView.setVisibility(View.GONE);
-    }
-  }
+	ListView listView = findViewById(R.id.list);
+	if (list != null && list.size() > 0) {
+		// ListAdapter adapter = new ArrayAdapter<String>(this,
+		// android.R.layout.simple_list_item_1, list);
+		ListAdapter adapter = new ExplanationListAdapterView(this, list, list2);
+		listView.setAdapter(adapter);
+	} else {
+		listView.setVisibility(View.GONE);
+	}
+}
 
-  public class ExplanationListAdapterView extends ArrayAdapter<String> {
+public class ExplanationListAdapterView extends ArrayAdapter<String> {
 
-    ArrayList<String> mList;
-    ArrayList<String> mList2;
+ArrayList<String> mList;
+ArrayList<String> mList2;
 
-    ExplanationListAdapterView(final Context context,
-                               final ArrayList<String> list,
-                               final ArrayList<String> list2) {
-      super(context, android.R.layout.two_line_list_item, android.R.id.text1,
-            list);
-      mList = list;
-      mList2 = list2;
-    }
+ExplanationListAdapterView(final Context context,
+                           final ArrayList<String> list,
+                           final ArrayList<String> list2) {
+	super(context, android.R.layout.two_line_list_item, android.R.id.text1,
+	      list);
+	mList = list;
+	mList2 = list2;
+}
 
-    @Override
-    public boolean isEnabled(final int position) {
-      return false;
-    }
+@Override
+public boolean isEnabled(final int position) {
+	return false;
+}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View getView(final int position, final View convertView,
-                        final ViewGroup parent) {
-      View view = super.getView(position, convertView, parent);
-      if ((view != null) && (mList2 != null && mList2.size() > 0 && position >= 0 &&
-            position < mList2.size())) {
-        TextView text2 = view.findViewById(android.R.id.text2);
-        if (text2 != null) {
-          text2.setText(mList2.get(position));
-        }
-      }
-      return view;
-    }
-  }
+/**
+ * {@inheritDoc}
+ */
+@Override
+public View getView(final int position, final View convertView,
+                    final ViewGroup parent) {
+	View view = super.getView(position, convertView, parent);
+	if ((view != null) && (mList2 != null && mList2.size() > 0 && position >= 0 &&
+	                       position < mList2.size())) {
+		TextView text2 = view.findViewById(android.R.id.text2);
+		if (text2 != null) {
+			text2.setText(mList2.get(position));
+		}
+	}
+	return view;
+}
+}
 }

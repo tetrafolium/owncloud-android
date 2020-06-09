@@ -35,70 +35,70 @@ import com.owncloud.android.utils.RemoteFileUtils;
  */
 public class CopyFileOperation extends SyncOperation {
 
-  private String mSrcPath;
-  private String mTargetParentPath;
+private String mSrcPath;
+private String mTargetParentPath;
 
-  private OCFile mFile;
+private OCFile mFile;
 
-  /**
-   * Constructor
-   *
-   * @param srcPath          Remote path of the {@link OCFile} to move.
-   * @param targetParentPath Path to the folder where the file will be copied
-   *     into.
-   */
-  public CopyFileOperation(final String srcPath,
-                           final String targetParentPath) {
-    mSrcPath = srcPath;
-    mTargetParentPath = targetParentPath;
-    if (!mTargetParentPath.endsWith(OCFile.PATH_SEPARATOR)) {
-      mTargetParentPath += OCFile.PATH_SEPARATOR;
-    }
+/**
+ * Constructor
+ *
+ * @param srcPath          Remote path of the {@link OCFile} to move.
+ * @param targetParentPath Path to the folder where the file will be copied
+ *     into.
+ */
+public CopyFileOperation(final String srcPath,
+                         final String targetParentPath) {
+	mSrcPath = srcPath;
+	mTargetParentPath = targetParentPath;
+	if (!mTargetParentPath.endsWith(OCFile.PATH_SEPARATOR)) {
+		mTargetParentPath += OCFile.PATH_SEPARATOR;
+	}
 
-    mFile = null;
-  }
+	mFile = null;
+}
 
-  /**
-   * Performs the operation.
-   *
-   * @param client Client object to communicate with the remote ownCloud server.
-   */
-  @Override
-  protected RemoteOperationResult run(final OwnCloudClient client) {
-    RemoteOperationResult result;
+/**
+ * Performs the operation.
+ *
+ * @param client Client object to communicate with the remote ownCloud server.
+ */
+@Override
+protected RemoteOperationResult run(final OwnCloudClient client) {
+	RemoteOperationResult result;
 
-    /// 1. check copy validity
-    if (mTargetParentPath.startsWith(mSrcPath)) {
-      return new RemoteOperationResult(ResultCode.INVALID_COPY_INTO_DESCENDANT);
-    }
-    mFile = getStorageManager().getFileByPath(mSrcPath);
-    if (mFile == null) {
-      return new RemoteOperationResult(ResultCode.FILE_NOT_FOUND);
-    }
+	/// 1. check copy validity
+	if (mTargetParentPath.startsWith(mSrcPath)) {
+		return new RemoteOperationResult(ResultCode.INVALID_COPY_INTO_DESCENDANT);
+	}
+	mFile = getStorageManager().getFileByPath(mSrcPath);
+	if (mFile == null) {
+		return new RemoteOperationResult(ResultCode.FILE_NOT_FOUND);
+	}
 
-    /// 2. remote copy
-    String targetRemotePath = mTargetParentPath + mFile.getFileName();
-    // Check if target remote path already exists on server or add suffix (2),
-    // (3) ... otherwise
-    String finalRemotePath = RemoteFileUtils.Companion.getAvailableRemotePath(
-        client, targetRemotePath);
+	/// 2. remote copy
+	String targetRemotePath = mTargetParentPath + mFile.getFileName();
+	// Check if target remote path already exists on server or add suffix (2),
+	// (3) ... otherwise
+	String finalRemotePath = RemoteFileUtils.Companion.getAvailableRemotePath(
+		client, targetRemotePath);
 
-    if (mFile.isFolder()) {
-      finalRemotePath += OCFile.PATH_SEPARATOR;
-    }
-    CopyRemoteFileOperation operation =
-        new CopyRemoteFileOperation(mSrcPath, finalRemotePath, false);
-    result = operation.execute(client);
-    String targetFileRemoteId = (String)result.getData();
+	if (mFile.isFolder()) {
+		finalRemotePath += OCFile.PATH_SEPARATOR;
+	}
+	CopyRemoteFileOperation operation =
+		new CopyRemoteFileOperation(mSrcPath, finalRemotePath, false);
+	result = operation.execute(client);
+	String targetFileRemoteId = (String)result.getData();
 
-    /// 3. local copy
-    if (result.isSuccess()) {
-      getStorageManager().copyLocalFile(mFile, finalRemotePath,
-                                        targetFileRemoteId);
-    }
-    // TODO handle ResultCode.PARTIAL_COPY_DONE in client Activity, for the
-    // moment
+	/// 3. local copy
+	if (result.isSuccess()) {
+		getStorageManager().copyLocalFile(mFile, finalRemotePath,
+		                                  targetFileRemoteId);
+	}
+	// TODO handle ResultCode.PARTIAL_COPY_DONE in client Activity, for the
+	// moment
 
-    return result;
-  }
+	return result;
+}
 }

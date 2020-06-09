@@ -24,22 +24,22 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.resources.files.chunks.RemoveRemoteChunksFolderOperation;
 
 public class RemoveChunksFolderOperation extends RemoveFileOperation {
-  /**
-   * Constructor
-   *
-   * @param remotePath RemotePath of the OCFile instance describing the remote
-   *     file or
-   *                   folder to remove from the server
-   */
-  public RemoveChunksFolderOperation(final String remotePath) {
-    super(remotePath, false, false);
-  }
+/**
+ * Constructor
+ *
+ * @param remotePath RemotePath of the OCFile instance describing the remote
+ *     file or
+ *                   folder to remove from the server
+ */
+public RemoveChunksFolderOperation(final String remotePath) {
+	super(remotePath, false, false);
+}
 
-  @Override
-  protected RemoteOperationResult run(final OwnCloudClient client) {
-    RemoveRemoteChunksFolderOperation removeRemoteChunksFolderOperation =
-        new RemoveRemoteChunksFolderOperation(mRemotePath);
+@Override
+protected RemoteOperationResult run(final OwnCloudClient client) {
+	RemoveRemoteChunksFolderOperation removeRemoteChunksFolderOperation =
+		new RemoveRemoteChunksFolderOperation(mRemotePath);
 
-    return removeRemoteChunksFolderOperation.execute(client);
-  }
+	return removeRemoteChunksFolderOperation.execute(client);
+}
 }

@@ -69,567 +69,569 @@ import timber.log.Timber;
  * IllegalStateException}.
  */
 public class PreviewVideoFragment extends FileFragment
-    implements View.OnClickListener, ExoPlayer.EventListener,
-               PrepareVideoPlayerAsyncTask.OnPrepareVideoPlayerTaskListener {
-
-  public static final String EXTRA_FILE = "FILE";
-  public static final String EXTRA_ACCOUNT = "ACCOUNT";
-
-  /**
-   * Key to receive a flag signaling if the video should be started immediately
-   */
-  private static final String EXTRA_AUTOPLAY = "AUTOPLAY";
-
-  /**
-   * Key to receive the position of the playback where the video should be put
-   * at start
-   */
-  private static final String EXTRA_PLAY_POSITION = "START_POSITION";
-
-  private Account mAccount;
-  private ProgressBar mProgressBar;
-  private TransferProgressController mProgressController;
-
-  private Handler mainHandler;
-  private SimpleExoPlayerView simpleExoPlayerView;
-
-  private SimpleExoPlayer player;
-  private DefaultTrackSelector trackSelector;
-
-  private ImageButton fullScreenButton;
-
-  private boolean mAutoplay;
-  private long mPlaybackPosition;
-
-  private static final DefaultBandwidthMeter BANDWIDTH_METER =
-      new DefaultBandwidthMeter();
-
-  /**
-   * Public factory method to create new PreviewVideoFragment instances.
-   *
-   * @param file                  An {@link OCFile} to preview in the fragment
-   * @param account               ownCloud account containing file
-   * @param startPlaybackPosition Time in milliseconds where the play should be
-   *     started
-   * @param autoplay              If 'true', the file will be played
-   *     automatically when
-   *                              the fragment is displayed.
-   * @return Fragment ready to be used.
-   */
-  public static PreviewVideoFragment
-  newInstance(final OCFile file, final Account account,
-              final int startPlaybackPosition, final boolean autoplay) {
-    PreviewVideoFragment frag = new PreviewVideoFragment();
-    Bundle args = new Bundle();
-    args.putParcelable(EXTRA_FILE, file);
-    args.putParcelable(EXTRA_ACCOUNT, account);
-    args.putLong(EXTRA_PLAY_POSITION, startPlaybackPosition);
-    args.putBoolean(EXTRA_AUTOPLAY, autoplay);
-    frag.setArguments(args);
-    return frag;
-  }
-
-  /**
-   * Creates an empty fragment to preview video files.
-   * <p>
-   * MUST BE KEPT: the system uses it when tries to reinstantiate a fragment
-   * automatically (for instance, when the device is turned a aside). <p> DO NOT
-   * CALL IT: an {@link OCFile} and {@link Account} must be provided for a
-   * successful construction
-   */
-  public PreviewVideoFragment() {
-    super();
-    mAccount = null;
-    mAutoplay = true;
-  }
-
-  // Fragment and activity lifecicle
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setHasOptionsMenu(true);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public View onCreateView(final LayoutInflater inflater,
-                           final ViewGroup container,
-                           final Bundle savedInstanceState) {
-    super.onCreateView(inflater, container, savedInstanceState);
-    Timber.v("onCreateView");
-
-    View view = inflater.inflate(R.layout.video_preview, container, false);
-
-    mProgressBar = view.findViewById(R.id.syncProgressBar);
-    mProgressBar.setVisibility(View.GONE);
-
-    simpleExoPlayerView = view.findViewById(R.id.video_player);
-
-    fullScreenButton = view.findViewById(R.id.fullscreen_button);
-
-    fullScreenButton.setOnClickListener(this);
-
-    return view;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onActivityCreated(final Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    Timber.v("onActivityCreated");
-
-    OCFile file;
-    if (savedInstanceState == null) {
-      Bundle args = getArguments();
-      file = args.getParcelable(PreviewVideoFragment.EXTRA_FILE);
-      setFile(file);
-      mAccount = args.getParcelable(PreviewVideoFragment.EXTRA_ACCOUNT);
-      mAutoplay = args.getBoolean(PreviewVideoFragment.EXTRA_AUTOPLAY);
-      mPlaybackPosition =
-          args.getLong(PreviewVideoFragment.EXTRA_PLAY_POSITION);
-
-    } else {
-      file = savedInstanceState.getParcelable(PreviewVideoFragment.EXTRA_FILE);
-      setFile(file);
-      mAccount =
-          savedInstanceState.getParcelable(PreviewVideoFragment.EXTRA_ACCOUNT);
-      mAutoplay =
-          savedInstanceState.getBoolean(PreviewVideoFragment.EXTRA_AUTOPLAY);
-      mPlaybackPosition =
-          savedInstanceState.getLong(PreviewVideoFragment.EXTRA_PLAY_POSITION);
-    }
-
-    if (file == null) {
-      throw new IllegalStateException("Instanced with a NULL OCFile");
-    }
-    if (mAccount == null) {
-      throw new IllegalStateException("Instanced with a NULL ownCloud Account");
-    }
-    if (!file.isVideo()) {
-      throw new IllegalStateException("Not a video file");
-    }
-
-    mProgressController = new TransferProgressController(mContainerActivity);
-    mProgressController.setProgressBar(mProgressBar);
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    Timber.v("onStart");
-
-    OCFile file = getFile();
-
-    if (file != null) {
-      mProgressController.startListeningProgressFor(file, mAccount);
-    }
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-    Timber.v("onResume");
-
-    preparePlayer();
-
-    if (player != null) {
-      player.seekTo(mPlaybackPosition);
-      player.setPlayWhenReady(mAutoplay);
-    }
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    Timber.v("onPause");
-
-    releasePlayer();
-  }
-
-  @Override
-  public void onStop() {
-    Timber.v("onStop");
-
-    super.onStop();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onSaveInstanceState(final Bundle outState) {
-    super.onSaveInstanceState(outState);
-    Timber.v("onSaveInstanceState");
-
-    outState.putParcelable(PreviewVideoFragment.EXTRA_FILE, getFile());
-    outState.putParcelable(PreviewVideoFragment.EXTRA_ACCOUNT, mAccount);
-    if (player != null) {
-      outState.putBoolean(PreviewVideoFragment.EXTRA_AUTOPLAY, mAutoplay);
-      outState.putLong(PreviewVideoFragment.EXTRA_PLAY_POSITION,
-                       player.getCurrentPosition());
-    }
-  }
-
-  @Override
-  public void onActivityResult(final int requestCode, final int resultCode,
-                               final Intent data) {
-    Timber.v("onActivityResult %s", this);
-    super.onActivityResult(requestCode, resultCode, data);
-    if (resultCode == Activity.RESULT_OK) {
-      mAutoplay =
-          data.getExtras().getBoolean(PreviewVideoActivity.EXTRA_AUTOPLAY);
-      mPlaybackPosition =
-          data.getExtras().getLong(PreviewVideoActivity.EXTRA_START_POSITION);
-    }
-  }
-
-  // OnClickListener methods
-
-  public void onClick(final View view) {
-    if (view == fullScreenButton) {
-      releasePlayer();
-      startFullScreenVideo();
-    }
-  }
-
-  private void startFullScreenVideo() {
-
-    Intent i = new Intent(getActivity(), PreviewVideoActivity.class);
-    i.putExtra(EXTRA_AUTOPLAY, player.getPlayWhenReady());
-    i.putExtra(EXTRA_PLAY_POSITION, player.getCurrentPosition());
-    i.putExtra(FileActivity.EXTRA_FILE, getFile());
-
-    startActivityForResult(i, FileActivity.REQUEST_CODE__LAST_SHARED + 1);
-  }
-
-  // Progress bar
-  @Override
-  public void onTransferServiceConnected() {
-    if (mProgressController != null) {
-      mProgressController.startListeningProgressFor(getFile(), mAccount);
-    }
-  }
-
-  @Override
-  public void updateViewForSyncInProgress() {
-    mProgressController.showProgressBar();
-  }
-
-  @Override
-  public void updateViewForSyncOff() {
-    mProgressController.hideProgressBar();
-  }
-
-  // Menu options
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onCreateOptionsMenu(final Menu menu,
-                                  final MenuInflater inflater) {
-    super.onCreateOptionsMenu(menu, inflater);
-    inflater.inflate(R.menu.file_actions_menu, menu);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onPrepareOptionsMenu(final Menu menu) {
-    super.onPrepareOptionsMenu(menu);
-
-    FileMenuFilter mf = new FileMenuFilter(getFile(), mAccount,
-                                           mContainerActivity, getActivity());
-    mf.filter(menu, false, false, false, false);
-
-    // additional restrictions for this fragment
-
-    MenuItem item = menu.findItem(R.id.action_sort);
-    if (item != null) {
-      item.setVisible(false);
-      item.setEnabled(false);
-    }
-
-    item = menu.findItem(R.id.action_switch_view);
-    if (item != null) {
-      item.setVisible(false);
-      item.setEnabled(false);
-    }
-
-    item = menu.findItem(R.id.action_sync_account);
-    if (item != null) {
-      item.setVisible(false);
-      item.setEnabled(false);
-    }
-
-    item = menu.findItem(R.id.action_search);
-    if (item != null) {
-      item.setVisible(false);
-      item.setEnabled(false);
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean onOptionsItemSelected(final MenuItem item) {
-    switch (item.getItemId()) {
-    case R.id.action_share_file: {
-      releasePlayer();
-      mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-      return true;
-    }
-    case R.id.action_open_file_with: {
-      openFile();
-      return true;
-    }
-    case R.id.action_remove_file: {
-      RemoveFilesDialogFragment dialog =
-          RemoveFilesDialogFragment.newInstance(getFile());
-      dialog.show(getFragmentManager(),
-                  ConfirmationDialogFragment.FTAG_CONFIRMATION);
-      return true;
-    }
-    case R.id.action_see_details: {
-      seeDetails();
-      return true;
-    }
-    case R.id.action_send_file: {
-      releasePlayer();
-      mContainerActivity.getFileOperationsHelper().sendDownloadedFile(
-          getFile());
-      return true;
-    }
-    case R.id.action_sync_file: {
-      mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-      return true;
-    }
-    case R.id.action_set_available_offline: {
-      mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(
-          getFile(), true);
-      return true;
-    }
-    case R.id.action_unset_available_offline: {
-      mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(
-          getFile(), false);
-      return true;
-    }
-    case R.id.action_download_file: {
-      releasePlayer();
-      // Show progress bar
-      mProgressBar.setVisibility(View.VISIBLE);
-      mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-      return true;
-    }
-    case R.id.action_cancel_sync: {
-      ((FileDisplayActivity)mContainerActivity).cancelTransference(getFile());
-      return true;
-    }
-    default:
-      return super.onOptionsItemSelected(item);
-    }
-  }
-
-  // Video player internal methods
-  private void preparePlayer() {
-
-    // Create a default TrackSelector
-    mainHandler = new Handler();
-    TrackSelection.Factory videoTrackSelectionFactory =
-        new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
-    trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
-
-    // Video streaming is only supported at Jelly Bean or higher Android
-    // versions (>= API 16)
-
-    // Create the player
-    player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector,
-                                                new DefaultLoadControl());
-
-    player.addListener(this);
-
-    // Bind the player to the view.
-    simpleExoPlayerView.setPlayer(player);
-
-    // Prepare video player asynchronously
-    new PrepareVideoPlayerAsyncTask(getActivity(), this, getFile(), mAccount,
-                                    mainHandler)
-        .execute();
-  }
-
-  /**
-   * Called after preparing the player asynchronously
-   *
-   * @param mediaSource media to be played
-   */
-  @Override
-  public void OnPrepareVideoPlayerTaskCallback(final MediaSource mediaSource) {
-    Timber.v("playerPrepared");
-    player.prepare(mediaSource);
-  }
-
-  public void releasePlayer() {
-    if (player != null) {
-      mAutoplay = player.getPlayWhenReady();
-      updateResumePosition();
-      player.release();
-      trackSelector = null;
-      Timber.v("playerReleased");
-    }
-  }
-
-  private void updateResumePosition() {
-    mPlaybackPosition = player.getCurrentPosition();
-  }
-
-  // Video player eventListener implementation
-
-  @Override
-  public void onPlayerError(final ExoPlaybackException error) {
-
-    Timber.e(error, "Error in video player");
-
-    showAlertDialog(
-        PreviewVideoErrorAdapter.handlePreviewVideoError(error, getContext()));
-  }
-
-  /**
-   * Show an alert dialog with the error produced while playing the video and
-   * initialize a specific behaviour when necessary
-   *
-   * @param previewVideoError player error with the needed info
-   */
-  private void showAlertDialog(final PreviewVideoError previewVideoError) {
-    new AlertDialog.Builder(getActivity())
-        .setMessage(previewVideoError.getErrorMessage())
-        .setPositiveButton(
-            android.R.string.VideoView_error_button,
-            (dialog, whichButton) -> {
-              if (previewVideoError.isFileSyncNeeded() &&
-                  mContainerActivity != null) {
-                // Initialize the file download
-                mContainerActivity.getFileOperationsHelper().syncFile(
-                    getFile());
-              }
-
-              // This solution is not the best one but is an easy way to handle
-              // expiration error from here, without modifying so much code
-              // or involving other parts
-              if (previewVideoError.isParentFolderSyncNeeded()) {
-                // Start to sync the parent file folder
-                OCFile folder = new OCFile(getFile().getParentRemotePath());
-                ((FileDisplayActivity)getActivity())
-                    .startSyncFolderOperation(folder, false);
-              }
-            })
-        .setCancelable(false)
-        .show();
-  }
-
-  @Override
-  public void onTracksChanged(final TrackGroupArray trackGroups,
-                              final TrackSelectionArray trackSelections) {
-    // Do nothing
-  }
-
-  @Override
-  public void onLoadingChanged(final boolean isLoading) {
-    // Do nothing
-  }
-
-  @Override
-  public void onPlayerStateChanged(final boolean playWhenReady,
-                                   final int playbackState) {
-    // If player is already, show full screen button
-    if (playbackState == ExoPlayer.STATE_READY) {
-      fullScreenButton.setVisibility(View.VISIBLE);
-    } else if (playbackState == ExoPlayer.STATE_ENDED) {
-      fullScreenButton.setVisibility(View.GONE);
-    }
-  }
-
-  @Override
-  public void onPositionDiscontinuity() {
-    // Do nothing
-  }
-
-  @Override
-  public void onTimelineChanged(final Timeline timeline,
-                                final Object manifest) {
-    // Do nothing
-  }
-
-  // File extra methods
-  @Override
-  public void onFileMetadataChanged(final OCFile updatedFile) {
-    if (updatedFile != null) {
-      setFile(updatedFile);
-    }
-    getActivity().invalidateOptionsMenu();
-  }
-
-  @Override
-  public void onFileMetadataChanged() {
-    FileDataStorageManager storageManager =
-        mContainerActivity.getStorageManager();
-    if (storageManager != null) {
-      setFile(storageManager.getFileByPath(getFile().getRemotePath()));
-    }
-    getActivity().invalidateOptionsMenu();
-  }
-
-  @Override
-  public void onFileContentChanged() {
-    // Reset the player with the updated file
-    releasePlayer();
-    preparePlayer();
-
-    if (player != null) {
-      mPlaybackPosition = 0;
-      player.setPlayWhenReady(mAutoplay);
-    }
-  }
-
-  private void seeDetails() {
-    releasePlayer();
-    mContainerActivity.showDetails(getFile());
-  }
-
-  @Override
-  public void onConfigurationChanged(final Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    Timber.v("onConfigurationChanged %s", this);
-  }
-
-  /**
-   * Opens the previewed file with an external application.
-   */
-  private void openFile() {
-    releasePlayer();
-    mContainerActivity.getFileOperationsHelper().openFile(getFile());
-    finish();
-  }
-
-  private void finish() { getActivity().onBackPressed(); }
-
-  /**
-   * Helper method to test if an {@link OCFile} can be passed to a {@link
-   * PreviewVideoFragment} to be previewed.
-   *
-   * @param file File to test if can be previewed.
-   * @return 'True' if the file can be handled by the fragment.
-   */
-  public static boolean canBePreviewed(final OCFile file) {
-    return (file != null && file.isVideo());
-  }
+	implements View.OnClickListener, ExoPlayer.EventListener,
+	                                  PrepareVideoPlayerAsyncTask.OnPrepareVideoPlayerTaskListener {
+
+public static final String EXTRA_FILE = "FILE";
+public static final String EXTRA_ACCOUNT = "ACCOUNT";
+
+/**
+ * Key to receive a flag signaling if the video should be started immediately
+ */
+private static final String EXTRA_AUTOPLAY = "AUTOPLAY";
+
+/**
+ * Key to receive the position of the playback where the video should be put
+ * at start
+ */
+private static final String EXTRA_PLAY_POSITION = "START_POSITION";
+
+private Account mAccount;
+private ProgressBar mProgressBar;
+private TransferProgressController mProgressController;
+
+private Handler mainHandler;
+private SimpleExoPlayerView simpleExoPlayerView;
+
+private SimpleExoPlayer player;
+private DefaultTrackSelector trackSelector;
+
+private ImageButton fullScreenButton;
+
+private boolean mAutoplay;
+private long mPlaybackPosition;
+
+private static final DefaultBandwidthMeter BANDWIDTH_METER =
+	new DefaultBandwidthMeter();
+
+/**
+ * Public factory method to create new PreviewVideoFragment instances.
+ *
+ * @param file                  An {@link OCFile} to preview in the fragment
+ * @param account               ownCloud account containing file
+ * @param startPlaybackPosition Time in milliseconds where the play should be
+ *     started
+ * @param autoplay              If 'true', the file will be played
+ *     automatically when
+ *                              the fragment is displayed.
+ * @return Fragment ready to be used.
+ */
+public static PreviewVideoFragment
+newInstance(final OCFile file, final Account account,
+            final int startPlaybackPosition, final boolean autoplay) {
+	PreviewVideoFragment frag = new PreviewVideoFragment();
+	Bundle args = new Bundle();
+	args.putParcelable(EXTRA_FILE, file);
+	args.putParcelable(EXTRA_ACCOUNT, account);
+	args.putLong(EXTRA_PLAY_POSITION, startPlaybackPosition);
+	args.putBoolean(EXTRA_AUTOPLAY, autoplay);
+	frag.setArguments(args);
+	return frag;
+}
+
+/**
+ * Creates an empty fragment to preview video files.
+ * <p>
+ * MUST BE KEPT: the system uses it when tries to reinstantiate a fragment
+ * automatically (for instance, when the device is turned a aside). <p> DO NOT
+ * CALL IT: an {@link OCFile} and {@link Account} must be provided for a
+ * successful construction
+ */
+public PreviewVideoFragment() {
+	super();
+	mAccount = null;
+	mAutoplay = true;
+}
+
+// Fragment and activity lifecicle
+
+/**
+ * {@inheritDoc}
+ */
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setHasOptionsMenu(true);
+}
+
+/**
+ * {@inheritDoc}
+ */
+@Override
+public View onCreateView(final LayoutInflater inflater,
+                         final ViewGroup container,
+                         final Bundle savedInstanceState) {
+	super.onCreateView(inflater, container, savedInstanceState);
+	Timber.v("onCreateView");
+
+	View view = inflater.inflate(R.layout.video_preview, container, false);
+
+	mProgressBar = view.findViewById(R.id.syncProgressBar);
+	mProgressBar.setVisibility(View.GONE);
+
+	simpleExoPlayerView = view.findViewById(R.id.video_player);
+
+	fullScreenButton = view.findViewById(R.id.fullscreen_button);
+
+	fullScreenButton.setOnClickListener(this);
+
+	return view;
+}
+
+/**
+ * {@inheritDoc}
+ */
+@Override
+public void onActivityCreated(final Bundle savedInstanceState) {
+	super.onActivityCreated(savedInstanceState);
+	Timber.v("onActivityCreated");
+
+	OCFile file;
+	if (savedInstanceState == null) {
+		Bundle args = getArguments();
+		file = args.getParcelable(PreviewVideoFragment.EXTRA_FILE);
+		setFile(file);
+		mAccount = args.getParcelable(PreviewVideoFragment.EXTRA_ACCOUNT);
+		mAutoplay = args.getBoolean(PreviewVideoFragment.EXTRA_AUTOPLAY);
+		mPlaybackPosition =
+			args.getLong(PreviewVideoFragment.EXTRA_PLAY_POSITION);
+
+	} else {
+		file = savedInstanceState.getParcelable(PreviewVideoFragment.EXTRA_FILE);
+		setFile(file);
+		mAccount =
+			savedInstanceState.getParcelable(PreviewVideoFragment.EXTRA_ACCOUNT);
+		mAutoplay =
+			savedInstanceState.getBoolean(PreviewVideoFragment.EXTRA_AUTOPLAY);
+		mPlaybackPosition =
+			savedInstanceState.getLong(PreviewVideoFragment.EXTRA_PLAY_POSITION);
+	}
+
+	if (file == null) {
+		throw new IllegalStateException("Instanced with a NULL OCFile");
+	}
+	if (mAccount == null) {
+		throw new IllegalStateException("Instanced with a NULL ownCloud Account");
+	}
+	if (!file.isVideo()) {
+		throw new IllegalStateException("Not a video file");
+	}
+
+	mProgressController = new TransferProgressController(mContainerActivity);
+	mProgressController.setProgressBar(mProgressBar);
+}
+
+@Override
+public void onStart() {
+	super.onStart();
+	Timber.v("onStart");
+
+	OCFile file = getFile();
+
+	if (file != null) {
+		mProgressController.startListeningProgressFor(file, mAccount);
+	}
+}
+
+@Override
+public void onResume() {
+	super.onResume();
+	Timber.v("onResume");
+
+	preparePlayer();
+
+	if (player != null) {
+		player.seekTo(mPlaybackPosition);
+		player.setPlayWhenReady(mAutoplay);
+	}
+}
+
+@Override
+public void onPause() {
+	super.onPause();
+	Timber.v("onPause");
+
+	releasePlayer();
+}
+
+@Override
+public void onStop() {
+	Timber.v("onStop");
+
+	super.onStop();
+}
+
+/**
+ * {@inheritDoc}
+ */
+@Override
+public void onSaveInstanceState(final Bundle outState) {
+	super.onSaveInstanceState(outState);
+	Timber.v("onSaveInstanceState");
+
+	outState.putParcelable(PreviewVideoFragment.EXTRA_FILE, getFile());
+	outState.putParcelable(PreviewVideoFragment.EXTRA_ACCOUNT, mAccount);
+	if (player != null) {
+		outState.putBoolean(PreviewVideoFragment.EXTRA_AUTOPLAY, mAutoplay);
+		outState.putLong(PreviewVideoFragment.EXTRA_PLAY_POSITION,
+		                 player.getCurrentPosition());
+	}
+}
+
+@Override
+public void onActivityResult(final int requestCode, final int resultCode,
+                             final Intent data) {
+	Timber.v("onActivityResult %s", this);
+	super.onActivityResult(requestCode, resultCode, data);
+	if (resultCode == Activity.RESULT_OK) {
+		mAutoplay =
+			data.getExtras().getBoolean(PreviewVideoActivity.EXTRA_AUTOPLAY);
+		mPlaybackPosition =
+			data.getExtras().getLong(PreviewVideoActivity.EXTRA_START_POSITION);
+	}
+}
+
+// OnClickListener methods
+
+public void onClick(final View view) {
+	if (view == fullScreenButton) {
+		releasePlayer();
+		startFullScreenVideo();
+	}
+}
+
+private void startFullScreenVideo() {
+
+	Intent i = new Intent(getActivity(), PreviewVideoActivity.class);
+	i.putExtra(EXTRA_AUTOPLAY, player.getPlayWhenReady());
+	i.putExtra(EXTRA_PLAY_POSITION, player.getCurrentPosition());
+	i.putExtra(FileActivity.EXTRA_FILE, getFile());
+
+	startActivityForResult(i, FileActivity.REQUEST_CODE__LAST_SHARED + 1);
+}
+
+// Progress bar
+@Override
+public void onTransferServiceConnected() {
+	if (mProgressController != null) {
+		mProgressController.startListeningProgressFor(getFile(), mAccount);
+	}
+}
+
+@Override
+public void updateViewForSyncInProgress() {
+	mProgressController.showProgressBar();
+}
+
+@Override
+public void updateViewForSyncOff() {
+	mProgressController.hideProgressBar();
+}
+
+// Menu options
+
+/**
+ * {@inheritDoc}
+ */
+@Override
+public void onCreateOptionsMenu(final Menu menu,
+                                final MenuInflater inflater) {
+	super.onCreateOptionsMenu(menu, inflater);
+	inflater.inflate(R.menu.file_actions_menu, menu);
+}
+
+/**
+ * {@inheritDoc}
+ */
+@Override
+public void onPrepareOptionsMenu(final Menu menu) {
+	super.onPrepareOptionsMenu(menu);
+
+	FileMenuFilter mf = new FileMenuFilter(getFile(), mAccount,
+	                                       mContainerActivity, getActivity());
+	mf.filter(menu, false, false, false, false);
+
+	// additional restrictions for this fragment
+
+	MenuItem item = menu.findItem(R.id.action_sort);
+	if (item != null) {
+		item.setVisible(false);
+		item.setEnabled(false);
+	}
+
+	item = menu.findItem(R.id.action_switch_view);
+	if (item != null) {
+		item.setVisible(false);
+		item.setEnabled(false);
+	}
+
+	item = menu.findItem(R.id.action_sync_account);
+	if (item != null) {
+		item.setVisible(false);
+		item.setEnabled(false);
+	}
+
+	item = menu.findItem(R.id.action_search);
+	if (item != null) {
+		item.setVisible(false);
+		item.setEnabled(false);
+	}
+}
+
+/**
+ * {@inheritDoc}
+ */
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.action_share_file: {
+		releasePlayer();
+		mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+		return true;
+	}
+	case R.id.action_open_file_with: {
+		openFile();
+		return true;
+	}
+	case R.id.action_remove_file: {
+		RemoveFilesDialogFragment dialog =
+			RemoveFilesDialogFragment.newInstance(getFile());
+		dialog.show(getFragmentManager(),
+		            ConfirmationDialogFragment.FTAG_CONFIRMATION);
+		return true;
+	}
+	case R.id.action_see_details: {
+		seeDetails();
+		return true;
+	}
+	case R.id.action_send_file: {
+		releasePlayer();
+		mContainerActivity.getFileOperationsHelper().sendDownloadedFile(
+			getFile());
+		return true;
+	}
+	case R.id.action_sync_file: {
+		mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+		return true;
+	}
+	case R.id.action_set_available_offline: {
+		mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(
+			getFile(), true);
+		return true;
+	}
+	case R.id.action_unset_available_offline: {
+		mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(
+			getFile(), false);
+		return true;
+	}
+	case R.id.action_download_file: {
+		releasePlayer();
+		// Show progress bar
+		mProgressBar.setVisibility(View.VISIBLE);
+		mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+		return true;
+	}
+	case R.id.action_cancel_sync: {
+		((FileDisplayActivity)mContainerActivity).cancelTransference(getFile());
+		return true;
+	}
+	default:
+		return super.onOptionsItemSelected(item);
+	}
+}
+
+// Video player internal methods
+private void preparePlayer() {
+
+	// Create a default TrackSelector
+	mainHandler = new Handler();
+	TrackSelection.Factory videoTrackSelectionFactory =
+		new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
+	trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+
+	// Video streaming is only supported at Jelly Bean or higher Android
+	// versions (>= API 16)
+
+	// Create the player
+	player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector,
+	                                            new DefaultLoadControl());
+
+	player.addListener(this);
+
+	// Bind the player to the view.
+	simpleExoPlayerView.setPlayer(player);
+
+	// Prepare video player asynchronously
+	new PrepareVideoPlayerAsyncTask(getActivity(), this, getFile(), mAccount,
+	                                mainHandler)
+	.execute();
+}
+
+/**
+ * Called after preparing the player asynchronously
+ *
+ * @param mediaSource media to be played
+ */
+@Override
+public void OnPrepareVideoPlayerTaskCallback(final MediaSource mediaSource) {
+	Timber.v("playerPrepared");
+	player.prepare(mediaSource);
+}
+
+public void releasePlayer() {
+	if (player != null) {
+		mAutoplay = player.getPlayWhenReady();
+		updateResumePosition();
+		player.release();
+		trackSelector = null;
+		Timber.v("playerReleased");
+	}
+}
+
+private void updateResumePosition() {
+	mPlaybackPosition = player.getCurrentPosition();
+}
+
+// Video player eventListener implementation
+
+@Override
+public void onPlayerError(final ExoPlaybackException error) {
+
+	Timber.e(error, "Error in video player");
+
+	showAlertDialog(
+		PreviewVideoErrorAdapter.handlePreviewVideoError(error, getContext()));
+}
+
+/**
+ * Show an alert dialog with the error produced while playing the video and
+ * initialize a specific behaviour when necessary
+ *
+ * @param previewVideoError player error with the needed info
+ */
+private void showAlertDialog(final PreviewVideoError previewVideoError) {
+	new AlertDialog.Builder(getActivity())
+	.setMessage(previewVideoError.getErrorMessage())
+	.setPositiveButton(
+		android.R.string.VideoView_error_button,
+		(dialog, whichButton)->{
+			if (previewVideoError.isFileSyncNeeded() &&
+			    mContainerActivity != null) {
+			        // Initialize the file download
+			        mContainerActivity.getFileOperationsHelper().syncFile(
+					getFile());
+			}
+
+			// This solution is not the best one but is an easy way to handle
+			// expiration error from here, without modifying so much code
+			// or involving other parts
+			if (previewVideoError.isParentFolderSyncNeeded()) {
+			        // Start to sync the parent file folder
+			        OCFile folder = new OCFile(getFile().getParentRemotePath());
+			        ((FileDisplayActivity)getActivity())
+			        .startSyncFolderOperation(folder, false);
+			}
+		})
+	.setCancelable(false)
+	.show();
+}
+
+@Override
+public void onTracksChanged(final TrackGroupArray trackGroups,
+                            final TrackSelectionArray trackSelections) {
+	// Do nothing
+}
+
+@Override
+public void onLoadingChanged(final boolean isLoading) {
+	// Do nothing
+}
+
+@Override
+public void onPlayerStateChanged(final boolean playWhenReady,
+                                 final int playbackState) {
+	// If player is already, show full screen button
+	if (playbackState == ExoPlayer.STATE_READY) {
+		fullScreenButton.setVisibility(View.VISIBLE);
+	} else if (playbackState == ExoPlayer.STATE_ENDED) {
+		fullScreenButton.setVisibility(View.GONE);
+	}
+}
+
+@Override
+public void onPositionDiscontinuity() {
+	// Do nothing
+}
+
+@Override
+public void onTimelineChanged(final Timeline timeline,
+                              final Object manifest) {
+	// Do nothing
+}
+
+// File extra methods
+@Override
+public void onFileMetadataChanged(final OCFile updatedFile) {
+	if (updatedFile != null) {
+		setFile(updatedFile);
+	}
+	getActivity().invalidateOptionsMenu();
+}
+
+@Override
+public void onFileMetadataChanged() {
+	FileDataStorageManager storageManager =
+		mContainerActivity.getStorageManager();
+	if (storageManager != null) {
+		setFile(storageManager.getFileByPath(getFile().getRemotePath()));
+	}
+	getActivity().invalidateOptionsMenu();
+}
+
+@Override
+public void onFileContentChanged() {
+	// Reset the player with the updated file
+	releasePlayer();
+	preparePlayer();
+
+	if (player != null) {
+		mPlaybackPosition = 0;
+		player.setPlayWhenReady(mAutoplay);
+	}
+}
+
+private void seeDetails() {
+	releasePlayer();
+	mContainerActivity.showDetails(getFile());
+}
+
+@Override
+public void onConfigurationChanged(final Configuration newConfig) {
+	super.onConfigurationChanged(newConfig);
+	Timber.v("onConfigurationChanged %s", this);
+}
+
+/**
+ * Opens the previewed file with an external application.
+ */
+private void openFile() {
+	releasePlayer();
+	mContainerActivity.getFileOperationsHelper().openFile(getFile());
+	finish();
+}
+
+private void finish() {
+	getActivity().onBackPressed();
+}
+
+/**
+ * Helper method to test if an {@link OCFile} can be passed to a {@link
+ * PreviewVideoFragment} to be previewed.
+ *
+ * @param file File to test if can be previewed.
+ * @return 'True' if the file can be handled by the fragment.
+ */
+public static boolean canBePreviewed(final OCFile file) {
+	return (file != null && file.isVideo());
+}
 }

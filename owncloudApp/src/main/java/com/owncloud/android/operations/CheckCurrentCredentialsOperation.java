@@ -34,29 +34,29 @@ import com.owncloud.android.operations.common.SyncOperation;
  */
 public class CheckCurrentCredentialsOperation extends SyncOperation<Account> {
 
-  private Account mAccount;
+private Account mAccount;
 
-  public CheckCurrentCredentialsOperation(final Account account) {
-    if (account == null) {
-      throw new IllegalArgumentException("NULL account");
-    }
-    mAccount = account;
-  }
+public CheckCurrentCredentialsOperation(final Account account) {
+	if (account == null) {
+		throw new IllegalArgumentException("NULL account");
+	}
+	mAccount = account;
+}
 
-  @Override
-  protected RemoteOperationResult<Account> run(final OwnCloudClient client) {
-    if (!getStorageManager().getAccount().name.equals(mAccount.name)) {
-      return new RemoteOperationResult<>(new IllegalStateException(
-          "Account to validate is not the account connected to!"));
-    } else {
-      RemoteOperation checkPathExistenceOperation =
-          new CheckPathExistenceRemoteOperation(OCFile.ROOT_PATH, false);
-      final RemoteOperationResult existenceCheckResult =
-          checkPathExistenceOperation.execute(client);
-      final RemoteOperationResult<Account> result =
-          new RemoteOperationResult<>(existenceCheckResult.getCode());
-      result.setData(mAccount);
-      return result;
-    }
-  }
+@Override
+protected RemoteOperationResult<Account> run(final OwnCloudClient client) {
+	if (!getStorageManager().getAccount().name.equals(mAccount.name)) {
+		return new RemoteOperationResult<>(new IllegalStateException(
+							   "Account to validate is not the account connected to!"));
+	} else {
+		RemoteOperation checkPathExistenceOperation =
+			new CheckPathExistenceRemoteOperation(OCFile.ROOT_PATH, false);
+		final RemoteOperationResult existenceCheckResult =
+			checkPathExistenceOperation.execute(client);
+		final RemoteOperationResult<Account> result =
+			new RemoteOperationResult<>(existenceCheckResult.getCode());
+		result.setData(mAccount);
+		return result;
+	}
+}
 }

@@ -30,34 +30,34 @@ import com.owncloud.android.lib.resources.files.chunks.MoveRemoteChunksFileOpera
  */
 public class MoveChunksFileOperation extends MoveFileOperation {
 
-  private String mFileLastModifTimestamp;
-  private long mFileLength;
+private String mFileLastModifTimestamp;
+private long mFileLength;
 
-  /**
-   * Constructor
-   * @param srcPath          Remote path of the {@link OCFile} to move.
-   * @param targetParentPath  Path to the folder where the file will be moved
-   *     into.
-   * @param fileLastModifTimestamp Timestamp of last modification of file to
-   *     move.
-   * @param fileLength        Total length of the file to move.
-   */
-  public MoveChunksFileOperation(final String srcPath,
-                                 final String targetParentPath,
-                                 final String fileLastModifTimestamp,
-                                 final long fileLength) {
-    super(srcPath, targetParentPath);
-    mFileLastModifTimestamp = fileLastModifTimestamp;
-    mFileLength = fileLength;
-  }
+/**
+ * Constructor
+ * @param srcPath          Remote path of the {@link OCFile} to move.
+ * @param targetParentPath  Path to the folder where the file will be moved
+ *     into.
+ * @param fileLastModifTimestamp Timestamp of last modification of file to
+ *     move.
+ * @param fileLength        Total length of the file to move.
+ */
+public MoveChunksFileOperation(final String srcPath,
+                               final String targetParentPath,
+                               final String fileLastModifTimestamp,
+                               final long fileLength) {
+	super(srcPath, targetParentPath);
+	mFileLastModifTimestamp = fileLastModifTimestamp;
+	mFileLength = fileLength;
+}
 
-  @Override
-  protected RemoteOperationResult run(final OwnCloudClient client) {
+@Override
+protected RemoteOperationResult run(final OwnCloudClient client) {
 
-    MoveRemoteChunksFileOperation operation =
-        new MoveRemoteChunksFileOperation(mSrcPath, mTargetParentPath, false,
-                                          mFileLastModifTimestamp, mFileLength);
+	MoveRemoteChunksFileOperation operation =
+		new MoveRemoteChunksFileOperation(mSrcPath, mTargetParentPath, false,
+		                                  mFileLastModifTimestamp, mFileLength);
 
-    return operation.execute(client);
-  }
+	return operation.execute(client);
+}
 }

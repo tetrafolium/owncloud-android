@@ -37,92 +37,92 @@ import com.owncloud.android.utils.PreferenceUtils;
 
 public class LoadingDialog extends DialogFragment {
 
-  private static final String ARG_MESSAGE_ID =
-      LoadingDialog.class.getCanonicalName() + ".ARG_MESSAGE_ID";
-  private static final String ARG_CANCELABLE =
-      LoadingDialog.class.getCanonicalName() + ".ARG_CANCELABLE";
+private static final String ARG_MESSAGE_ID =
+	LoadingDialog.class.getCanonicalName() + ".ARG_MESSAGE_ID";
+private static final String ARG_CANCELABLE =
+	LoadingDialog.class.getCanonicalName() + ".ARG_CANCELABLE";
 
-  @Override
-  public void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setRetainInstance(true);
-    setCancelable(false);
-  }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setRetainInstance(true);
+	setCancelable(false);
+}
 
-  /**
-   * Public factory method to get dialog instances.
-   *
-   * @param messageId     DataResult id for a message to show in the dialog.
-   * @param cancelable    If 'true', the dialog can be cancelled by the user
-   *     input (BACK button, touch outside...)
-   * @return New dialog instance, ready to show.
-   */
-  public static LoadingDialog newInstance(final int messageId,
-                                          final boolean cancelable) {
-    LoadingDialog fragment = new LoadingDialog();
-    Bundle args = new Bundle();
-    args.putInt(ARG_MESSAGE_ID, messageId);
-    args.putBoolean(ARG_CANCELABLE, cancelable);
-    fragment.setArguments(args);
-    return fragment;
-  }
+/**
+ * Public factory method to get dialog instances.
+ *
+ * @param messageId     DataResult id for a message to show in the dialog.
+ * @param cancelable    If 'true', the dialog can be cancelled by the user
+ *     input (BACK button, touch outside...)
+ * @return New dialog instance, ready to show.
+ */
+public static LoadingDialog newInstance(final int messageId,
+                                        final boolean cancelable) {
+	LoadingDialog fragment = new LoadingDialog();
+	Bundle args = new Bundle();
+	args.putInt(ARG_MESSAGE_ID, messageId);
+	args.putBoolean(ARG_CANCELABLE, cancelable);
+	fragment.setArguments(args);
+	return fragment;
+}
 
-  @Override
-  public View onCreateView(final LayoutInflater inflater,
-                           final ViewGroup container,
-                           final Bundle savedInstanceState) {
-    // Create a view by inflating desired layout
-    View v = inflater.inflate(R.layout.loading_dialog, container, false);
+@Override
+public View onCreateView(final LayoutInflater inflater,
+                         final ViewGroup container,
+                         final Bundle savedInstanceState) {
+	// Create a view by inflating desired layout
+	View v = inflater.inflate(R.layout.loading_dialog, container, false);
 
-    // Allow or disallow touches with other visible windows
-    v.setFilterTouchesWhenObscured(
-        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
-            getContext()));
+	// Allow or disallow touches with other visible windows
+	v.setFilterTouchesWhenObscured(
+		PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
+			getContext()));
 
-    // set message
-    TextView tv = v.findViewById(R.id.loadingText);
-    int messageId =
-        getArguments().getInt(ARG_MESSAGE_ID, R.string.placeholder_sentence);
-    tv.setText(messageId);
+	// set message
+	TextView tv = v.findViewById(R.id.loadingText);
+	int messageId =
+		getArguments().getInt(ARG_MESSAGE_ID, R.string.placeholder_sentence);
+	tv.setText(messageId);
 
-    // set progress wheel color
-    ProgressBar progressBar = v.findViewById(R.id.loadingBar);
-    progressBar.getIndeterminateDrawable().setColorFilter(
-        ContextCompat.getColor(getActivity(), R.color.color_accent),
-        PorterDuff.Mode.SRC_IN);
+	// set progress wheel color
+	ProgressBar progressBar = v.findViewById(R.id.loadingBar);
+	progressBar.getIndeterminateDrawable().setColorFilter(
+		ContextCompat.getColor(getActivity(), R.color.color_accent),
+		PorterDuff.Mode.SRC_IN);
 
-    return v;
-  }
+	return v;
+}
 
-  @Override
-  public Dialog onCreateDialog(final Bundle savedInstanceState) {
-    Dialog dialog = super.onCreateDialog(savedInstanceState);
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+@Override
+public Dialog onCreateDialog(final Bundle savedInstanceState) {
+	Dialog dialog = super.onCreateDialog(savedInstanceState);
+	dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-    /// set cancellation behavior
-    boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE, false);
-    dialog.setCancelable(cancelable);
-    if (!cancelable) {
-      // disable the back button
-      DialogInterface.OnKeyListener keyListener =
-          new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(final DialogInterface dialog,
-                                 final int keyCode, final KeyEvent event) {
+	/// set cancellation behavior
+	boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE, false);
+	dialog.setCancelable(cancelable);
+	if (!cancelable) {
+		// disable the back button
+		DialogInterface.OnKeyListener keyListener =
+			new DialogInterface.OnKeyListener() {
+			@Override
+			public boolean onKey(final DialogInterface dialog,
+			                     final int keyCode, final KeyEvent event) {
 
-              return keyCode == KeyEvent.KEYCODE_BACK;
-            }
-          };
-      dialog.setOnKeyListener(keyListener);
-    }
-    return dialog;
-  }
+				return keyCode == KeyEvent.KEYCODE_BACK;
+			}
+		};
+		dialog.setOnKeyListener(keyListener);
+	}
+	return dialog;
+}
 
-  @Override
-  public void onDestroyView() {
-    if (getDialog() != null && getRetainInstance()) {
-      getDialog().setDismissMessage(null);
-    }
-    super.onDestroyView();
-  }
+@Override
+public void onDestroyView() {
+	if (getDialog() != null && getRetainInstance()) {
+		getDialog().setDismissMessage(null);
+	}
+	super.onDestroyView();
+}
 }

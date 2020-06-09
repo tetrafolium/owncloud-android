@@ -35,66 +35,68 @@ import com.owncloud.android.R;
  */
 public class ProgressIndicator extends FrameLayout {
 
-  protected LinearLayout mDotsContainer;
+protected LinearLayout mDotsContainer;
 
-  protected int mNumberOfSteps = -1;
-  protected int mCurrentStep = -1;
+protected int mNumberOfSteps = -1;
+protected int mCurrentStep = -1;
 
-  public ProgressIndicator(final Context context) {
-    super(context);
-    setup();
-  }
+public ProgressIndicator(final Context context) {
+	super(context);
+	setup();
+}
 
-  public ProgressIndicator(final Context context, final AttributeSet attrs) {
-    super(context, attrs);
-    setup();
-  }
+public ProgressIndicator(final Context context, final AttributeSet attrs) {
+	super(context, attrs);
+	setup();
+}
 
-  public ProgressIndicator(final Context context, final AttributeSet attrs,
-                           final int defStyleAttr) {
-    super(context, attrs, defStyleAttr);
-    setup();
-  }
+public ProgressIndicator(final Context context, final AttributeSet attrs,
+                         final int defStyleAttr) {
+	super(context, attrs, defStyleAttr);
+	setup();
+}
 
-  public boolean hasNextStep() { return mNumberOfSteps > mCurrentStep; }
+public boolean hasNextStep() {
+	return mNumberOfSteps > mCurrentStep;
+}
 
-  public void setNumberOfSteps(final int steps) {
-    mNumberOfSteps = steps;
-    mDotsContainer.removeAllViews();
-    for (int i = 0; i < steps; ++i) {
-      ImageView iv = new ImageView(getContext());
-      iv.setImageDrawable(getContext().getResources().getDrawable(
-          R.drawable.whats_new_progress_transition));
-      mDotsContainer.addView(iv);
-    }
-    animateToStep(1);
-  }
+public void setNumberOfSteps(final int steps) {
+	mNumberOfSteps = steps;
+	mDotsContainer.removeAllViews();
+	for (int i = 0; i < steps; ++i) {
+		ImageView iv = new ImageView(getContext());
+		iv.setImageDrawable(getContext().getResources().getDrawable(
+					    R.drawable.whats_new_progress_transition));
+		mDotsContainer.addView(iv);
+	}
+	animateToStep(1);
+}
 
-  public void animateToStep(final int step) {
-    if (step < 1 || step > mNumberOfSteps) {
-      return;
-    }
+public void animateToStep(final int step) {
+	if (step < 1 || step > mNumberOfSteps) {
+		return;
+	}
 
-    if (mCurrentStep != -1) {
-      ImageView prevDot =
-          (ImageView)mDotsContainer.getChildAt(mCurrentStep - 1);
-      TransitionDrawable transition = (TransitionDrawable)prevDot.getDrawable();
-      transition.resetTransition();
-    }
+	if (mCurrentStep != -1) {
+		ImageView prevDot =
+			(ImageView)mDotsContainer.getChildAt(mCurrentStep - 1);
+		TransitionDrawable transition = (TransitionDrawable)prevDot.getDrawable();
+		transition.resetTransition();
+	}
 
-    mCurrentStep = step;
-    ImageView dot = (ImageView)mDotsContainer.getChildAt(step - 1);
-    TransitionDrawable transition = (TransitionDrawable)dot.getDrawable();
-    transition.startTransition(500);
-  }
+	mCurrentStep = step;
+	ImageView dot = (ImageView)mDotsContainer.getChildAt(step - 1);
+	TransitionDrawable transition = (TransitionDrawable)dot.getDrawable();
+	transition.startTransition(500);
+}
 
-  private void setup() {
-    mDotsContainer = new LinearLayout(getContext());
-    mDotsContainer.setGravity(Gravity.CENTER);
-    FrameLayout.LayoutParams params = generateDefaultLayoutParams();
-    params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-    params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-    mDotsContainer.setLayoutParams(params);
-    addView(mDotsContainer);
-  }
+private void setup() {
+	mDotsContainer = new LinearLayout(getContext());
+	mDotsContainer.setGravity(Gravity.CENTER);
+	FrameLayout.LayoutParams params = generateDefaultLayoutParams();
+	params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+	params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+	mDotsContainer.setLayoutParams(params);
+	addView(mDotsContainer);
+}
 }

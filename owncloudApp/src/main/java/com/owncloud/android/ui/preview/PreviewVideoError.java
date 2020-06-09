@@ -26,38 +26,44 @@ package com.owncloud.android.ui.preview;
 
 public class PreviewVideoError {
 
-  private String errorMessage;
+private String errorMessage;
 
-  // Error should trigger the preview file synchronization
-  private boolean fileSyncNeeded;
+// Error should trigger the preview file synchronization
+private boolean fileSyncNeeded;
 
-  // Error should trigger the preview file parent folder synchronization
-  private boolean parentFolderSyncNeeded;
+// Error should trigger the preview file parent folder synchronization
+private boolean parentFolderSyncNeeded;
 
-  public PreviewVideoError(final String errorMessage,
-                           final boolean fileSyncNeeded,
-                           final boolean parentFolderSyncNeeded) {
+public PreviewVideoError(final String errorMessage,
+                         final boolean fileSyncNeeded,
+                         final boolean parentFolderSyncNeeded) {
 
-    this.errorMessage = errorMessage;
-    this.fileSyncNeeded = fileSyncNeeded;
-    this.parentFolderSyncNeeded = parentFolderSyncNeeded;
-  }
+	this.errorMessage = errorMessage;
+	this.fileSyncNeeded = fileSyncNeeded;
+	this.parentFolderSyncNeeded = parentFolderSyncNeeded;
+}
 
-  public String getErrorMessage() { return errorMessage; }
+public String getErrorMessage() {
+	return errorMessage;
+}
 
-  public void setErrorMessage(final String errorMessage) {
-    this.errorMessage = errorMessage;
-  }
+public void setErrorMessage(final String errorMessage) {
+	this.errorMessage = errorMessage;
+}
 
-  public boolean isFileSyncNeeded() { return fileSyncNeeded; }
+public boolean isFileSyncNeeded() {
+	return fileSyncNeeded;
+}
 
-  public void setFileSyncNeeded(final boolean fileSyncNeeded) {
-    this.fileSyncNeeded = fileSyncNeeded;
-  }
+public void setFileSyncNeeded(final boolean fileSyncNeeded) {
+	this.fileSyncNeeded = fileSyncNeeded;
+}
 
-  public boolean isParentFolderSyncNeeded() { return parentFolderSyncNeeded; }
+public boolean isParentFolderSyncNeeded() {
+	return parentFolderSyncNeeded;
+}
 
-  public void setParentFolderSyncNeeded(final boolean parentFolderSyncNeeded) {
-    this.parentFolderSyncNeeded = parentFolderSyncNeeded;
-  }
+public void setParentFolderSyncNeeded(final boolean parentFolderSyncNeeded) {
+	this.parentFolderSyncNeeded = parentFolderSyncNeeded;
+}
 }

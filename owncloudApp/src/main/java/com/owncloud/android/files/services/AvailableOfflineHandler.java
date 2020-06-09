@@ -34,50 +34,50 @@ import timber.log.Timber;
  */
 public class AvailableOfflineHandler {
 
-  private static final long MILLISECONDS_INTERVAL_AVAILABLE_OFFLINE = 900000;
+private static final long MILLISECONDS_INTERVAL_AVAILABLE_OFFLINE = 900000;
 
-  // It needs to be always the same so that the previous job is removed and
-  // replaced with a new one with the recent configuration
-  private static final int JOB_ID_AVAILABLE_OFFLINE = 2;
+// It needs to be always the same so that the previous job is removed and
+// replaced with a new one with the recent configuration
+private static final int JOB_ID_AVAILABLE_OFFLINE = 2;
 
-  private String mAccountName;
-  private JobScheduler mJobScheduler;
+private String mAccountName;
+private JobScheduler mJobScheduler;
 
-  public AvailableOfflineHandler(final Context context,
-                                 final String accountName) {
-    mAccountName = accountName;
-    mJobScheduler =
-        (JobScheduler)context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-  }
+public AvailableOfflineHandler(final Context context,
+                               final String accountName) {
+	mAccountName = accountName;
+	mJobScheduler =
+		(JobScheduler)context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+}
 
-  /**
-   * Schedule a periodic job to check whether recently updated available offline
-   * files need to be synchronized
-   */
-  public void scheduleAvailableOfflineJob(final Context context) {
-    ComponentName serviceComponent =
-        new ComponentName(context, AvailableOfflineSyncJobService.class);
-    JobInfo.Builder builder;
+/**
+ * Schedule a periodic job to check whether recently updated available offline
+ * files need to be synchronized
+ */
+public void scheduleAvailableOfflineJob(final Context context) {
+	ComponentName serviceComponent =
+		new ComponentName(context, AvailableOfflineSyncJobService.class);
+	JobInfo.Builder builder;
 
-    builder = new JobInfo.Builder(JOB_ID_AVAILABLE_OFFLINE, serviceComponent);
+	builder = new JobInfo.Builder(JOB_ID_AVAILABLE_OFFLINE, serviceComponent);
 
-    builder.setPersisted(true);
+	builder.setPersisted(true);
 
-    // Execute job every 15 minutes
-    builder.setPeriodic(MILLISECONDS_INTERVAL_AVAILABLE_OFFLINE);
+	// Execute job every 15 minutes
+	builder.setPeriodic(MILLISECONDS_INTERVAL_AVAILABLE_OFFLINE);
 
-    // Extra data
-    PersistableBundle extras = new PersistableBundle();
+	// Extra data
+	PersistableBundle extras = new PersistableBundle();
 
-    extras.putInt(Extras.EXTRA_AVAILABLE_OFFLINE_SYNC_JOB_ID,
-                  JOB_ID_AVAILABLE_OFFLINE);
+	extras.putInt(Extras.EXTRA_AVAILABLE_OFFLINE_SYNC_JOB_ID,
+	              JOB_ID_AVAILABLE_OFFLINE);
 
-    extras.putString(Extras.EXTRA_ACCOUNT_NAME, mAccountName);
+	extras.putString(Extras.EXTRA_ACCOUNT_NAME, mAccountName);
 
-    builder.setExtras(extras);
+	builder.setExtras(extras);
 
-    Timber.d("Scheduling an AvailableOfflineSyncJobService");
+	Timber.d("Scheduling an AvailableOfflineSyncJobService");
 
-    mJobScheduler.schedule(builder.build());
-  }
+	mJobScheduler.schedule(builder.build());
+}
 }

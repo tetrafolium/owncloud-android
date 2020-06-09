@@ -36,80 +36,80 @@ import timber.log.Timber;
  */
 public class CreateFolderOperation extends SyncOperation {
 
-  protected String mRemotePath;
-  protected boolean mCreateFullPath;
+protected String mRemotePath;
+protected boolean mCreateFullPath;
 
-  /**
-   * Constructor
-   *
-   * @param createFullPath        'True' means that all the ancestor folders
-   *     should be created
-   *                              if don't exist yet.
-   */
-  public CreateFolderOperation(final String remotePath,
-                               final boolean createFullPath) {
-    mRemotePath = remotePath;
-    mCreateFullPath = createFullPath;
-  }
+/**
+ * Constructor
+ *
+ * @param createFullPath        'True' means that all the ancestor folders
+ *     should be created
+ *                              if don't exist yet.
+ */
+public CreateFolderOperation(final String remotePath,
+                             final boolean createFullPath) {
+	mRemotePath = remotePath;
+	mCreateFullPath = createFullPath;
+}
 
-  @Override
-  protected RemoteOperationResult run(final OwnCloudClient client) {
-    CreateRemoteFolderOperation createRemoteFolderOperation =
-        new CreateRemoteFolderOperation(mRemotePath, mCreateFullPath);
-    RemoteOperationResult result = createRemoteFolderOperation.execute(client);
+@Override
+protected RemoteOperationResult run(final OwnCloudClient client) {
+	CreateRemoteFolderOperation createRemoteFolderOperation =
+		new CreateRemoteFolderOperation(mRemotePath, mCreateFullPath);
+	RemoteOperationResult result = createRemoteFolderOperation.execute(client);
 
-    if (result.isSuccess()) {
-      OCFile newDir = saveFolderInDB();
-      String localPath = FileStorageUtils.getDefaultSavePathFor(
-          getStorageManager().getAccount().name, newDir);
-      File localFile = new File(localPath);
-      boolean created = localFile.mkdirs();
-      if (!created) {
-        Timber.w("Local folder " + localPath + " was not fully created");
-      }
-    } else {
-      Timber.e("%s hasn't been created", mRemotePath);
-    }
+	if (result.isSuccess()) {
+		OCFile newDir = saveFolderInDB();
+		String localPath = FileStorageUtils.getDefaultSavePathFor(
+			getStorageManager().getAccount().name, newDir);
+		File localFile = new File(localPath);
+		boolean created = localFile.mkdirs();
+		if (!created) {
+			Timber.w("Local folder " + localPath + " was not fully created");
+		}
+	} else {
+		Timber.e("%s hasn't been created", mRemotePath);
+	}
 
-    return result;
-  }
+	return result;
+}
 
-  /**
-   * Save new directory in local database
-   *
-   * @return Instance of {@link OCFile} just created
-   */
-  private OCFile saveFolderInDB() {
-    OCFile newDir = null;
-    if (mCreateFullPath && getStorageManager().getFileByPath(
-                               FileStorageUtils.getParentPath(mRemotePath)) ==
-                               null) { // When parent
-      // of remote path
-      // is not created
-      String[] subFolders = mRemotePath.split("/");
-      String composedRemotePath = "/";
+/**
+ * Save new directory in local database
+ *
+ * @return Instance of {@link OCFile} just created
+ */
+private OCFile saveFolderInDB() {
+	OCFile newDir = null;
+	if (mCreateFullPath && getStorageManager().getFileByPath(
+		    FileStorageUtils.getParentPath(mRemotePath)) ==
+	    null) {                    // When parent
+		// of remote path
+		// is not created
+		String[] subFolders = mRemotePath.split("/");
+		String composedRemotePath = "/";
 
-      // Create all the ancestors
-      for (String subFolder : subFolders) {
-        if (!subFolder.isEmpty()) {
-          composedRemotePath = composedRemotePath + subFolder + "/";
-          mRemotePath = composedRemotePath;
-          newDir = saveFolderInDB();
-        }
-      }
-    } else { // Create directory on DB
-      newDir = new OCFile(mRemotePath);
-      newDir.setMimetype("DIR");
-      long parentId =
-          getStorageManager()
-              .getFileByPath(FileStorageUtils.getParentPath(mRemotePath))
-              .getFileId();
-      newDir.setParentId(parentId);
-      newDir.setModificationTimestamp(System.currentTimeMillis());
-      getStorageManager().saveFile(newDir);
+		// Create all the ancestors
+		for (String subFolder : subFolders) {
+			if (!subFolder.isEmpty()) {
+				composedRemotePath = composedRemotePath + subFolder + "/";
+				mRemotePath = composedRemotePath;
+				newDir = saveFolderInDB();
+			}
+		}
+	} else { // Create directory on DB
+		newDir = new OCFile(mRemotePath);
+		newDir.setMimetype("DIR");
+		long parentId =
+			getStorageManager()
+			.getFileByPath(FileStorageUtils.getParentPath(mRemotePath))
+			.getFileId();
+		newDir.setParentId(parentId);
+		newDir.setModificationTimestamp(System.currentTimeMillis());
+		getStorageManager().saveFile(newDir);
 
-      Timber.d("Create directory " + mRemotePath + " in Database");
-    }
-    return newDir;
-  }
+		Timber.d("Create directory " + mRemotePath + " in Database");
+	}
+	return newDir;
+}
 }

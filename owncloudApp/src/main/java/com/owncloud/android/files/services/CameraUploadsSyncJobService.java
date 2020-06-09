@@ -43,257 +43,257 @@ import timber.log.Timber;
 
 public class CameraUploadsSyncJobService extends JobService {
 
-  @Override
-  public boolean onStartJob(final JobParameters jobParameters) {
+@Override
+public boolean onStartJob(final JobParameters jobParameters) {
 
-    Timber.d("Starting job to sync camera folder");
+	Timber.d("Starting job to sync camera folder");
 
-    new CameraUploadsSyncJobTask(this).execute(jobParameters);
+	new CameraUploadsSyncJobTask(this).execute(jobParameters);
 
-    return true; // True because we have a thread still running in background
-  }
+	return true; // True because we have a thread still running in background
+}
 
-  private static class CameraUploadsSyncJobTask
-      extends AsyncTask<JobParameters, Void, JobParameters> {
+private static class CameraUploadsSyncJobTask
+	extends AsyncTask<JobParameters, Void, JobParameters> {
 
-    private final JobService mCameraUploadsSyncJobService;
+private final JobService mCameraUploadsSyncJobService;
 
-    private Account mAccount;
-    private CameraUploadsSyncStorageManager mCameraUploadsSyncStorageManager;
-    private OCCameraUploadSync mOCCameraUploadSync;
-    private String mCameraUploadsPicturesPath;
-    private String mCameraUploadsVideosPath;
-    private String mCameraUploadsSourcePath;
-    private int mCameraUploadsBehaviorAfterUpload;
+private Account mAccount;
+private CameraUploadsSyncStorageManager mCameraUploadsSyncStorageManager;
+private OCCameraUploadSync mOCCameraUploadSync;
+private String mCameraUploadsPicturesPath;
+private String mCameraUploadsVideosPath;
+private String mCameraUploadsSourcePath;
+private int mCameraUploadsBehaviorAfterUpload;
 
-    public CameraUploadsSyncJobTask(
-        final JobService mCameraUploadsSyncJobService) {
-      this.mCameraUploadsSyncJobService = mCameraUploadsSyncJobService;
-    }
+public CameraUploadsSyncJobTask(
+	final JobService mCameraUploadsSyncJobService) {
+	this.mCameraUploadsSyncJobService = mCameraUploadsSyncJobService;
+}
 
-    @Override
-    protected JobParameters doInBackground(final JobParameters... jobParams) {
-      // Cancel periodic job if feature is disabled
-      CameraUploadsConfiguration cameraUploadsConfiguration =
-          PreferenceManager.getCameraUploadsConfiguration(
-              mCameraUploadsSyncJobService);
+@Override
+protected JobParameters doInBackground(final JobParameters... jobParams) {
+	// Cancel periodic job if feature is disabled
+	CameraUploadsConfiguration cameraUploadsConfiguration =
+		PreferenceManager.getCameraUploadsConfiguration(
+			mCameraUploadsSyncJobService);
 
-      if (!cameraUploadsConfiguration.isEnabledForPictures() &&
-          !cameraUploadsConfiguration.isEnabledForVideos()) {
-        cancelPeriodicJob(jobParams[0].getJobId());
+	if (!cameraUploadsConfiguration.isEnabledForPictures() &&
+	    !cameraUploadsConfiguration.isEnabledForVideos()) {
+		cancelPeriodicJob(jobParams[0].getJobId());
 
-        return jobParams[0];
-      }
+		return jobParams[0];
+	}
 
-      String accountName =
-          jobParams[0].getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
-      mAccount = AccountUtils.getOwnCloudAccountByName(
-          mCameraUploadsSyncJobService, accountName);
-      mCameraUploadsSyncStorageManager = new CameraUploadsSyncStorageManager(
-          mCameraUploadsSyncJobService.getContentResolver());
+	String accountName =
+		jobParams[0].getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
+	mAccount = AccountUtils.getOwnCloudAccountByName(
+		mCameraUploadsSyncJobService, accountName);
+	mCameraUploadsSyncStorageManager = new CameraUploadsSyncStorageManager(
+		mCameraUploadsSyncJobService.getContentResolver());
 
-      mCameraUploadsPicturesPath = jobParams[0].getExtras().getString(
-          Extras.EXTRA_CAMERA_UPLOADS_PICTURES_PATH);
-      mCameraUploadsVideosPath = jobParams[0].getExtras().getString(
-          Extras.EXTRA_CAMERA_UPLOADS_VIDEOS_PATH);
-      mCameraUploadsSourcePath = jobParams[0].getExtras().getString(
-          Extras.EXTRA_CAMERA_UPLOADS_SOURCE_PATH);
-      mCameraUploadsBehaviorAfterUpload = jobParams[0].getExtras().getInt(
-          Extras.EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD);
+	mCameraUploadsPicturesPath = jobParams[0].getExtras().getString(
+		Extras.EXTRA_CAMERA_UPLOADS_PICTURES_PATH);
+	mCameraUploadsVideosPath = jobParams[0].getExtras().getString(
+		Extras.EXTRA_CAMERA_UPLOADS_VIDEOS_PATH);
+	mCameraUploadsSourcePath = jobParams[0].getExtras().getString(
+		Extras.EXTRA_CAMERA_UPLOADS_SOURCE_PATH);
+	mCameraUploadsBehaviorAfterUpload = jobParams[0].getExtras().getInt(
+		Extras.EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD);
 
-      syncFiles();
+	syncFiles();
 
-      return jobParams[0];
-    }
+	return jobParams[0];
+}
 
-    @Override
-    protected void onPostExecute(final JobParameters jobParameters) {
-      mCameraUploadsSyncJobService.jobFinished(jobParameters, false);
-    }
+@Override
+protected void onPostExecute(final JobParameters jobParameters) {
+	mCameraUploadsSyncJobService.jobFinished(jobParameters, false);
+}
 
-    /**
-     * Get local images and videos and start handling them
-     */
-    private void syncFiles() {
+/**
+ * Get local images and videos and start handling them
+ */
+private void syncFiles() {
 
-      // Get local images and videos
-      String localCameraPath = mCameraUploadsSourcePath;
+	// Get local images and videos
+	String localCameraPath = mCameraUploadsSourcePath;
 
-      File[] localFiles = new File[0];
+	File[] localFiles = new File[0];
 
-      if (localCameraPath != null) {
-        File cameraFolder = new File(localCameraPath);
-        localFiles = cameraFolder.listFiles();
-      }
+	if (localCameraPath != null) {
+		File cameraFolder = new File(localCameraPath);
+		localFiles = cameraFolder.listFiles();
+	}
 
-      if (localFiles != null) {
-        localFiles = orderFilesByCreationTimestamp(localFiles);
+	if (localFiles != null) {
+		localFiles = orderFilesByCreationTimestamp(localFiles);
 
-        for (File localFile : localFiles) {
-          handleFile(localFile);
-        }
-      }
+		for (File localFile : localFiles) {
+			handleFile(localFile);
+		}
+	}
 
-      Timber.d("All files synced, finishing job");
-    }
+	Timber.d("All files synced, finishing job");
+}
 
-    private File[] orderFilesByCreationTimestamp(final File[] localFiles) {
-      Arrays.sort(
-          localFiles,
-          (file1,
-           file2) -> Long.compare(file1.lastModified(), file2.lastModified()));
+private File[] orderFilesByCreationTimestamp(final File[] localFiles) {
+	Arrays.sort(
+		localFiles,
+		(file1,
+		 file2)->Long.compare(file1.lastModified(), file2.lastModified()));
 
-      return localFiles;
-    }
+	return localFiles;
+}
 
-    /**
-     * Request the upload of a file just created if matches the criteria of the
-     * current configuration for camera uploads.
-     *
-     * @param localFile image or video to upload to the server
-     */
-    private synchronized void handleFile(final File localFile) {
+/**
+ * Request the upload of a file just created if matches the criteria of the
+ * current configuration for camera uploads.
+ *
+ * @param localFile image or video to upload to the server
+ */
+private synchronized void handleFile(final File localFile) {
 
-      String fileName = localFile.getName();
+	String fileName = localFile.getName();
 
-      String mimeType = MimetypeIconUtil.getBestMimeTypeByFilename(fileName);
-      boolean isImage = mimeType.startsWith("image/");
-      boolean isVideo = mimeType.startsWith("video/");
+	String mimeType = MimetypeIconUtil.getBestMimeTypeByFilename(fileName);
+	boolean isImage = mimeType.startsWith("image/");
+	boolean isVideo = mimeType.startsWith("video/");
 
-      if (!isImage && !isVideo) {
-        Timber.d("Ignoring %s", fileName);
-        return;
-      }
+	if (!isImage && !isVideo) {
+		Timber.d("Ignoring %s", fileName);
+		return;
+	}
 
-      if (isImage && mCameraUploadsPicturesPath == null) {
-        Timber.d("Camera uploads disabled for images, ignoring %s", fileName);
-        return;
-      }
+	if (isImage && mCameraUploadsPicturesPath == null) {
+		Timber.d("Camera uploads disabled for images, ignoring %s", fileName);
+		return;
+	}
 
-      if (isVideo && mCameraUploadsVideosPath == null) {
-        Timber.d("Camera uploads disabled for videos, ignoring %s", fileName);
-        return;
-      }
+	if (isVideo && mCameraUploadsVideosPath == null) {
+		Timber.d("Camera uploads disabled for videos, ignoring %s", fileName);
+		return;
+	}
 
-      String remotePath =
-          (isImage ? mCameraUploadsPicturesPath : mCameraUploadsVideosPath) +
-          fileName;
+	String remotePath =
+		(isImage ? mCameraUploadsPicturesPath : mCameraUploadsVideosPath) +
+		fileName;
 
-      int createdBy = isImage
-                          ? UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_PICTURE
-                          : UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_VIDEO;
+	int createdBy = isImage
+	                  ? UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_PICTURE
+	                  : UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_VIDEO;
 
-      String localPath = mCameraUploadsSourcePath + File.separator + fileName;
+	String localPath = mCameraUploadsSourcePath + File.separator + fileName;
 
-      mOCCameraUploadSync =
-          mCameraUploadsSyncStorageManager.getCameraUploadSync(null, null,
-                                                               null);
+	mOCCameraUploadSync =
+		mCameraUploadsSyncStorageManager.getCameraUploadSync(null, null,
+		                                                     null);
 
-      if (mOCCameraUploadSync == null) {
-        Timber.d(
-            "There's no timestamp to compare with in database yet, not continue");
-        return;
-      }
+	if (mOCCameraUploadSync == null) {
+		Timber.d(
+			"There's no timestamp to compare with in database yet, not continue");
+		return;
+	}
 
-      SimpleDateFormat simpleDateFormat =
-          new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-      if (isImage && localFile.lastModified() <=
-                         mOCCameraUploadSync.getPicturesLastSync()) {
-        Timber.i("Image " + localPath +
-                 " created before period to check, ignoring " +
-                 simpleDateFormat.format(new Date(localFile.lastModified())) +
-                 " <= " +
-                 simpleDateFormat.format(
-                     new Date(mOCCameraUploadSync.getPicturesLastSync())));
-        return;
-      }
+	SimpleDateFormat simpleDateFormat =
+		new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+	if (isImage && localFile.lastModified() <=
+	    mOCCameraUploadSync.getPicturesLastSync()) {
+		Timber.i("Image " + localPath +
+		         " created before period to check, ignoring " +
+		         simpleDateFormat.format(new Date(localFile.lastModified())) +
+		         " <= " +
+		         simpleDateFormat.format(
+				 new Date(mOCCameraUploadSync.getPicturesLastSync())));
+		return;
+	}
 
-      if (isVideo &&
-          localFile.lastModified() <= mOCCameraUploadSync.getVideosLastSync()) {
-        Timber.i("Video " + localPath +
-                 " created before period to check, ignoring " +
-                 simpleDateFormat.format(new Date(localFile.lastModified())) +
-                 " <= " +
-                 simpleDateFormat.format(
-                     new Date(mOCCameraUploadSync.getVideosLastSync())));
-        return;
-      }
+	if (isVideo &&
+	    localFile.lastModified() <= mOCCameraUploadSync.getVideosLastSync()) {
+		Timber.i("Video " + localPath +
+		         " created before period to check, ignoring " +
+		         simpleDateFormat.format(new Date(localFile.lastModified())) +
+		         " <= " +
+		         simpleDateFormat.format(
+				 new Date(mOCCameraUploadSync.getVideosLastSync())));
+		return;
+	}
 
-      TransferRequester requester = new TransferRequester();
-      requester.uploadNewFile(mCameraUploadsSyncJobService, mAccount, localPath,
-                              remotePath, mCameraUploadsBehaviorAfterUpload,
-                              mimeType,
-                              true, // create parent folder if not existent
-                              createdBy);
+	TransferRequester requester = new TransferRequester();
+	requester.uploadNewFile(mCameraUploadsSyncJobService, mAccount, localPath,
+	                        remotePath, mCameraUploadsBehaviorAfterUpload,
+	                        mimeType,
+	                        true, // create parent folder if not existent
+	                        createdBy);
 
-      // Update timestamps once the first picture/video has been enqueued
-      updateTimestamps(isImage, isVideo, localFile.lastModified());
+	// Update timestamps once the first picture/video has been enqueued
+	updateTimestamps(isImage, isVideo, localFile.lastModified());
 
-      Timber.i("Requested upload of %1s to %2s in %3s", localPath, remotePath,
-               mAccount.name);
-    }
+	Timber.i("Requested upload of %1s to %2s in %3s", localPath, remotePath,
+	         mAccount.name);
+}
 
-    /**
-     * Update pictures and videos timestamps to upload only the pictures and
-     * videos taken later than those timestamps
-     *
-     * @param isImage true if file is an image, false otherwise
-     * @param isVideo true if file is a video, false otherwise
-     */
-    private void updateTimestamps(final boolean isImage, final boolean isVideo,
-                                  final long fileTimestamp) {
+/**
+ * Update pictures and videos timestamps to upload only the pictures and
+ * videos taken later than those timestamps
+ *
+ * @param isImage true if file is an image, false otherwise
+ * @param isVideo true if file is a video, false otherwise
+ */
+private void updateTimestamps(final boolean isImage, final boolean isVideo,
+                              final long fileTimestamp) {
 
-      long picturesTimestamp = mOCCameraUploadSync.getPicturesLastSync();
-      long videosTimestamp = mOCCameraUploadSync.getVideosLastSync();
+	long picturesTimestamp = mOCCameraUploadSync.getPicturesLastSync();
+	long videosTimestamp = mOCCameraUploadSync.getVideosLastSync();
 
-      if (isImage) {
+	if (isImage) {
 
-        Timber.d("Updating timestamp for pictures");
+		Timber.d("Updating timestamp for pictures");
 
-        picturesTimestamp = fileTimestamp;
-      }
+		picturesTimestamp = fileTimestamp;
+	}
 
-      if (isVideo) {
+	if (isVideo) {
 
-        Timber.d("Updating timestamp for videos");
+		Timber.d("Updating timestamp for videos");
 
-        videosTimestamp = fileTimestamp;
-      }
+		videosTimestamp = fileTimestamp;
+	}
 
-      OCCameraUploadSync newOCCameraUploadSync =
-          new OCCameraUploadSync(picturesTimestamp, videosTimestamp);
+	OCCameraUploadSync newOCCameraUploadSync =
+		new OCCameraUploadSync(picturesTimestamp, videosTimestamp);
 
-      newOCCameraUploadSync.setId(mOCCameraUploadSync.getId());
+	newOCCameraUploadSync.setId(mOCCameraUploadSync.getId());
 
-      mCameraUploadsSyncStorageManager.updateCameraUploadSync(
-          newOCCameraUploadSync);
-    }
+	mCameraUploadsSyncStorageManager.updateCameraUploadSync(
+		newOCCameraUploadSync);
+}
 
-    /**
-     * Cancel the periodic job
-     *
-     * @param jobId id of the job to cancel
-     */
-    private void cancelPeriodicJob(final int jobId) {
+/**
+ * Cancel the periodic job
+ *
+ * @param jobId id of the job to cancel
+ */
+private void cancelPeriodicJob(final int jobId) {
 
-      JobScheduler jobScheduler =
-          (JobScheduler)mCameraUploadsSyncJobService.getSystemService(
-              Context.JOB_SCHEDULER_SERVICE);
+	JobScheduler jobScheduler =
+		(JobScheduler)mCameraUploadsSyncJobService.getSystemService(
+			Context.JOB_SCHEDULER_SERVICE);
 
-      jobScheduler.cancel(jobId);
+	jobScheduler.cancel(jobId);
 
-      Timber.d("Camera uploads disabled, cancelling the periodic job");
-    }
-  }
+	Timber.d("Camera uploads disabled, cancelling the periodic job");
+}
+}
 
-  @Override
-  /*
-   * Called by the system if the job is cancelled before being finished
-   */
-  public boolean onStopJob(final JobParameters jobParameters) {
+@Override
+/*
+ * Called by the system if the job is cancelled before being finished
+ */
+public boolean onStopJob(final JobParameters jobParameters) {
 
-    Timber.d("Job was cancelled before finishing.");
+	Timber.d("Job was cancelled before finishing.");
 
-    return true;
-  }
+	return true;
+}
 }

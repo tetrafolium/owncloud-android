@@ -50,139 +50,139 @@ import timber.log.Timber;
  */
 public class ConnectivityActionReceiver extends BroadcastReceiver {
 
-  /**
-   * Magic keyword, by Google.
-   *
-   * {@See
-   * http://developer.android.com/intl/es/reference/android/net/wifi/WifiInfo.html#getSSID()}
-   */
-  private static final String UNKNOWN_SSID = "<unknown ssid>";
+/**
+ * Magic keyword, by Google.
+ *
+ * {@See
+ * http://developer.android.com/intl/es/reference/android/net/wifi/WifiInfo.html#getSSID()}
+ */
+private static final String UNKNOWN_SSID = "<unknown ssid>";
 
-  @Override
-  public void onReceive(final Context context, final Intent intent) {
-    // LOG ALL EVENTS:
-    Timber.v("action: %s", intent.getAction());
-    Timber.v("component: %s", intent.getComponent());
-    Bundle extras = intent.getExtras();
-    if (extras != null) {
-      for (String key : extras.keySet()) {
-        Timber.v("key [" + key + "]: " + extras.get(key));
-      }
-    } else {
-      Timber.v("no extras");
-    }
+@Override
+public void onReceive(final Context context, final Intent intent) {
+	// LOG ALL EVENTS:
+	Timber.v("action: %s", intent.getAction());
+	Timber.v("component: %s", intent.getComponent());
+	Bundle extras = intent.getExtras();
+	if (extras != null) {
+		for (String key : extras.keySet()) {
+			Timber.v("key [" + key + "]: " + extras.get(key));
+		}
+	} else {
+		Timber.v("no extras");
+	}
 
-    /*
-     * There is an interesting mess to process
-     * WifiManager.NETWORK_STATE_CHANGED_ACTION and
-     * ConnectivityManager.CONNECTIVITY_ACTION in a simple and reliable way.
-     *
-     * The former triggers much more events than what we really need to know
-     * about Wifi connection.
-     *
-     * But there are annoying uncertainties about
-     * ConnectivityManager.CONNECTIVITY_ACTION due to the deprecation of
-     * ConnectivityManager.EXTRA_NETWORK_INFO in API level 14, and the absence
-     * of ConnectivityManager.EXTRA_NETWORK_TYPE until API level 17. Dear
-     * Google, how should we handle API levels 14 to 16?
-     *
-     * In the end maybe we need to keep in memory the current knowledge about
-     * connectivity and update it taking into account several Intents received
-     * in a row
-     *
-     * But first let's try something "simple" to keep a basic retry of camera
-     * uploads in version 1.9.2, similar to the existent until 1.9.1. To be
-     * improved.
-     */
-    if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-      NetworkInfo networkInfo =
-          intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-      WifiInfo wifiInfo =
-          intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
-      String bssid = intent.getStringExtra(WifiManager.EXTRA_BSSID);
-      if (networkInfo.isConnected() && // not enough; see (*) right below
-          wifiInfo != null &&
-          !UNKNOWN_SSID.equals(wifiInfo.getSSID().toLowerCase()) &&
-          bssid != null) {
-        Timber.d("WiFi connected");
+	/*
+	 * There is an interesting mess to process
+	 * WifiManager.NETWORK_STATE_CHANGED_ACTION and
+	 * ConnectivityManager.CONNECTIVITY_ACTION in a simple and reliable way.
+	 *
+	 * The former triggers much more events than what we really need to know
+	 * about Wifi connection.
+	 *
+	 * But there are annoying uncertainties about
+	 * ConnectivityManager.CONNECTIVITY_ACTION due to the deprecation of
+	 * ConnectivityManager.EXTRA_NETWORK_INFO in API level 14, and the absence
+	 * of ConnectivityManager.EXTRA_NETWORK_TYPE until API level 17. Dear
+	 * Google, how should we handle API levels 14 to 16?
+	 *
+	 * In the end maybe we need to keep in memory the current knowledge about
+	 * connectivity and update it taking into account several Intents received
+	 * in a row
+	 *
+	 * But first let's try something "simple" to keep a basic retry of camera
+	 * uploads in version 1.9.2, similar to the existent until 1.9.1. To be
+	 * improved.
+	 */
+	if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+		NetworkInfo networkInfo =
+			intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+		WifiInfo wifiInfo =
+			intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+		String bssid = intent.getStringExtra(WifiManager.EXTRA_BSSID);
+		if (networkInfo.isConnected() && // not enough; see (*) right below
+		    wifiInfo != null &&
+		    !UNKNOWN_SSID.equals(wifiInfo.getSSID().toLowerCase()) &&
+		    bssid != null) {
+			Timber.d("WiFi connected");
 
-        wifiConnected(context);
-      } else {
-        // TODO tons of things to check to conclude disconnection;
-        // TODO maybe alternative commented below, based on CONNECTIVITY_ACTION
-        // is better
-        Timber.d("WiFi disconnected ... but don't know if right now");
-      }
-    }
-    // (*) When WiFi is lost, an Intent with network state CONNECTED and SSID
-    // "<unknown ssid>" is
-    //      received right before another Intent with network state
-    //      DISCONNECTED; needs to be differentiated of a new Wifi connection.
-    //
-    //  Besides, with a new connection two Intents are received, having only the
-    //  second the extra WifiManager.EXTRA_BSSID, with the BSSID of the access
-    //  point accessed.
-    //
-    //  Not sure if this protocol is exact, since it's not documented. Only
-    //  found mild references in
-    //   -
-    //   http://developer.android.com/intl/es/reference/android/net/wifi/WifiInfo.html#getSSID()
-    //   -
-    //   http://developer.android.com/intl/es/reference/android/net/wifi/WifiManager.html#EXTRA_BSSID
-    //  and reproduced in Nexus 5 with Android 6.
+			wifiConnected(context);
+		} else {
+			// TODO tons of things to check to conclude disconnection;
+			// TODO maybe alternative commented below, based on CONNECTIVITY_ACTION
+			// is better
+			Timber.d("WiFi disconnected ... but don't know if right now");
+		}
+	}
+	// (*) When WiFi is lost, an Intent with network state CONNECTED and SSID
+	// "<unknown ssid>" is
+	//      received right before another Intent with network state
+	//      DISCONNECTED; needs to be differentiated of a new Wifi connection.
+	//
+	//  Besides, with a new connection two Intents are received, having only the
+	//  second the extra WifiManager.EXTRA_BSSID, with the BSSID of the access
+	//  point accessed.
+	//
+	//  Not sure if this protocol is exact, since it's not documented. Only
+	//  found mild references in
+	//   -
+	//   http://developer.android.com/intl/es/reference/android/net/wifi/WifiInfo.html#getSSID()
+	//   -
+	//   http://developer.android.com/intl/es/reference/android/net/wifi/WifiManager.html#EXTRA_BSSID
+	//  and reproduced in Nexus 5 with Android 6.
 
-    // TODO check if this helps us
-    /*
-     * Possible alternative attending ConnectivityManager.CONNECTIVITY_ACTION.
-     *
-     * Let's see what QA has to say
-     *
-     if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-     NetworkInfo networkInfo = intent.getParcelableExtra(
-     ConnectivityManager.EXTRA_NETWORK_INFO      // deprecated in API 14
-     );
-     int networkType = intent.getIntExtra(
-     ConnectivityManager.EXTRA_NETWORK_TYPE,     // only from API level 17
-     -1
-     );
-     boolean couldBeWifiAction =
-     (networkInfo == null && networkType < 0)    ||      // cases of lack of
-     info networkInfo.getType() == ConnectivityManager.TYPE_WIFI  || networkType
-     == ConnectivityManager.TYPE_WIFI;
+	// TODO check if this helps us
+	/*
+	 * Possible alternative attending ConnectivityManager.CONNECTIVITY_ACTION.
+	 *
+	 * Let's see what QA has to say
+	 *
+	   if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+	   NetworkInfo networkInfo = intent.getParcelableExtra(
+	   ConnectivityManager.EXTRA_NETWORK_INFO      // deprecated in API 14
+	   );
+	   int networkType = intent.getIntExtra(
+	   ConnectivityManager.EXTRA_NETWORK_TYPE,     // only from API level 17
+	   -1
+	   );
+	   boolean couldBeWifiAction =
+	   (networkInfo == null && networkType < 0)    ||      // cases of lack of
+	   info networkInfo.getType() == ConnectivityManager.TYPE_WIFI  || networkType
+	   == ConnectivityManager.TYPE_WIFI;
 
-     if (couldBeWifiAction) {
-     if (ConnectivityUtils.isAppConnectedViaWiFi(context)) {
-     Timber.d("WiFi connected");
-     wifiConnected(context);
-     } else {
-     Timber.d("WiFi disconnected");
-     wifiDisconnected(context);
-     }
-     } /* else, CONNECTIVIY_ACTION is (probably) about other network interface
-     (mobile, bluetooth, ...)
-     }
-     */
-  }
+	   if (couldBeWifiAction) {
+	   if (ConnectivityUtils.isAppConnectedViaWiFi(context)) {
+	   Timber.d("WiFi connected");
+	   wifiConnected(context);
+	   } else {
+	   Timber.d("WiFi disconnected");
+	   wifiDisconnected(context);
+	   }
+	   } /* else, CONNECTIVIY_ACTION is (probably) about other network interface
+	   (mobile, bluetooth, ...)
+	   }
+	 */
+}
 
-  private void wifiConnected(final Context context) {
-    // for the moment, only recovery of camera uploads, similar to behaviour in
-    // release 1.9.1
-    if ((PreferenceManager.cameraPictureUploadEnabled(context) &&
-         PreferenceManager.cameraPictureUploadViaWiFiOnly(context)) ||
-        (PreferenceManager.cameraVideoUploadEnabled(context) &&
-         PreferenceManager.cameraVideoUploadViaWiFiOnly(context))) {
+private void wifiConnected(final Context context) {
+	// for the moment, only recovery of camera uploads, similar to behaviour in
+	// release 1.9.1
+	if ((PreferenceManager.cameraPictureUploadEnabled(context) &&
+	     PreferenceManager.cameraPictureUploadViaWiFiOnly(context)) ||
+	    (PreferenceManager.cameraVideoUploadEnabled(context) &&
+	     PreferenceManager.cameraVideoUploadViaWiFiOnly(context))) {
 
-      Handler h = new Handler(Looper.getMainLooper());
-      h.postDelayed(() -> {
-        Timber.d("Requesting retry of camera uploads (& friends)");
-        TransferRequester requester = new TransferRequester();
+		Handler h = new Handler(Looper.getMainLooper());
+		h.postDelayed(()->{
+				Timber.d("Requesting retry of camera uploads (& friends)");
+				TransferRequester requester = new TransferRequester();
 
-        requester.retryFailedUploads(
-            MainApp.Companion.getAppContext(), null,
-            UploadResult
-                .DELAYED_FOR_WIFI, // for the rest of enqueued when Wifi fell
-            true);
-      }, 500);
-    }
-  }
+				requester.retryFailedUploads(
+					MainApp.Companion.getAppContext(), null,
+					UploadResult
+					.DELAYED_FOR_WIFI, // for the rest of enqueued when Wifi fell
+					true);
+			}, 500);
+	}
+}
 }

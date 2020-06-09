@@ -24,14 +24,16 @@ import android.webkit.WebView;
 
 public class SsoWebView extends WebView {
 
-  public SsoWebView(final Context context) { super(context); }
+public SsoWebView(final Context context) {
+	super(context);
+}
 
-  public SsoWebView(final Context context, final AttributeSet attr) {
-    super(context, attr);
-  }
+public SsoWebView(final Context context, final AttributeSet attr) {
+	super(context, attr);
+}
 
-  @Override
-  public boolean onCheckIsTextEditor() {
-    return false;
-  }
+@Override
+public boolean onCheckIsTextEditor() {
+	return false;
+}
 }

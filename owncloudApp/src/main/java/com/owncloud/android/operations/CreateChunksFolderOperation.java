@@ -26,29 +26,29 @@ import timber.log.Timber;
 
 public class CreateChunksFolderOperation extends CreateFolderOperation {
 
-  /**
-   * Constructor
-   *
-   * @param remotePath         Path in which create the chunks folder in server
-   */
-  public CreateChunksFolderOperation(final String remotePath) {
-    super(remotePath, false);
-  }
+/**
+ * Constructor
+ *
+ * @param remotePath         Path in which create the chunks folder in server
+ */
+public CreateChunksFolderOperation(final String remotePath) {
+	super(remotePath, false);
+}
 
-  @Override
-  protected RemoteOperationResult run(final OwnCloudClient client) {
-    CreateRemoteChunkFolderOperation createRemoteChunkFolderOperation =
-        new CreateRemoteChunkFolderOperation(mRemotePath, mCreateFullPath);
+@Override
+protected RemoteOperationResult run(final OwnCloudClient client) {
+	CreateRemoteChunkFolderOperation createRemoteChunkFolderOperation =
+		new CreateRemoteChunkFolderOperation(mRemotePath, mCreateFullPath);
 
-    RemoteOperationResult result =
-        createRemoteChunkFolderOperation.execute(client);
+	RemoteOperationResult result =
+		createRemoteChunkFolderOperation.execute(client);
 
-    if (result.isSuccess()) {
-      Timber.w("Remote chunks folder " + mRemotePath + " was created");
-    } else {
-      Timber.e("%s hasn't been created", mRemotePath);
-    }
+	if (result.isSuccess()) {
+		Timber.w("Remote chunks folder " + mRemotePath + " was created");
+	} else {
+		Timber.e("%s hasn't been created", mRemotePath);
+	}
 
-    return result;
-  }
+	return result;
+}
 }

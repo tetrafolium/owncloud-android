@@ -23,88 +23,114 @@ import androidx.annotation.Nullable;
  */
 public class UserProfile {
 
-  private long mId;
-  private String mAccountName;
+private long mId;
+private String mAccountName;
 
-  private String mUserId;
-  private String mDisplayName = "";
-  private String mEmail = "";
+private String mUserId;
+private String mDisplayName = "";
+private String mEmail = "";
 
-  private UserAvatar mAvatar;
-  private UserQuota mQuota;
+private UserAvatar mAvatar;
+private UserQuota mQuota;
 
-  public UserProfile(final String accountName, final String userId,
-                     final String displayName, final String email) {
-    mAccountName = accountName;
-    mUserId = userId;
-    mDisplayName = displayName;
-    mEmail = email;
-    mAvatar = null;
-  }
+public UserProfile(final String accountName, final String userId,
+                   final String displayName, final String email) {
+	mAccountName = accountName;
+	mUserId = userId;
+	mDisplayName = displayName;
+	mEmail = email;
+	mAvatar = null;
+}
 
-  public String getAccountName() { return mAccountName; }
+public String getAccountName() {
+	return mAccountName;
+}
 
-  public String getUserId() { return mUserId; }
+public String getUserId() {
+	return mUserId;
+}
 
-  public String getDisplayName() { return mDisplayName; }
+public String getDisplayName() {
+	return mDisplayName;
+}
 
-  public String getEmail() { return mEmail; }
+public String getEmail() {
+	return mEmail;
+}
 
-  @Nullable
-  public UserAvatar getAvatar() {
-    return mAvatar;
-  }
+@Nullable
+public UserAvatar getAvatar() {
+	return mAvatar;
+}
 
-  public void setAvatar(final UserAvatar avatar) { mAvatar = avatar; }
+public void setAvatar(final UserAvatar avatar) {
+	mAvatar = avatar;
+}
 
-  @Nullable
-  public UserQuota getQuota() {
-    return mQuota;
-  }
+@Nullable
+public UserQuota getQuota() {
+	return mQuota;
+}
 
-  public void setQuota(final UserQuota quota) { this.mQuota = quota; }
+public void setQuota(final UserQuota quota) {
+	this.mQuota = quota;
+}
 
-  public static class UserAvatar {
+public static class UserAvatar {
 
-    private String mCacheKey;
-    private String mMimeType;
-    private String mEtag;
+private String mCacheKey;
+private String mMimeType;
+private String mEtag;
 
-    public UserAvatar(final String cacheKey, final String mimeType,
-                      final String etag) {
-      mCacheKey = cacheKey;
-      mMimeType = mimeType;
-      mEtag = etag;
-    }
+public UserAvatar(final String cacheKey, final String mimeType,
+                  final String etag) {
+	mCacheKey = cacheKey;
+	mMimeType = mimeType;
+	mEtag = etag;
+}
 
-    public String getCacheKey() { return mCacheKey; }
+public String getCacheKey() {
+	return mCacheKey;
+}
 
-    public String getMimeType() { return mMimeType; }
+public String getMimeType() {
+	return mMimeType;
+}
 
-    public String getEtag() { return mEtag; }
-  }
+public String getEtag() {
+	return mEtag;
+}
+}
 
-  public static class UserQuota {
+public static class UserQuota {
 
-    private long mFree;
-    private double mRelative;
-    private long mTotal;
-    private long mUsed;
+private long mFree;
+private double mRelative;
+private long mTotal;
+private long mUsed;
 
-    public UserQuota(final long free, final double relative, final long total,
-                     final long used) {
-      mFree = free;
-      mRelative = relative;
-      mTotal = total;
-      mUsed = used;
-    }
+public UserQuota(final long free, final double relative, final long total,
+                 final long used) {
+	mFree = free;
+	mRelative = relative;
+	mTotal = total;
+	mUsed = used;
+}
 
-    public long getFree() { return mFree; }
+public long getFree() {
+	return mFree;
+}
 
-    public double getRelative() { return mRelative; }
+public double getRelative() {
+	return mRelative;
+}
 
-    public long getTotal() { return mTotal; }
+public long getTotal() {
+	return mTotal;
+}
 
-    public long getUsed() { return mUsed; }
-  }
+public long getUsed() {
+	return mUsed;
+}
+}
 }

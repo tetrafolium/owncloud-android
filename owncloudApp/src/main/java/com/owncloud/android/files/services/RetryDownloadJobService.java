@@ -33,53 +33,53 @@ import timber.log.Timber;
 
 public class RetryDownloadJobService extends JobService {
 
-  @Override
-  public boolean onStartJob(final JobParameters jobParameters) {
+@Override
+public boolean onStartJob(final JobParameters jobParameters) {
 
-    String accountName =
-        jobParameters.getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
+	String accountName =
+		jobParameters.getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
 
-    Account account = AccountUtils.getOwnCloudAccountByName(this, accountName);
+	Account account = AccountUtils.getOwnCloudAccountByName(this, accountName);
 
-    // Check if the account has been deleted after downloading the file and
-    // before retrying the download
-    if (account != null) {
-      FileDataStorageManager fileDataStorageManager =
-          new FileDataStorageManager(this, account, getContentResolver());
+	// Check if the account has been deleted after downloading the file and
+	// before retrying the download
+	if (account != null) {
+		FileDataStorageManager fileDataStorageManager =
+			new FileDataStorageManager(this, account, getContentResolver());
 
-      String fileRemotePath =
-          jobParameters.getExtras().getString(Extras.EXTRA_REMOTE_PATH);
+		String fileRemotePath =
+			jobParameters.getExtras().getString(Extras.EXTRA_REMOTE_PATH);
 
-      Timber.d("Retrying download of %1s in %2s", fileRemotePath, accountName);
+		Timber.d("Retrying download of %1s in %2s", fileRemotePath, accountName);
 
-      // Get download file from database
-      OCFile ocFile = fileDataStorageManager.getFileByPath(fileRemotePath);
+		// Get download file from database
+		OCFile ocFile = fileDataStorageManager.getFileByPath(fileRemotePath);
 
-      if (ocFile != null) {
-        // Retry download
-        Intent intent = new Intent(this, FileDownloader.class);
-        intent.putExtra(FileDownloader.KEY_ACCOUNT, account);
-        intent.putExtra(FileDownloader.KEY_FILE, ocFile);
-        intent.putExtra(FileDownloader.KEY_RETRY_DOWNLOAD, true);
-        Timber.d(
-            "Retry download from foreground/background, startForeground() will be called soon");
-        ContextCompat.startForegroundService(this, intent);
-      } else {
-        Timber.w("File %1s in %2s not found in database", fileRemotePath,
-                 accountName);
-      }
+		if (ocFile != null) {
+			// Retry download
+			Intent intent = new Intent(this, FileDownloader.class);
+			intent.putExtra(FileDownloader.KEY_ACCOUNT, account);
+			intent.putExtra(FileDownloader.KEY_FILE, ocFile);
+			intent.putExtra(FileDownloader.KEY_RETRY_DOWNLOAD, true);
+			Timber.d(
+				"Retry download from foreground/background, startForeground() will be called soon");
+			ContextCompat.startForegroundService(this, intent);
+		} else {
+			Timber.w("File %1s in %2s not found in database", fileRemotePath,
+			         accountName);
+		}
 
-    } else {
-      Timber.w("Account %1s was deleted, no retry will be done", accountName);
-    }
+	} else {
+		Timber.w("Account %1s was deleted, no retry will be done", accountName);
+	}
 
-    jobFinished(jobParameters,
-                false); // done here, real job was delegated to another castle
-    return true; // TODO or false? what is the real effect, Google!?!?!?!?
-  }
+	jobFinished(jobParameters,
+	            false); // done here, real job was delegated to another castle
+	return true; // TODO or false? what is the real effect, Google!?!?!?!?
+}
 
-  @Override
-  public boolean onStopJob(final JobParameters jobParameters) {
-    return true;
-  }
+@Override
+public boolean onStopJob(final JobParameters jobParameters) {
+	return true;
+}
 }

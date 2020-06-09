@@ -23,33 +23,33 @@ package com.owncloud.android.utils;
 
 public class Extras {
 
-  // from both
-  public static final String EXTRA_REMOTE_PATH = "REMOTE_PATH";
-  public static final String EXTRA_ACCOUNT_NAME = "EXTRA_ACCOUNT_NAME";
-  public static final String EXTRA_LINKED_TO_PATH = "LINKED_TO";
+// from both
+public static final String EXTRA_REMOTE_PATH = "REMOTE_PATH";
+public static final String EXTRA_ACCOUNT_NAME = "EXTRA_ACCOUNT_NAME";
+public static final String EXTRA_LINKED_TO_PATH = "LINKED_TO";
 
-  // from FileDownloader
-  public static final String EXTRA_FILE_PATH = "FILE_PATH";
-  public static final String EXTRA_DOWNLOAD_RESULT = "RESULT";
+// from FileDownloader
+public static final String EXTRA_FILE_PATH = "FILE_PATH";
+public static final String EXTRA_DOWNLOAD_RESULT = "RESULT";
 
-  // from FileUploader
-  public static final String EXTRA_OLD_REMOTE_PATH = "OLD_REMOTE_PATH";
-  public static final String EXTRA_OLD_FILE_PATH = "OLD_FILE_PATH";
-  public static final String EXTRA_UPLOAD_RESULT = "RESULT";
+// from FileUploader
+public static final String EXTRA_OLD_REMOTE_PATH = "OLD_REMOTE_PATH";
+public static final String EXTRA_OLD_FILE_PATH = "OLD_FILE_PATH";
+public static final String EXTRA_UPLOAD_RESULT = "RESULT";
 
-  // for Camera uploads
-  public static final String EXTRA_CAMERA_UPLOADS_SYNC_JOB_ID =
-      "EXTRA_CAMERA_UPLOADS_SYNC_JOB_ID";
-  public static final String EXTRA_CAMERA_UPLOADS_PICTURES_PATH =
-      "EXTRA_CAMERA_UPLOADS_PICTURES_PATH";
-  public static final String EXTRA_CAMERA_UPLOADS_VIDEOS_PATH =
-      "EXTRA_CAMERA_UPLOADS_VIDEOS_PATH";
-  public static final String EXTRA_CAMERA_UPLOADS_SOURCE_PATH =
-      "EXTRA_CAMERA_UPLOADS_SOURCE_PATH";
-  public static final String EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD =
-      "EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD";
+// for Camera uploads
+public static final String EXTRA_CAMERA_UPLOADS_SYNC_JOB_ID =
+	"EXTRA_CAMERA_UPLOADS_SYNC_JOB_ID";
+public static final String EXTRA_CAMERA_UPLOADS_PICTURES_PATH =
+	"EXTRA_CAMERA_UPLOADS_PICTURES_PATH";
+public static final String EXTRA_CAMERA_UPLOADS_VIDEOS_PATH =
+	"EXTRA_CAMERA_UPLOADS_VIDEOS_PATH";
+public static final String EXTRA_CAMERA_UPLOADS_SOURCE_PATH =
+	"EXTRA_CAMERA_UPLOADS_SOURCE_PATH";
+public static final String EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD =
+	"EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD";
 
-  // for Available offline
-  public static final String EXTRA_AVAILABLE_OFFLINE_SYNC_JOB_ID =
-      "EXTRA_AVAILABLE_OFFLINE_SYNC_JOB_ID";
+// for Available offline
+public static final String EXTRA_AVAILABLE_OFFLINE_SYNC_JOB_ID =
+	"EXTRA_AVAILABLE_OFFLINE_SYNC_JOB_ID";
 }

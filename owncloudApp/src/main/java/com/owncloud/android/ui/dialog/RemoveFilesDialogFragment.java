@@ -34,117 +34,117 @@ import com.owncloud.android.ui.dialog.ConfirmationDialogFragment.ConfirmationDia
 import java.util.ArrayList;
 
 public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
-    implements ConfirmationDialogFragmentListener {
+	implements ConfirmationDialogFragmentListener {
 
-  private ArrayList<OCFile> mTargetFiles;
+private ArrayList<OCFile> mTargetFiles;
 
-  private static final String ARG_TARGET_FILES = "TARGET_FILES";
+private static final String ARG_TARGET_FILES = "TARGET_FILES";
 
-  /**
-   * Public factory method to create new RemoveFilesDialogFragment instances.
-   *
-   * @param files           Files to remove.
-   * @return Dialog ready to show.
-   */
-  public static RemoveFilesDialogFragment
-  newInstance(final ArrayList<OCFile> files) {
-    RemoveFilesDialogFragment frag = new RemoveFilesDialogFragment();
-    Bundle args = new Bundle();
-    int messageStringId;
+/**
+ * Public factory method to create new RemoveFilesDialogFragment instances.
+ *
+ * @param files           Files to remove.
+ * @return Dialog ready to show.
+ */
+public static RemoveFilesDialogFragment
+newInstance(final ArrayList<OCFile> files) {
+	RemoveFilesDialogFragment frag = new RemoveFilesDialogFragment();
+	Bundle args = new Bundle();
+	int messageStringId;
 
-    boolean containsFolder = false;
-    boolean containsDown = false;
-    boolean containsAvailableOffline = false;
-    for (OCFile file : files) {
-      if (file.isFolder()) {
-        containsFolder = true;
-      }
-      if (file.isDown()) {
-        containsDown = true;
-      }
-      if (file.getAvailableOfflineStatus() !=
-          OCFile.AvailableOfflineStatus.NOT_AVAILABLE_OFFLINE) {
-        containsAvailableOffline = true;
-      }
-    }
+	boolean containsFolder = false;
+	boolean containsDown = false;
+	boolean containsAvailableOffline = false;
+	for (OCFile file : files) {
+		if (file.isFolder()) {
+			containsFolder = true;
+		}
+		if (file.isDown()) {
+			containsDown = true;
+		}
+		if (file.getAvailableOfflineStatus() !=
+		    OCFile.AvailableOfflineStatus.NOT_AVAILABLE_OFFLINE) {
+			containsAvailableOffline = true;
+		}
+	}
 
-    if (files.size() == 1) {
-      // choose message for a single file
-      OCFile file = files.get(0);
+	if (files.size() == 1) {
+		// choose message for a single file
+		OCFile file = files.get(0);
 
-      messageStringId = (file.isFolder())
-                            ? R.string.confirmation_remove_folder_alert
-                            : R.string.confirmation_remove_file_alert;
+		messageStringId = (file.isFolder())
+		            ? R.string.confirmation_remove_folder_alert
+		            : R.string.confirmation_remove_file_alert;
 
-    } else {
-      // choose message for more than one file
-      messageStringId = (containsFolder)
-                            ? R.string.confirmation_remove_folders_alert
-                            : R.string.confirmation_remove_files_alert;
-    }
+	} else {
+		// choose message for more than one file
+		messageStringId = (containsFolder)
+		            ? R.string.confirmation_remove_folders_alert
+		            : R.string.confirmation_remove_files_alert;
+	}
 
-    int localRemoveButton =
-        (!containsAvailableOffline && (containsFolder || containsDown))
-            ? R.string.confirmation_remove_local
-            : -1;
+	int localRemoveButton =
+		(!containsAvailableOffline && (containsFolder || containsDown))
+	    ? R.string.confirmation_remove_local
+	    : -1;
 
-    args.putInt(ARG_MESSAGE_RESOURCE_ID, messageStringId);
-    if (files.size() == 1) {
-      args.putStringArray(ARG_MESSAGE_ARGUMENTS,
-                          new String[] {files.get(0).getFileName()});
-    }
-    args.putInt(ARG_POSITIVE_BTN_RES, R.string.common_yes);
-    args.putInt(ARG_NEUTRAL_BTN_RES, R.string.common_no);
-    args.putInt(ARG_NEGATIVE_BTN_RES, localRemoveButton);
-    args.putParcelableArrayList(ARG_TARGET_FILES, files);
-    frag.setArguments(args);
+	args.putInt(ARG_MESSAGE_RESOURCE_ID, messageStringId);
+	if (files.size() == 1) {
+		args.putStringArray(ARG_MESSAGE_ARGUMENTS,
+		                    new String[] {files.get(0).getFileName()});
+	}
+	args.putInt(ARG_POSITIVE_BTN_RES, R.string.common_yes);
+	args.putInt(ARG_NEUTRAL_BTN_RES, R.string.common_no);
+	args.putInt(ARG_NEGATIVE_BTN_RES, localRemoveButton);
+	args.putParcelableArrayList(ARG_TARGET_FILES, files);
+	frag.setArguments(args);
 
-    return frag;
-  }
+	return frag;
+}
 
-  /**
-   * Convenience factory method to create new RemoveFilesDialogFragment
-   * instances for a single file
-   *
-   * @param file           File to remove.
-   * @return Dialog ready to show.
-   */
-  public static RemoveFilesDialogFragment newInstance(final OCFile file) {
-    ArrayList<OCFile> list = new ArrayList<>();
-    list.add(file);
-    return newInstance(list);
-  }
+/**
+ * Convenience factory method to create new RemoveFilesDialogFragment
+ * instances for a single file
+ *
+ * @param file           File to remove.
+ * @return Dialog ready to show.
+ */
+public static RemoveFilesDialogFragment newInstance(final OCFile file) {
+	ArrayList<OCFile> list = new ArrayList<>();
+	list.add(file);
+	return newInstance(list);
+}
 
-  @Override
-  public Dialog onCreateDialog(final Bundle savedInstanceState) {
-    Dialog dialog = super.onCreateDialog(savedInstanceState);
-    mTargetFiles = getArguments().getParcelableArrayList(ARG_TARGET_FILES);
+@Override
+public Dialog onCreateDialog(final Bundle savedInstanceState) {
+	Dialog dialog = super.onCreateDialog(savedInstanceState);
+	mTargetFiles = getArguments().getParcelableArrayList(ARG_TARGET_FILES);
 
-    setOnConfirmationListener(this);
+	setOnConfirmationListener(this);
 
-    return dialog;
-  }
+	return dialog;
+}
 
-  /**
-   * Performs the removal of the target file, both locally and in the server.
-   */
-  @Override
-  public void onConfirmation(final String callerTag) {
-    ComponentsGetter cg = (ComponentsGetter)getActivity();
-    cg.getFileOperationsHelper().removeFiles(mTargetFiles, false);
-  }
+/**
+ * Performs the removal of the target file, both locally and in the server.
+ */
+@Override
+public void onConfirmation(final String callerTag) {
+	ComponentsGetter cg = (ComponentsGetter)getActivity();
+	cg.getFileOperationsHelper().removeFiles(mTargetFiles, false);
+}
 
-  /**
-   * Performs the removal of the local copy of the target file
-   */
-  @Override
-  public void onCancel(final String callerTag) {
-    ComponentsGetter cg = (ComponentsGetter)getActivity();
-    cg.getFileOperationsHelper().removeFiles(mTargetFiles, true);
-  }
+/**
+ * Performs the removal of the local copy of the target file
+ */
+@Override
+public void onCancel(final String callerTag) {
+	ComponentsGetter cg = (ComponentsGetter)getActivity();
+	cg.getFileOperationsHelper().removeFiles(mTargetFiles, true);
+}
 
-  @Override
-  public void onNeutral(final String callerTag) {
-    // nothing to do here
-  }
+@Override
+public void onNeutral(final String callerTag) {
+	// nothing to do here
+}
 }

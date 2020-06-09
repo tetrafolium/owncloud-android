@@ -28,83 +28,93 @@ import android.os.Parcelable;
  */
 public class OCCameraUploadSync implements Parcelable {
 
-  private long mId;
+private long mId;
 
-  // Timestamp (milliseconds) of last pictures synchronization
-  private long mPicturesLastSync;
+// Timestamp (milliseconds) of last pictures synchronization
+private long mPicturesLastSync;
 
-  // Timestamp (milliseconds) of last videos synchronization
-  private long mVideosLastSync;
+// Timestamp (milliseconds) of last videos synchronization
+private long mVideosLastSync;
 
-  /**
-   * Main constructor
-   *
-   * @param picturesLastSync
-   * @param videosLastSync
-   */
-  public OCCameraUploadSync(final long picturesLastSync,
-                            final long videosLastSync) {
+/**
+ * Main constructor
+ *
+ * @param picturesLastSync
+ * @param videosLastSync
+ */
+public OCCameraUploadSync(final long picturesLastSync,
+                          final long videosLastSync) {
 
-    if (picturesLastSync < 0) {
-      throw new IllegalArgumentException(
-          "Pictures last sync must be a positive long");
-    }
+	if (picturesLastSync < 0) {
+		throw new IllegalArgumentException(
+			      "Pictures last sync must be a positive long");
+	}
 
-    if (videosLastSync < 0) {
-      throw new IllegalArgumentException(
-          "Videos last sync must be a positive long");
-    }
+	if (videosLastSync < 0) {
+		throw new IllegalArgumentException(
+			      "Videos last sync must be a positive long");
+	}
 
-    this.mPicturesLastSync = picturesLastSync;
-    this.mVideosLastSync = videosLastSync;
-  }
+	this.mPicturesLastSync = picturesLastSync;
+	this.mVideosLastSync = videosLastSync;
+}
 
-  protected OCCameraUploadSync(final Parcel source) { readFromParcel(source); }
+protected OCCameraUploadSync(final Parcel source) {
+	readFromParcel(source);
+}
 
-  public void readFromParcel(final Parcel source) {
-    mId = source.readLong();
-    mPicturesLastSync = source.readLong();
-    mVideosLastSync = source.readLong();
-  }
+public void readFromParcel(final Parcel source) {
+	mId = source.readLong();
+	mPicturesLastSync = source.readLong();
+	mVideosLastSync = source.readLong();
+}
 
-  public static final Creator<OCCameraUploadSync> CREATOR =
-      new Creator<OCCameraUploadSync>() {
-        @Override
-        public OCCameraUploadSync createFromParcel(final Parcel source) {
-          return new OCCameraUploadSync(source);
-        }
+public static final Creator<OCCameraUploadSync> CREATOR =
+	new Creator<OCCameraUploadSync>() {
+	@Override
+	public OCCameraUploadSync createFromParcel(final Parcel source) {
+		return new OCCameraUploadSync(source);
+	}
 
-        @Override
-        public OCCameraUploadSync[] newArray(final int size) {
-          return new OCCameraUploadSync[size];
-        }
-      };
+	@Override
+	public OCCameraUploadSync[] newArray(final int size) {
+		return new OCCameraUploadSync[size];
+	}
+};
 
-  @Override
-  public int describeContents() {
-    return 0;
-  }
+@Override
+public int describeContents() {
+	return 0;
+}
 
-  @Override
-  public void writeToParcel(final Parcel dest, final int flags) {
-    dest.writeLong(mId);
-    dest.writeLong(mPicturesLastSync);
-    dest.writeLong(mVideosLastSync);
-  }
+@Override
+public void writeToParcel(final Parcel dest, final int flags) {
+	dest.writeLong(mId);
+	dest.writeLong(mPicturesLastSync);
+	dest.writeLong(mVideosLastSync);
+}
 
-  public long getId() { return mId; }
+public long getId() {
+	return mId;
+}
 
-  public void setId(final long id) { this.mId = id; }
+public void setId(final long id) {
+	this.mId = id;
+}
 
-  public long getPicturesLastSync() { return mPicturesLastSync; }
+public long getPicturesLastSync() {
+	return mPicturesLastSync;
+}
 
-  public void setPicturesLastSync(final long picturesLastSync) {
-    this.mPicturesLastSync = picturesLastSync;
-  }
+public void setPicturesLastSync(final long picturesLastSync) {
+	this.mPicturesLastSync = picturesLastSync;
+}
 
-  public long getVideosLastSync() { return mVideosLastSync; }
+public long getVideosLastSync() {
+	return mVideosLastSync;
+}
 
-  public void setVideosLastSync(final long videosLastSync) {
-    this.mVideosLastSync = videosLastSync;
-  }
+public void setVideosLastSync(final long videosLastSync) {
+	this.mVideosLastSync = videosLastSync;
+}
 }

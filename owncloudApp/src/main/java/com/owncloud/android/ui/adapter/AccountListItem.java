@@ -26,28 +26,34 @@ import android.accounts.Account;
  * list.
  */
 public class AccountListItem {
-  public static final int TYPE_ACCOUNT = 0;
-  public static final int TYPE_ACTION_ADD = 1;
+public static final int TYPE_ACCOUNT = 0;
+public static final int TYPE_ACTION_ADD = 1;
 
-  private Account mAccount;
-  private int mType;
+private Account mAccount;
+private int mType;
 
-  /**
-   * creates an account list item containing an {@link Account}.
-   *
-   * @param account the account
-   */
-  public AccountListItem(final Account account) {
-    mAccount = account;
-    mType = TYPE_ACCOUNT;
-  }
+/**
+ * creates an account list item containing an {@link Account}.
+ *
+ * @param account the account
+ */
+public AccountListItem(final Account account) {
+	mAccount = account;
+	mType = TYPE_ACCOUNT;
+}
 
-  /**
-   * creates an account list item flagged as add-action.
-   */
-  public AccountListItem() { mType = TYPE_ACTION_ADD; }
+/**
+ * creates an account list item flagged as add-action.
+ */
+public AccountListItem() {
+	mType = TYPE_ACTION_ADD;
+}
 
-  public Account getAccount() { return mAccount; }
+public Account getAccount() {
+	return mAccount;
+}
 
-  public int getType() { return mType; }
+public int getType() {
+	return mType;
+}
 }

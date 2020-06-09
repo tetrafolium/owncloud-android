@@ -38,326 +38,342 @@ import java.io.File;
  * Helper to simplify reading of Preferences all around the app
  */
 public abstract class PreferenceManager {
-  /**
-   * Constant to access value of last path selected by the user to upload a file
-   * shared from other app. Value handled by the app without direct access in
-   * the UI.
-   */
-  private static final String AUTO_PREF__LAST_UPLOAD_PATH = "last_upload_path";
-  private static final String AUTO_PREF__SORT_ORDER_FILE_DISP =
-      "sortOrderFileDisp";
-  private static final String AUTO_PREF__SORT_ASCENDING_FILE_DISP =
-      "sortAscendingFileDisp";
-  private static final String AUTO_PREF__SORT_ORDER_UPLOAD = "sortOrderUpload";
-  private static final String AUTO_PREF__SORT_ASCENDING_UPLOAD =
-      "sortAscendingUpload";
+/**
+ * Constant to access value of last path selected by the user to upload a file
+ * shared from other app. Value handled by the app without direct access in
+ * the UI.
+ */
+private static final String AUTO_PREF__LAST_UPLOAD_PATH = "last_upload_path";
+private static final String AUTO_PREF__SORT_ORDER_FILE_DISP =
+	"sortOrderFileDisp";
+private static final String AUTO_PREF__SORT_ASCENDING_FILE_DISP =
+	"sortAscendingFileDisp";
+private static final String AUTO_PREF__SORT_ORDER_UPLOAD = "sortOrderUpload";
+private static final String AUTO_PREF__SORT_ASCENDING_UPLOAD =
+	"sortAscendingUpload";
 
-  private static final String PREF__CAMERA_PICTURE_UPLOADS_ENABLED =
-      "camera_picture_uploads";
-  private static final String PREF__CAMERA_VIDEO_UPLOADS_ENABLED =
-      "camera_video_uploads";
-  private static final String PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY =
-      "camera_picture_uploads_on_wifi";
-  private static final String PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY =
-      "camera_video_uploads_on_wifi";
-  private static final String PREF__CAMERA_UPLOADS_ACCOUNT_NAME =
-      "camera_uploads_account_name"; // NEW - not
-  // saved yet
-  private static final String PREF__CAMERA_PICTURE_UPLOADS_PATH =
-      "camera_picture_uploads_path";
-  private static final String PREF__CAMERA_VIDEO_UPLOADS_PATH =
-      "camera_video_uploads_path";
-  private static final String PREF__CAMERA_UPLOADS_BEHAVIOUR =
-      "camera_uploads_behaviour";
-  private static final String PREF__CAMERA_UPLOADS_SOURCE =
-      "camera_uploads_source_path";
+private static final String PREF__CAMERA_PICTURE_UPLOADS_ENABLED =
+	"camera_picture_uploads";
+private static final String PREF__CAMERA_VIDEO_UPLOADS_ENABLED =
+	"camera_video_uploads";
+private static final String PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY =
+	"camera_picture_uploads_on_wifi";
+private static final String PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY =
+	"camera_video_uploads_on_wifi";
+private static final String PREF__CAMERA_UPLOADS_ACCOUNT_NAME =
+	"camera_uploads_account_name"; // NEW - not
+// saved yet
+private static final String PREF__CAMERA_PICTURE_UPLOADS_PATH =
+	"camera_picture_uploads_path";
+private static final String PREF__CAMERA_VIDEO_UPLOADS_PATH =
+	"camera_video_uploads_path";
+private static final String PREF__CAMERA_UPLOADS_BEHAVIOUR =
+	"camera_uploads_behaviour";
+private static final String PREF__CAMERA_UPLOADS_SOURCE =
+	"camera_uploads_source_path";
 
-  public static final String PREF__CAMERA_UPLOADS_DEFAULT_PATH =
-      "/CameraUpload";
+public static final String PREF__CAMERA_UPLOADS_DEFAULT_PATH =
+	"/CameraUpload";
 
-  public static final String PREF__LEGACY_FINGERPRINT = "set_fingerprint";
+public static final String PREF__LEGACY_FINGERPRINT = "set_fingerprint";
 
-  public static void migrateFingerprintToBiometricKey(final Context context) {
-    SharedPreferences sharedPref = getDefaultSharedPreferences(context);
+public static void migrateFingerprintToBiometricKey(final Context context) {
+	SharedPreferences sharedPref = getDefaultSharedPreferences(context);
 
-    // Check if legacy fingerprint key exists, delete it and migrate its value
-    // to the new key
-    if (sharedPref.contains(PREF__LEGACY_FINGERPRINT)) {
-      boolean currentFingerprintValue =
-          sharedPref.getBoolean(PREF__LEGACY_FINGERPRINT, false);
-      SharedPreferences.Editor editor = sharedPref.edit();
-      editor.remove(PREF__LEGACY_FINGERPRINT);
-      editor.putBoolean(BiometricActivity.PREFERENCE_SET_BIOMETRIC,
-                        currentFingerprintValue);
-      editor.apply();
-    }
-  }
+	// Check if legacy fingerprint key exists, delete it and migrate its value
+	// to the new key
+	if (sharedPref.contains(PREF__LEGACY_FINGERPRINT)) {
+		boolean currentFingerprintValue =
+			sharedPref.getBoolean(PREF__LEGACY_FINGERPRINT, false);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.remove(PREF__LEGACY_FINGERPRINT);
+		editor.putBoolean(BiometricActivity.PREFERENCE_SET_BIOMETRIC,
+		                  currentFingerprintValue);
+		editor.apply();
+	}
+}
 
-  public static boolean cameraPictureUploadEnabled(final Context context) {
-    return getDefaultSharedPreferences(context).getBoolean(
-        PREF__CAMERA_PICTURE_UPLOADS_ENABLED, false);
-  }
+public static boolean cameraPictureUploadEnabled(final Context context) {
+	return getDefaultSharedPreferences(context).getBoolean(
+		PREF__CAMERA_PICTURE_UPLOADS_ENABLED, false);
+}
 
-  public static boolean cameraVideoUploadEnabled(final Context context) {
-    return getDefaultSharedPreferences(context).getBoolean(
-        PREF__CAMERA_VIDEO_UPLOADS_ENABLED, false);
-  }
+public static boolean cameraVideoUploadEnabled(final Context context) {
+	return getDefaultSharedPreferences(context).getBoolean(
+		PREF__CAMERA_VIDEO_UPLOADS_ENABLED, false);
+}
 
-  public static boolean cameraPictureUploadViaWiFiOnly(final Context context) {
-    return getDefaultSharedPreferences(context).getBoolean(
-        PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY, false);
-  }
+public static boolean cameraPictureUploadViaWiFiOnly(final Context context) {
+	return getDefaultSharedPreferences(context).getBoolean(
+		PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY, false);
+}
 
-  public static boolean cameraVideoUploadViaWiFiOnly(final Context context) {
-    return getDefaultSharedPreferences(context).getBoolean(
-        PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY, false);
-  }
+public static boolean cameraVideoUploadViaWiFiOnly(final Context context) {
+	return getDefaultSharedPreferences(context).getBoolean(
+		PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY, false);
+}
 
-  public static CameraUploadsConfiguration
-  getCameraUploadsConfiguration(final Context context) {
-    CameraUploadsConfiguration result = new CameraUploadsConfiguration();
-    SharedPreferences prefs = getDefaultSharedPreferences(context);
-    result.setEnabledForPictures(
-        prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_ENABLED, false));
-    result.setEnabledForVideos(
-        prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_ENABLED, false));
-    result.setWifiOnlyForPictures(
-        prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY, false));
-    result.setWifiOnlyForVideos(
-        prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY, false));
-    Account currentAccount = AccountUtils.getCurrentOwnCloudAccount(context);
-    result.setUploadAccountName(
-        prefs.getString(PREF__CAMERA_UPLOADS_ACCOUNT_NAME,
-                        (currentAccount == null) ? "" : currentAccount.name));
-    String uploadPath = prefs.getString(PREF__CAMERA_PICTURE_UPLOADS_PATH,
-                                        PREF__CAMERA_UPLOADS_DEFAULT_PATH +
-                                            OCFile.PATH_SEPARATOR);
-    result.setUploadPathForPictures(uploadPath.endsWith(File.separator)
-                                        ? uploadPath
-                                        : uploadPath + File.separator);
-    uploadPath = prefs.getString(PREF__CAMERA_VIDEO_UPLOADS_PATH,
-                                 PREF__CAMERA_UPLOADS_DEFAULT_PATH +
-                                     OCFile.PATH_SEPARATOR);
-    result.setUploadPathForVideos(uploadPath.endsWith(File.separator)
-                                      ? uploadPath
-                                      : uploadPath + File.separator);
-    result.setBehaviourAfterUpload(
-        prefs.getString(PREF__CAMERA_UPLOADS_BEHAVIOUR,
-                        context.getResources().getStringArray(
-                            R.array.pref_behaviour_entryValues)[0]));
-    result.setSourcePath(
-        prefs.getString(PREF__CAMERA_UPLOADS_SOURCE,
-                        CameraUploadsConfiguration.DEFAULT_SOURCE_PATH));
-    return result;
-  }
+public static CameraUploadsConfiguration
+getCameraUploadsConfiguration(final Context context) {
+	CameraUploadsConfiguration result = new CameraUploadsConfiguration();
+	SharedPreferences prefs = getDefaultSharedPreferences(context);
+	result.setEnabledForPictures(
+		prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_ENABLED, false));
+	result.setEnabledForVideos(
+		prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_ENABLED, false));
+	result.setWifiOnlyForPictures(
+		prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY, false));
+	result.setWifiOnlyForVideos(
+		prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY, false));
+	Account currentAccount = AccountUtils.getCurrentOwnCloudAccount(context);
+	result.setUploadAccountName(
+		prefs.getString(PREF__CAMERA_UPLOADS_ACCOUNT_NAME,
+		                (currentAccount == null) ? "" : currentAccount.name));
+	String uploadPath = prefs.getString(PREF__CAMERA_PICTURE_UPLOADS_PATH,
+	                                    PREF__CAMERA_UPLOADS_DEFAULT_PATH +
+	                                    OCFile.PATH_SEPARATOR);
+	result.setUploadPathForPictures(uploadPath.endsWith(File.separator)
+	                                ? uploadPath
+	                                : uploadPath + File.separator);
+	uploadPath = prefs.getString(PREF__CAMERA_VIDEO_UPLOADS_PATH,
+	                             PREF__CAMERA_UPLOADS_DEFAULT_PATH +
+	                             OCFile.PATH_SEPARATOR);
+	result.setUploadPathForVideos(uploadPath.endsWith(File.separator)
+	                              ? uploadPath
+	                              : uploadPath + File.separator);
+	result.setBehaviourAfterUpload(
+		prefs.getString(PREF__CAMERA_UPLOADS_BEHAVIOUR,
+		                context.getResources().getStringArray(
+					R.array.pref_behaviour_entryValues)[0]));
+	result.setSourcePath(
+		prefs.getString(PREF__CAMERA_UPLOADS_SOURCE,
+		                CameraUploadsConfiguration.DEFAULT_SOURCE_PATH));
+	return result;
+}
 
-  /**
-   * Gets the path where the user selected to do the last upload of a file
-   * shared from other app.
-   *
-   * @param context Caller {@link Context}, used to access to shared preferences
-   *     manager.
-   * @return path     Absolute path to a folder, as previously stored by {@link
-   *     #setLastUploadPath(String, Context)},
-   * or empty String if never saved before.
-   */
-  public static String getLastUploadPath(final Context context) {
-    return getDefaultSharedPreferences(context).getString(
-        AUTO_PREF__LAST_UPLOAD_PATH, "");
-  }
+/**
+ * Gets the path where the user selected to do the last upload of a file
+ * shared from other app.
+ *
+ * @param context Caller {@link Context}, used to access to shared preferences
+ *     manager.
+ * @return path     Absolute path to a folder, as previously stored by {@link
+ *     #setLastUploadPath(String, Context)},
+ * or empty String if never saved before.
+ */
+public static String getLastUploadPath(final Context context) {
+	return getDefaultSharedPreferences(context).getString(
+		AUTO_PREF__LAST_UPLOAD_PATH, "");
+}
 
-  /**
-   * Saves the path where the user selected to do the last upload of a file
-   * shared from other app.
-   *
-   * @param path    Absolute path to a folder.
-   * @param context Caller {@link Context}, used to access to shared preferences
-   *     manager.
-   */
-  public static void setLastUploadPath(final String path,
-                                       final Context context) {
-    saveStringPreference(AUTO_PREF__LAST_UPLOAD_PATH, path, context);
-  }
+/**
+ * Saves the path where the user selected to do the last upload of a file
+ * shared from other app.
+ *
+ * @param path    Absolute path to a folder.
+ * @param context Caller {@link Context}, used to access to shared preferences
+ *     manager.
+ */
+public static void setLastUploadPath(final String path,
+                                     final Context context) {
+	saveStringPreference(AUTO_PREF__LAST_UPLOAD_PATH, path, context);
+}
 
-  /**
-   * Gets the sort order which the user has set last.
-   *
-   * @param context Caller {@link Context}, used to access to shared preferences
-   *     manager.
-   * @return sort order     the sort order, default is {@link
-   *     FileStorageUtils#SORT_NAME} (sort by name)
-   */
-  public static int getSortOrder(final Context context, final int flag) {
-    if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
-      return getDefaultSharedPreferences(context).getInt(
-          AUTO_PREF__SORT_ORDER_FILE_DISP, FileStorageUtils.SORT_NAME);
-    } else {
-      return getDefaultSharedPreferences(context).getInt(
-          AUTO_PREF__SORT_ORDER_UPLOAD, FileStorageUtils.SORT_DATE);
-    }
-  }
+/**
+ * Gets the sort order which the user has set last.
+ *
+ * @param context Caller {@link Context}, used to access to shared preferences
+ *     manager.
+ * @return sort order     the sort order, default is {@link
+ *     FileStorageUtils#SORT_NAME} (sort by name)
+ */
+public static int getSortOrder(final Context context, final int flag) {
+	if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
+		return getDefaultSharedPreferences(context).getInt(
+			AUTO_PREF__SORT_ORDER_FILE_DISP, FileStorageUtils.SORT_NAME);
+	} else {
+		return getDefaultSharedPreferences(context).getInt(
+			AUTO_PREF__SORT_ORDER_UPLOAD, FileStorageUtils.SORT_DATE);
+	}
+}
 
-  /**
-   * Save the sort order which the user has set last.
-   *
-   * @param order   the sort order
-   * @param context Caller {@link Context}, used to access to shared preferences
-   *     manager.
-   */
-  public static void setSortOrder(final int order, final Context context,
-                                  final int flag) {
-    if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
-      saveIntPreference(AUTO_PREF__SORT_ORDER_FILE_DISP, order, context);
-    } else {
-      saveIntPreference(AUTO_PREF__SORT_ORDER_UPLOAD, order, context);
-    }
-  }
+/**
+ * Save the sort order which the user has set last.
+ *
+ * @param order   the sort order
+ * @param context Caller {@link Context}, used to access to shared preferences
+ *     manager.
+ */
+public static void setSortOrder(final int order, final Context context,
+                                final int flag) {
+	if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
+		saveIntPreference(AUTO_PREF__SORT_ORDER_FILE_DISP, order, context);
+	} else {
+		saveIntPreference(AUTO_PREF__SORT_ORDER_UPLOAD, order, context);
+	}
+}
 
-  /**
-   * Gets the ascending order flag which the user has set last.
-   *
-   * @param context Caller {@link Context}, used to access to shared preferences
-   *     manager.
-   * @return ascending order     the ascending order, default is true
-   */
-  public static boolean getSortAscending(final Context context,
-                                         final int flag) {
-    if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
-      return getDefaultSharedPreferences(context).getBoolean(
-          AUTO_PREF__SORT_ASCENDING_FILE_DISP, true);
-    } else {
-      return getDefaultSharedPreferences(context).getBoolean(
-          AUTO_PREF__SORT_ASCENDING_UPLOAD, true);
-    }
-  }
+/**
+ * Gets the ascending order flag which the user has set last.
+ *
+ * @param context Caller {@link Context}, used to access to shared preferences
+ *     manager.
+ * @return ascending order     the ascending order, default is true
+ */
+public static boolean getSortAscending(final Context context,
+                                       final int flag) {
+	if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
+		return getDefaultSharedPreferences(context).getBoolean(
+			AUTO_PREF__SORT_ASCENDING_FILE_DISP, true);
+	} else {
+		return getDefaultSharedPreferences(context).getBoolean(
+			AUTO_PREF__SORT_ASCENDING_UPLOAD, true);
+	}
+}
 
-  /**
-   * Saves the ascending order flag which the user has set last.
-   *
-   * @param ascending flag if sorting is ascending or descending
-   * @param context   Caller {@link Context}, used to access to shared
-   *     preferences manager.
-   */
-  public static void setSortAscending(final boolean ascending,
-                                      final Context context, final int flag) {
-    if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
-      saveBooleanPreference(AUTO_PREF__SORT_ASCENDING_FILE_DISP, ascending,
-                            context);
-    } else {
-      saveBooleanPreference(AUTO_PREF__SORT_ASCENDING_UPLOAD, ascending,
-                            context);
-    }
-  }
+/**
+ * Saves the ascending order flag which the user has set last.
+ *
+ * @param ascending flag if sorting is ascending or descending
+ * @param context   Caller {@link Context}, used to access to shared
+ *     preferences manager.
+ */
+public static void setSortAscending(final boolean ascending,
+                                    final Context context, final int flag) {
+	if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
+		saveBooleanPreference(AUTO_PREF__SORT_ASCENDING_FILE_DISP, ascending,
+		                      context);
+	} else {
+		saveBooleanPreference(AUTO_PREF__SORT_ASCENDING_UPLOAD, ascending,
+		                      context);
+	}
+}
 
-  private static void saveBooleanPreference(final String key,
-                                            final boolean value,
-                                            final Context context) {
-    SharedPreferences.Editor appPreferences =
-        getDefaultSharedPreferences(context.getApplicationContext()).edit();
-    appPreferences.putBoolean(key, value);
-    appPreferences.apply();
-  }
+private static void saveBooleanPreference(final String key,
+                                          final boolean value,
+                                          final Context context) {
+	SharedPreferences.Editor appPreferences =
+		getDefaultSharedPreferences(context.getApplicationContext()).edit();
+	appPreferences.putBoolean(key, value);
+	appPreferences.apply();
+}
 
-  private static void saveStringPreference(final String key, final String value,
-                                           final Context context) {
-    SharedPreferences.Editor appPreferences =
-        getDefaultSharedPreferences(context.getApplicationContext()).edit();
-    appPreferences.putString(key, value);
-    appPreferences.apply();
-  }
+private static void saveStringPreference(final String key, final String value,
+                                         final Context context) {
+	SharedPreferences.Editor appPreferences =
+		getDefaultSharedPreferences(context.getApplicationContext()).edit();
+	appPreferences.putString(key, value);
+	appPreferences.apply();
+}
 
-  private static void saveIntPreference(final String key, final int value,
-                                        final Context context) {
-    SharedPreferences.Editor appPreferences =
-        getDefaultSharedPreferences(context.getApplicationContext()).edit();
-    appPreferences.putInt(key, value);
-    appPreferences.apply();
-  }
+private static void saveIntPreference(final String key, final int value,
+                                      final Context context) {
+	SharedPreferences.Editor appPreferences =
+		getDefaultSharedPreferences(context.getApplicationContext()).edit();
+	appPreferences.putInt(key, value);
+	appPreferences.apply();
+}
 
-  public static SharedPreferences
-  getDefaultSharedPreferences(final Context context) {
-    return android.preference.PreferenceManager.getDefaultSharedPreferences(
-        context.getApplicationContext());
-  }
+public static SharedPreferences
+getDefaultSharedPreferences(final Context context) {
+	return android.preference.PreferenceManager.getDefaultSharedPreferences(
+		context.getApplicationContext());
+}
 
-  /**
-   * Aggregates preferences related to camera uploads in a single object.
-   */
-  public static class CameraUploadsConfiguration {
+/**
+ * Aggregates preferences related to camera uploads in a single object.
+ */
+public static class CameraUploadsConfiguration {
 
-    public static final String DEFAULT_SOURCE_PATH =
-        Environment
-            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            .getAbsolutePath() +
-        "/Camera";
+public static final String DEFAULT_SOURCE_PATH =
+	Environment
+	.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+	.getAbsolutePath() +
+	"/Camera";
 
-    private boolean mEnabledForPictures;
-    private boolean mEnabledForVideos;
-    private boolean mWifiOnlyForPictures;
-    private boolean mWifiOnlyForVideos;
-    private String mUploadAccountName; // same for both audio & video
-    private String mUploadPathForPictures;
-    private String mUploadPathForVideos;
-    private String mBehaviourAfterUpload;
-    private String mSourcePath; // same for both audio & video
+private boolean mEnabledForPictures;
+private boolean mEnabledForVideos;
+private boolean mWifiOnlyForPictures;
+private boolean mWifiOnlyForVideos;
+private String mUploadAccountName;     // same for both audio & video
+private String mUploadPathForPictures;
+private String mUploadPathForVideos;
+private String mBehaviourAfterUpload;
+private String mSourcePath;     // same for both audio & video
 
-    public boolean isEnabledForPictures() { return mEnabledForPictures; }
+public boolean isEnabledForPictures() {
+	return mEnabledForPictures;
+}
 
-    public void setEnabledForPictures(final boolean uploadPictures) {
-      mEnabledForPictures = uploadPictures;
-    }
+public void setEnabledForPictures(final boolean uploadPictures) {
+	mEnabledForPictures = uploadPictures;
+}
 
-    public boolean isEnabledForVideos() { return mEnabledForVideos; }
+public boolean isEnabledForVideos() {
+	return mEnabledForVideos;
+}
 
-    public void setEnabledForVideos(final boolean uploadVideos) {
-      mEnabledForVideos = uploadVideos;
-    }
+public void setEnabledForVideos(final boolean uploadVideos) {
+	mEnabledForVideos = uploadVideos;
+}
 
-    public boolean isWifiOnlyForPictures() { return mWifiOnlyForPictures; }
+public boolean isWifiOnlyForPictures() {
+	return mWifiOnlyForPictures;
+}
 
-    public void setWifiOnlyForPictures(final boolean wifiOnlyForPictures) {
-      mWifiOnlyForPictures = wifiOnlyForPictures;
-    }
+public void setWifiOnlyForPictures(final boolean wifiOnlyForPictures) {
+	mWifiOnlyForPictures = wifiOnlyForPictures;
+}
 
-    public boolean isWifiOnlyForVideos() { return mWifiOnlyForVideos; }
+public boolean isWifiOnlyForVideos() {
+	return mWifiOnlyForVideos;
+}
 
-    public void setWifiOnlyForVideos(final boolean wifiOnlyForVideos) {
-      mWifiOnlyForVideos = wifiOnlyForVideos;
-    }
+public void setWifiOnlyForVideos(final boolean wifiOnlyForVideos) {
+	mWifiOnlyForVideos = wifiOnlyForVideos;
+}
 
-    public String getUploadAccountName() { return mUploadAccountName; }
+public String getUploadAccountName() {
+	return mUploadAccountName;
+}
 
-    public void setUploadAccountName(final String uploadAccountName) {
-      mUploadAccountName = uploadAccountName;
-    }
+public void setUploadAccountName(final String uploadAccountName) {
+	mUploadAccountName = uploadAccountName;
+}
 
-    public String getUploadPathForPictures() { return mUploadPathForPictures; }
+public String getUploadPathForPictures() {
+	return mUploadPathForPictures;
+}
 
-    public void setUploadPathForPictures(final String uploadPathForPictures) {
-      mUploadPathForPictures = uploadPathForPictures;
-    }
+public void setUploadPathForPictures(final String uploadPathForPictures) {
+	mUploadPathForPictures = uploadPathForPictures;
+}
 
-    public String getUploadPathForVideos() { return mUploadPathForVideos; }
+public String getUploadPathForVideos() {
+	return mUploadPathForVideos;
+}
 
-    public void setUploadPathForVideos(final String uploadPathForVideos) {
-      mUploadPathForVideos = uploadPathForVideos;
-    }
+public void setUploadPathForVideos(final String uploadPathForVideos) {
+	mUploadPathForVideos = uploadPathForVideos;
+}
 
-    public int getBehaviourAfterUpload() {
-      if (mBehaviourAfterUpload.equalsIgnoreCase("MOVE")) {
-        return FileUploader.LOCAL_BEHAVIOUR_MOVE;
-      }
-      return FileUploader.LOCAL_BEHAVIOUR_FORGET; // "NOTHING
-    }
+public int getBehaviourAfterUpload() {
+	if (mBehaviourAfterUpload.equalsIgnoreCase("MOVE")) {
+		return FileUploader.LOCAL_BEHAVIOUR_MOVE;
+	}
+	return FileUploader.LOCAL_BEHAVIOUR_FORGET; // "NOTHING
+}
 
-    public void setBehaviourAfterUpload(final String behaviourAfterUpload) {
-      mBehaviourAfterUpload = behaviourAfterUpload;
-    }
+public void setBehaviourAfterUpload(final String behaviourAfterUpload) {
+	mBehaviourAfterUpload = behaviourAfterUpload;
+}
 
-    public String getSourcePath() { return mSourcePath; }
+public String getSourcePath() {
+	return mSourcePath;
+}
 
-    public void setSourcePath(final String sourcePath) {
-      mSourcePath = sourcePath;
-    }
-  }
+public void setSourcePath(final String sourcePath) {
+	mSourcePath = sourcePath;
+}
+}
 }

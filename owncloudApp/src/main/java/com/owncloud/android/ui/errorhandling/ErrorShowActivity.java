@@ -30,22 +30,22 @@ import timber.log.Timber;
 
 public class ErrorShowActivity extends BaseActivity {
 
-  TextView mError;
+TextView mError;
 
-  @Override
-  protected void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    Timber.e("ErrorShowActivity was called. See above for StackTrace.");
-    Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
-    setContentView(R.layout.errorhandling_showerror);
+@Override
+protected void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	Timber.e("ErrorShowActivity was called. See above for StackTrace.");
+	Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+	setContentView(R.layout.errorhandling_showerror);
 
-    // Allow or disallow touches with other visible windows
-    ScrollView errorHandlingShowErrorScrollView =
-        findViewById(R.id.errorHandlingShowErrorScrollView);
-    errorHandlingShowErrorScrollView.setFilterTouchesWhenObscured(
-        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
+	// Allow or disallow touches with other visible windows
+	ScrollView errorHandlingShowErrorScrollView =
+		findViewById(R.id.errorHandlingShowErrorScrollView);
+	errorHandlingShowErrorScrollView.setFilterTouchesWhenObscured(
+		PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
 
-    mError = findViewById(R.id.errorTextView);
-    mError.setText(getIntent().getStringExtra("error"));
-  }
+	mError = findViewById(R.id.errorTextView);
+	mError.setText(getIntent().getStringExtra("error"));
+}
 }

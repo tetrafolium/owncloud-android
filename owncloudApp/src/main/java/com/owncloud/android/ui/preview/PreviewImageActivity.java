@@ -64,428 +64,432 @@ import timber.log.Timber;
  * are shown
  */
 public class PreviewImageActivity extends FileActivity
-    implements FileFragment.ContainerActivity, ViewPager.OnPageChangeListener,
-               OnRemoteOperationListener {
+	implements FileFragment.ContainerActivity, ViewPager.OnPageChangeListener,
+	                                  OnRemoteOperationListener {
 
-  private static final int INITIAL_HIDE_DELAY = 0; // immediate hide
+private static final int INITIAL_HIDE_DELAY = 0;   // immediate hide
 
-  private ViewPager mViewPager;
-  private PreviewImagePagerAdapter mPreviewImagePagerAdapter;
-  private int mSavedPosition = 0;
-  private boolean mHasSavedPosition = false;
+private ViewPager mViewPager;
+private PreviewImagePagerAdapter mPreviewImagePagerAdapter;
+private int mSavedPosition = 0;
+private boolean mHasSavedPosition = false;
 
-  private LocalBroadcastManager mLocalBroadcastManager;
-  private DownloadFinishReceiver mDownloadFinishReceiver;
+private LocalBroadcastManager mLocalBroadcastManager;
+private DownloadFinishReceiver mDownloadFinishReceiver;
 
-  private View mFullScreenAnchorView;
+private View mFullScreenAnchorView;
 
-  @Override
-  protected void onCreate(final Bundle savedInstanceState) {
-    requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+@Override
+protected void onCreate(final Bundle savedInstanceState) {
+	requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
-    super.onCreate(savedInstanceState);
+	super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.preview_image_activity);
+	setContentView(R.layout.preview_image_activity);
 
-    // ActionBar
-    ActionBar actionBar = getSupportActionBar();
-    updateActionBarTitleAndHomeButton(null);
-    actionBar.hide();
+	// ActionBar
+	ActionBar actionBar = getSupportActionBar();
+	updateActionBarTitleAndHomeButton(null);
+	actionBar.hide();
 
-    /// FullScreen and Immersive Mode
-    mFullScreenAnchorView = getWindow().getDecorView();
-    // to keep our UI controls visibility in line with system bars
-    // visibility
-    mFullScreenAnchorView.setOnSystemUiVisibilityChangeListener(
-        new View.OnSystemUiVisibilityChangeListener() {
-          @SuppressLint("InlinedApi")
-          @Override
-          public void onSystemUiVisibilityChange(final int flags) {
-            boolean visible =
-                (flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-            ActionBar actionBar = getSupportActionBar();
-            if (visible) {
-              actionBar.show();
-              setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            } else {
-              actionBar.hide();
-              setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            }
-          }
-        });
+	/// FullScreen and Immersive Mode
+	mFullScreenAnchorView = getWindow().getDecorView();
+	// to keep our UI controls visibility in line with system bars
+	// visibility
+	mFullScreenAnchorView.setOnSystemUiVisibilityChangeListener(
+		new View.OnSystemUiVisibilityChangeListener() {
+			@SuppressLint("InlinedApi")
+			@Override
+			public void onSystemUiVisibilityChange(final int flags) {
+			        boolean visible =
+					(flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+			        ActionBar actionBar = getSupportActionBar();
+			        if (visible) {
+			                actionBar.show();
+			                setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+				} else {
+			                actionBar.hide();
+			                setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+				}
+			}
+		});
 
-    getWindow().setStatusBarColor(
-        getResources().getColor(R.color.owncloud_blue_dark_transparent));
+	getWindow().setStatusBarColor(
+		getResources().getColor(R.color.owncloud_blue_dark_transparent));
 
-    mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
-  }
+	mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+}
 
-  private void initViewPager() {
-    // get parent from path
-    String parentPath = getFile().getRemotePath().substring(
-        0, getFile().getRemotePath().lastIndexOf(getFile().getFileName()));
-    OCFile parentFolder = getStorageManager().getFileByPath(parentPath);
-    if (parentFolder == null) {
-      // should not be necessary
-      parentFolder = getStorageManager().getFileByPath(OCFile.ROOT_PATH);
-    }
+private void initViewPager() {
+	// get parent from path
+	String parentPath = getFile().getRemotePath().substring(
+		0, getFile().getRemotePath().lastIndexOf(getFile().getFileName()));
+	OCFile parentFolder = getStorageManager().getFileByPath(parentPath);
+	if (parentFolder == null) {
+		// should not be necessary
+		parentFolder = getStorageManager().getFileByPath(OCFile.ROOT_PATH);
+	}
 
-    mPreviewImagePagerAdapter =
-        new PreviewImagePagerAdapter(getSupportFragmentManager(), parentFolder,
-                                     getAccount(), getStorageManager());
+	mPreviewImagePagerAdapter =
+		new PreviewImagePagerAdapter(getSupportFragmentManager(), parentFolder,
+		                             getAccount(), getStorageManager());
 
-    mViewPager = findViewById(R.id.fragmentPager);
-    mViewPager.setFilterTouchesWhenObscured(
-        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
+	mViewPager = findViewById(R.id.fragmentPager);
+	mViewPager.setFilterTouchesWhenObscured(
+		PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
 
-    int position = mHasSavedPosition
-                       ? mSavedPosition
-                       : mPreviewImagePagerAdapter.getFilePosition(getFile());
-    position = (position >= 0) ? position : 0;
-    mViewPager.setAdapter(mPreviewImagePagerAdapter);
-    mViewPager.addOnPageChangeListener(this);
-    mViewPager.setCurrentItem(position);
-    if (position == 0) {
-      mViewPager.post(new Runnable() {
-        // this is necessary because mViewPager.setCurrentItem(0) does not
-        // trigger a call to onPageSelected in the first layout request aftet
-        // mViewPager.setAdapter(...) ; see, for example:
-        // https://android.googlesource.com/platform/frameworks/support.git/+/android-6.0
-        // .1_r55/v4/java/android/support/v4/view/ViewPager.java#541
-        // ; or just:
-        // http://stackoverflow.com/questions/11794269/onpageselected-isnt-triggered-when-calling
-        // -setcurrentitem0
-        @Override
-        public void run() {
-          PreviewImageActivity.this.onPageSelected(mViewPager.getCurrentItem());
-        }
-      });
-    }
-  }
+	int position = mHasSavedPosition
+	               ? mSavedPosition
+	               : mPreviewImagePagerAdapter.getFilePosition(getFile());
+	position = (position >= 0) ? position : 0;
+	mViewPager.setAdapter(mPreviewImagePagerAdapter);
+	mViewPager.addOnPageChangeListener(this);
+	mViewPager.setCurrentItem(position);
+	if (position == 0) {
+		mViewPager.post(new Runnable() {
+				// this is necessary because mViewPager.setCurrentItem(0) does not
+				// trigger a call to onPageSelected in the first layout request aftet
+				// mViewPager.setAdapter(...) ; see, for example:
+				// https://android.googlesource.com/platform/frameworks/support.git/+/android-6.0
+				// .1_r55/v4/java/android/support/v4/view/ViewPager.java#541
+				// ; or just:
+				// http://stackoverflow.com/questions/11794269/onpageselected-isnt-triggered-when-calling
+				// -setcurrentitem0
+				@Override
+				public void run() {
+				        PreviewImageActivity.this.onPageSelected(mViewPager.getCurrentItem());
+				}
+			});
+	}
+}
 
-  protected void onPostCreate(final Bundle savedInstanceState) {
-    super.onPostCreate(savedInstanceState);
+protected void onPostCreate(final Bundle savedInstanceState) {
+	super.onPostCreate(savedInstanceState);
 
-    // Trigger the initial hide() shortly after the activity has been
-    // created, to briefly hint to the user that UI controls
-    // are available
-    delayedHide(INITIAL_HIDE_DELAY);
-  }
+	// Trigger the initial hide() shortly after the activity has been
+	// created, to briefly hint to the user that UI controls
+	// are available
+	delayedHide(INITIAL_HIDE_DELAY);
+}
 
-  Handler mHideSystemUiHandler = new Handler() {
-    @Override
-    public void handleMessage(final Message msg) {
-      hideSystemUI(mFullScreenAnchorView);
-      getSupportActionBar().hide();
-    }
-  };
+Handler mHideSystemUiHandler = new Handler() {
+	@Override
+	public void handleMessage(final Message msg) {
+		hideSystemUI(mFullScreenAnchorView);
+		getSupportActionBar().hide();
+	}
+};
 
-  private void delayedHide(final int delayMillis) {
-    mHideSystemUiHandler.removeMessages(0);
-    mHideSystemUiHandler.sendEmptyMessageDelayed(0, delayMillis);
-  }
+private void delayedHide(final int delayMillis) {
+	mHideSystemUiHandler.removeMessages(0);
+	mHideSystemUiHandler.sendEmptyMessageDelayed(0, delayMillis);
+}
 
-  /// handle Window Focus changes
-  @Override
-  public void onWindowFocusChanged(final boolean hasFocus) {
-    super.onWindowFocusChanged(hasFocus);
+/// handle Window Focus changes
+@Override
+public void onWindowFocusChanged(final boolean hasFocus) {
+	super.onWindowFocusChanged(hasFocus);
 
-    // When the window loses focus (e.g. the action overflow is shown),
-    // cancel any pending hide action.
-    if (!hasFocus) {
-      mHideSystemUiHandler.removeMessages(0);
-    }
-  }
+	// When the window loses focus (e.g. the action overflow is shown),
+	// cancel any pending hide action.
+	if (!hasFocus) {
+		mHideSystemUiHandler.removeMessages(0);
+	}
+}
 
-  @Override
-  public void onRemoteOperationFinish(final RemoteOperation operation,
-                                      final RemoteOperationResult result) {
-    super.onRemoteOperationFinish(operation, result);
+@Override
+public void onRemoteOperationFinish(final RemoteOperation operation,
+                                    final RemoteOperationResult result) {
+	super.onRemoteOperationFinish(operation, result);
 
-    if (operation instanceof RemoveFileOperation) {
-      finish();
-    } else if (operation instanceof SynchronizeFileOperation) {
-      onSynchronizeFileOperationFinish((SynchronizeFileOperation)operation,
-                                       result);
-    }
-  }
+	if (operation instanceof RemoveFileOperation) {
+		finish();
+	} else if (operation instanceof SynchronizeFileOperation) {
+		onSynchronizeFileOperationFinish((SynchronizeFileOperation)operation,
+		                                 result);
+	}
+}
 
-  private void
-  onSynchronizeFileOperationFinish(final SynchronizeFileOperation operation,
-                                   final RemoteOperationResult result) {
-    if (result.isSuccess()) {
-      invalidateOptionsMenu();
-    }
-  }
+private void
+onSynchronizeFileOperationFinish(final SynchronizeFileOperation operation,
+                                 final RemoteOperationResult result) {
+	if (result.isSuccess()) {
+		invalidateOptionsMenu();
+	}
+}
 
-  @Override
-  protected ServiceConnection newTransferenceServiceConnection() {
-    return new PreviewImageServiceConnection();
-  }
+@Override
+protected ServiceConnection newTransferenceServiceConnection() {
+	return new PreviewImageServiceConnection();
+}
 
-  /**
-   * Defines callbacks for service binding, passed to bindService()
-   */
-  private class PreviewImageServiceConnection implements ServiceConnection {
+/**
+ * Defines callbacks for service binding, passed to bindService()
+ */
+private class PreviewImageServiceConnection implements ServiceConnection {
 
-    @Override
-    public void onServiceConnected(final ComponentName component,
-                                   final IBinder service) {
+@Override
+public void onServiceConnected(final ComponentName component,
+                               final IBinder service) {
 
-      if (component.equals(new ComponentName(PreviewImageActivity.this,
-                                             FileDownloader.class))) {
-        Timber.d("onServiceConnected, FileDownloader");
-        mDownloaderBinder = (FileDownloaderBinder)service;
+	if (component.equals(new ComponentName(PreviewImageActivity.this,
+	                                       FileDownloader.class))) {
+		Timber.d("onServiceConnected, FileDownloader");
+		mDownloaderBinder = (FileDownloaderBinder)service;
 
-      } else if (component.equals(new ComponentName(PreviewImageActivity.this,
-                                                    FileUploader.class))) {
-        Timber.d("onServiceConnected, FileUploader");
-        mUploaderBinder = (FileUploaderBinder)service;
-      }
+	} else if (component.equals(new ComponentName(PreviewImageActivity.this,
+	                                              FileUploader.class))) {
+		Timber.d("onServiceConnected, FileUploader");
+		mUploaderBinder = (FileUploaderBinder)service;
+	}
 
-      mPreviewImagePagerAdapter.onTransferServiceConnected();
-    }
+	mPreviewImagePagerAdapter.onTransferServiceConnected();
+}
 
-    @Override
-    public void onServiceDisconnected(final ComponentName component) {
-      if (component.equals(new ComponentName(PreviewImageActivity.this,
-                                             FileDownloader.class))) {
-        Timber.d("Download service suddenly disconnected");
-        mDownloaderBinder = null;
-      } else if (component.equals(new ComponentName(PreviewImageActivity.this,
-                                                    FileUploader.class))) {
-        Timber.d("Upload service suddenly disconnected");
-        mUploaderBinder = null;
-      }
-    }
-  }
+@Override
+public void onServiceDisconnected(final ComponentName component) {
+	if (component.equals(new ComponentName(PreviewImageActivity.this,
+	                                       FileDownloader.class))) {
+		Timber.d("Download service suddenly disconnected");
+		mDownloaderBinder = null;
+	} else if (component.equals(new ComponentName(PreviewImageActivity.this,
+	                                              FileUploader.class))) {
+		Timber.d("Upload service suddenly disconnected");
+		mUploaderBinder = null;
+	}
+}
+}
 
-  @Override
-  public boolean onOptionsItemSelected(final MenuItem item) {
-    boolean returnValue;
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	boolean returnValue;
 
-    switch (item.getItemId()) {
-    case android.R.id.home:
-      if (isDrawerOpen()) {
-        closeDrawer();
-      } else {
-        backToDisplayActivity();
-      }
-      returnValue = true;
-      break;
-    default:
-      returnValue = super.onOptionsItemSelected(item);
-    }
+	switch (item.getItemId()) {
+	case android.R.id.home:
+		if (isDrawerOpen()) {
+			closeDrawer();
+		} else {
+			backToDisplayActivity();
+		}
+		returnValue = true;
+		break;
+	default:
+		returnValue = super.onOptionsItemSelected(item);
+	}
 
-    return returnValue;
-  }
+	return returnValue;
+}
 
-  @Override
-  protected void onResume() {
-    super.onResume();
+@Override
+protected void onResume() {
+	super.onResume();
 
-    mDownloadFinishReceiver = new DownloadFinishReceiver();
+	mDownloadFinishReceiver = new DownloadFinishReceiver();
 
-    IntentFilter filter =
-        new IntentFilter(FileDownloader.getDownloadFinishMessage());
-    filter.addAction(FileDownloader.getDownloadAddedMessage());
-    mLocalBroadcastManager.registerReceiver(mDownloadFinishReceiver, filter);
-  }
+	IntentFilter filter =
+		new IntentFilter(FileDownloader.getDownloadFinishMessage());
+	filter.addAction(FileDownloader.getDownloadAddedMessage());
+	mLocalBroadcastManager.registerReceiver(mDownloadFinishReceiver, filter);
+}
 
-  @Override
-  public void onPause() {
-    if (mDownloadFinishReceiver != null) {
-      mLocalBroadcastManager.unregisterReceiver(mDownloadFinishReceiver);
-      mDownloadFinishReceiver = null;
-    }
+@Override
+public void onPause() {
+	if (mDownloadFinishReceiver != null) {
+		mLocalBroadcastManager.unregisterReceiver(mDownloadFinishReceiver);
+		mDownloadFinishReceiver = null;
+	}
 
-    super.onPause();
-  }
+	super.onPause();
+}
 
-  private void backToDisplayActivity() { finish(); }
+private void backToDisplayActivity() {
+	finish();
+}
 
-  @Override
-  public void showDetails(final OCFile file) {
-    Intent showDetailsIntent = new Intent(this, FileDisplayActivity.class);
-    showDetailsIntent.setAction(FileDisplayActivity.ACTION_DETAILS);
-    showDetailsIntent.putExtra(FileActivity.EXTRA_FILE, file);
-    showDetailsIntent.putExtra(FileActivity.EXTRA_ACCOUNT,
-                               AccountUtils.getCurrentOwnCloudAccount(this));
-    startActivity(showDetailsIntent);
-  }
+@Override
+public void showDetails(final OCFile file) {
+	Intent showDetailsIntent = new Intent(this, FileDisplayActivity.class);
+	showDetailsIntent.setAction(FileDisplayActivity.ACTION_DETAILS);
+	showDetailsIntent.putExtra(FileActivity.EXTRA_FILE, file);
+	showDetailsIntent.putExtra(FileActivity.EXTRA_ACCOUNT,
+	                           AccountUtils.getCurrentOwnCloudAccount(this));
+	startActivity(showDetailsIntent);
+}
 
-  /**
-   * This method will be invoked when a new page becomes selected. Animation is
-   * not necessarily complete.
-   *
-   * @param position Position index of the new selected page
-   */
-  @Override
-  public void onPageSelected(final int position) {
-    Timber.d("onPageSelected %s", position);
+/**
+ * This method will be invoked when a new page becomes selected. Animation is
+ * not necessarily complete.
+ *
+ * @param position Position index of the new selected page
+ */
+@Override
+public void onPageSelected(final int position) {
+	Timber.d("onPageSelected %s", position);
 
-    if (getOperationsServiceBinder() != null) {
-      mSavedPosition = position;
-      mHasSavedPosition = true;
+	if (getOperationsServiceBinder() != null) {
+		mSavedPosition = position;
+		mHasSavedPosition = true;
 
-      OCFile currentFile = mPreviewImagePagerAdapter.getFileAt(position);
-      getSupportActionBar().setTitle(currentFile.getFileName());
-      setDrawerIndicatorEnabled(false);
-      if (!mPreviewImagePagerAdapter.pendingErrorAt(position)) {
-        getFileOperationsHelper().syncFile(currentFile);
-      }
+		OCFile currentFile = mPreviewImagePagerAdapter.getFileAt(position);
+		getSupportActionBar().setTitle(currentFile.getFileName());
+		setDrawerIndicatorEnabled(false);
+		if (!mPreviewImagePagerAdapter.pendingErrorAt(position)) {
+			getFileOperationsHelper().syncFile(currentFile);
+		}
 
-      // Call to reset image zoom to initial state
-      ((PreviewImagePagerAdapter)mViewPager.getAdapter()).resetZoom();
+		// Call to reset image zoom to initial state
+		((PreviewImagePagerAdapter)mViewPager.getAdapter()).resetZoom();
 
-    } else {
-      // too soon! ; selection of page (first image) was faster than binding of
-      // FileOperationsService; wait a bit!
-      final int fPosition = position;
-      getHandler().post(new Runnable() {
-        @Override
-        public void run() {
-          onPageSelected(fPosition);
-        }
-      });
-    }
-  }
+	} else {
+		// too soon! ; selection of page (first image) was faster than binding of
+		// FileOperationsService; wait a bit!
+		final int fPosition = position;
+		getHandler().post(new Runnable() {
+				@Override
+				public void run() {
+				        onPageSelected(fPosition);
+				}
+			});
+	}
+}
 
-  /**
-   * Called when the scroll state changes. Useful for discovering when the user
-   * begins dragging, when the pager is automatically settling to the current
-   * page. when it is fully stopped/idle.
-   *
-   * @param state The new scroll state (SCROLL_STATE_IDLE, _DRAGGING, _SETTLING
-   */
-  @Override
-  public void onPageScrollStateChanged(final int state) {}
+/**
+ * Called when the scroll state changes. Useful for discovering when the user
+ * begins dragging, when the pager is automatically settling to the current
+ * page. when it is fully stopped/idle.
+ *
+ * @param state The new scroll state (SCROLL_STATE_IDLE, _DRAGGING, _SETTLING
+ */
+@Override
+public void onPageScrollStateChanged(final int state) {
+}
 
-  /**
-   * This method will be invoked when the current page is scrolled, either as
-   * part of a programmatically initiated smooth scroll or a user initiated
-   * touch scroll.
-   *
-   * @param position             Position index of the first page currently
-   *     being displayed.
-   *                             Page position+1 will be visible if
-   * positionOffset is nonzero.
-   * @param positionOffset       Value from [0, 1) indicating the offset from
-   *     the page
-   *                             at position.
-   * @param positionOffsetPixels Value in pixels indicating the offset from
-   *     position.
-   */
-  @Override
-  public void onPageScrolled(final int position, final float positionOffset,
-                             final int positionOffsetPixels) {}
+/**
+ * This method will be invoked when the current page is scrolled, either as
+ * part of a programmatically initiated smooth scroll or a user initiated
+ * touch scroll.
+ *
+ * @param position             Position index of the first page currently
+ *     being displayed.
+ *                             Page position+1 will be visible if
+ * positionOffset is nonzero.
+ * @param positionOffset       Value from [0, 1) indicating the offset from
+ *     the page
+ *                             at position.
+ * @param positionOffsetPixels Value in pixels indicating the offset from
+ *     position.
+ */
+@Override
+public void onPageScrolled(final int position, final float positionOffset,
+                           final int positionOffsetPixels) {
+}
 
-  /**
-   * Class waiting for broadcast events from the {@link FileDownloader} service.
-   * <p>
-   * Updates the UI when a download is started or finished, provided that it is
-   * relevant for the folder displayed in the gallery.
-   */
-  private class DownloadFinishReceiver extends BroadcastReceiver {
-    @Override
-    public void onReceive(final Context context, final Intent intent) {
-      String accountName = intent.getStringExtra(Extras.EXTRA_ACCOUNT_NAME);
-      String downloadedRemotePath =
-          intent.getStringExtra(Extras.EXTRA_REMOTE_PATH);
-      if (getAccount().name.equals(accountName) &&
-          downloadedRemotePath != null) {
+/**
+ * Class waiting for broadcast events from the {@link FileDownloader} service.
+ * <p>
+ * Updates the UI when a download is started or finished, provided that it is
+ * relevant for the folder displayed in the gallery.
+ */
+private class DownloadFinishReceiver extends BroadcastReceiver {
+@Override
+public void onReceive(final Context context, final Intent intent) {
+	String accountName = intent.getStringExtra(Extras.EXTRA_ACCOUNT_NAME);
+	String downloadedRemotePath =
+		intent.getStringExtra(Extras.EXTRA_REMOTE_PATH);
+	if (getAccount().name.equals(accountName) &&
+	    downloadedRemotePath != null) {
 
-        OCFile file = getStorageManager().getFileByPath(downloadedRemotePath);
-        mPreviewImagePagerAdapter.onDownloadEvent(
-            file, intent.getAction(),
-            intent.getBooleanExtra(Extras.EXTRA_DOWNLOAD_RESULT, false));
-      }
-    }
-  }
+		OCFile file = getStorageManager().getFileByPath(downloadedRemotePath);
+		mPreviewImagePagerAdapter.onDownloadEvent(
+			file, intent.getAction(),
+			intent.getBooleanExtra(Extras.EXTRA_DOWNLOAD_RESULT, false));
+	}
+}
+}
 
-  @SuppressLint("InlinedApi")
-  public void toggleFullScreen() {
-    boolean visible = (mFullScreenAnchorView.getSystemUiVisibility() &
-                       View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+@SuppressLint("InlinedApi")
+public void toggleFullScreen() {
+	boolean visible = (mFullScreenAnchorView.getSystemUiVisibility() &
+	                   View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
 
-    if (visible) {
-      hideSystemUI(mFullScreenAnchorView);
-      // actionBar.hide(); // propagated through
-      // OnSystemUiVisibilityChangeListener()
-    } else {
-      showSystemUI(mFullScreenAnchorView);
-      // actionBar.show(); // propagated through
-      // OnSystemUiVisibilityChangeListener()
-    }
-  }
+	if (visible) {
+		hideSystemUI(mFullScreenAnchorView);
+		// actionBar.hide(); // propagated through
+		// OnSystemUiVisibilityChangeListener()
+	} else {
+		showSystemUI(mFullScreenAnchorView);
+		// actionBar.show(); // propagated through
+		// OnSystemUiVisibilityChangeListener()
+	}
+}
 
-  @Override
-  protected void onAccountSet(final boolean stateWasRecovered) {
-    super.onAccountSet(stateWasRecovered);
-    if (getAccount() != null) {
-      OCFile file = getFile();
-      /// Validate handled file  (first image to preview)
-      if (file == null) {
-        throw new IllegalStateException("Instanced with a NULL OCFile");
-      }
-      if (!file.isImage()) {
-        throw new IllegalArgumentException("Non-image file passed as argument");
-      }
+@Override
+protected void onAccountSet(final boolean stateWasRecovered) {
+	super.onAccountSet(stateWasRecovered);
+	if (getAccount() != null) {
+		OCFile file = getFile();
+		/// Validate handled file  (first image to preview)
+		if (file == null) {
+			throw new IllegalStateException("Instanced with a NULL OCFile");
+		}
+		if (!file.isImage()) {
+			throw new IllegalArgumentException("Non-image file passed as argument");
+		}
 
-      // Update file according to DB file, if it is possible
-      if (file.getFileId() > FileDataStorageManager.ROOT_PARENT_ID) {
-        file = getStorageManager().getFileById(file.getFileId());
-      }
+		// Update file according to DB file, if it is possible
+		if (file.getFileId() > FileDataStorageManager.ROOT_PARENT_ID) {
+			file = getStorageManager().getFileById(file.getFileId());
+		}
 
-      if (file != null) {
-        /// Refresh the activity according to the Account and OCFile set
-        setFile(file); // reset after getting it fresh from storageManager
-        getSupportActionBar().setTitle(getFile().getFileName());
-        initViewPager();
+		if (file != null) {
+			/// Refresh the activity according to the Account and OCFile set
+			setFile(file); // reset after getting it fresh from storageManager
+			getSupportActionBar().setTitle(getFile().getFileName());
+			initViewPager();
 
-      } else {
-        // handled file not in the current Account
-        finish();
-      }
-    }
-  }
+		} else {
+			// handled file not in the current Account
+			finish();
+		}
+	}
+}
 
-  @Override
-  public void onBrowsedDownTo(final OCFile folder) {
-    // TODO Auto-generated method stub
-  }
+@Override
+public void onBrowsedDownTo(final OCFile folder) {
+	// TODO Auto-generated method stub
+}
 
-  @SuppressLint("InlinedApi")
-  private void hideSystemUI(final View anchorView) {
-    anchorView.setSystemUiVisibility(
-        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hides NAVIGATION BAR; Android
-                                            // >= 4.0
-        | View.SYSTEM_UI_FLAG_FULLSCREEN // hides STATUS BAR;     Android >= 4.1
-        | View.SYSTEM_UI_FLAG_IMMERSIVE  // stays interactive;    Android >= 4.4
-        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE     // draw full window;     Android
-                                                // >= 4.1
-        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // draw full window;     Android
-                                                // >= 4.1
-        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION // draw full window;
-                                                     // Android >= 4.1
-    );
-  }
+@SuppressLint("InlinedApi")
+private void hideSystemUI(final View anchorView) {
+	anchorView.setSystemUiVisibility(
+		View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hides NAVIGATION BAR; Android
+		                                    // >= 4.0
+		| View.SYSTEM_UI_FLAG_FULLSCREEN // hides STATUS BAR;     Android >= 4.1
+		| View.SYSTEM_UI_FLAG_IMMERSIVE // stays interactive;    Android >= 4.4
+		| View.SYSTEM_UI_FLAG_LAYOUT_STABLE // draw full window;     Android
+		                                    // >= 4.1
+		| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // draw full window;     Android
+		                                        // >= 4.1
+		| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION // draw full window;
+		                                             // Android >= 4.1
+		);
+}
 
-  @SuppressLint("InlinedApi")
-  private void showSystemUI(final View anchorView) {
-    anchorView.setSystemUiVisibility(
-        View.SYSTEM_UI_FLAG_LAYOUT_STABLE       // draw full window;     Android
-                                                // >= 4.1
-        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // draw full window;     Android
-                                                // >= 4.1
-        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION // draw full window;
-                                                     // Android >= 4.1
-    );
-  }
+@SuppressLint("InlinedApi")
+private void showSystemUI(final View anchorView) {
+	anchorView.setSystemUiVisibility(
+		View.SYSTEM_UI_FLAG_LAYOUT_STABLE // draw full window;     Android
+		                                  // >= 4.1
+		| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // draw full window;     Android
+		                                        // >= 4.1
+		| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION // draw full window;
+		                                             // Android >= 4.1
+		);
+}
 
-  @Override
-  public void navigateToOption(final FileListOption fileListOption) {
-    backToDisplayActivity();
-    super.navigateToOption(fileListOption);
-  }
+@Override
+public void navigateToOption(final FileListOption fileListOption) {
+	backToDisplayActivity();
+	super.navigateToOption(fileListOption);
+}
 }

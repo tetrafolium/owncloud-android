@@ -37,86 +37,86 @@ import timber.log.Timber;
  */
 public class UploadListFragment extends ExpandableListFragment {
 
-  /**
-   * Reference to the Activity which this fragment is attached to. For
-   * callbacks
-   */
-  private UploadListFragment.ContainerActivity mContainerActivity;
+/**
+ * Reference to the Activity which this fragment is attached to. For
+ * callbacks
+ */
+private UploadListFragment.ContainerActivity mContainerActivity;
 
-  private ExpandableUploadListAdapter mAdapter;
+private ExpandableUploadListAdapter mAdapter;
 
-  @Override
-  public View onCreateView(final LayoutInflater inflater,
-                           final ViewGroup container,
-                           final Bundle savedInstanceState) {
-    View v = super.onCreateView(inflater, container, savedInstanceState);
-    getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-    setMessageForEmptyList(getString(R.string.upload_list_empty));
-    setOnRefreshListener(this);
-    return v;
-  }
+@Override
+public View onCreateView(final LayoutInflater inflater,
+                         final ViewGroup container,
+                         final Bundle savedInstanceState) {
+	View v = super.onCreateView(inflater, container, savedInstanceState);
+	getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+	setMessageForEmptyList(getString(R.string.upload_list_empty));
+	setOnRefreshListener(this);
+	return v;
+}
 
-  @Override
-  public void onRefresh() {
-    // remove the progress circle as soon as pull is triggered, like in the list
-    // of files
-    mRefreshEmptyLayout.setRefreshing(false);
-    mRefreshListLayout.setRefreshing(false);
+@Override
+public void onRefresh() {
+	// remove the progress circle as soon as pull is triggered, like in the list
+	// of files
+	mRefreshEmptyLayout.setRefreshing(false);
+	mRefreshListLayout.setRefreshing(false);
 
-    mAdapter.notifyDataSetChanged();
-  }
+	mAdapter.notifyDataSetChanged();
+}
 
-  @Override
-  public void onStart() {
-    Timber.v("onStart() start");
-    super.onStart();
-    mAdapter = new ExpandableUploadListAdapter((FileActivity)getActivity());
-    setListAdapter(mAdapter);
-  }
+@Override
+public void onStart() {
+	Timber.v("onStart() start");
+	super.onStart();
+	mAdapter = new ExpandableUploadListAdapter((FileActivity)getActivity());
+	setListAdapter(mAdapter);
+}
 
-  @Override
-  public boolean onChildClick(final ExpandableListView parent, final View v,
-                              final int groupPosition, final int childPosition,
-                              final long id) {
-    boolean handled = false;
-    OCUpload OCUpload =
-        (OCUpload)mAdapter.getChild(groupPosition, childPosition);
-    if (OCUpload != null) {
-      // notify the click to container Activity
-      handled = mContainerActivity.onUploadItemClick(OCUpload);
-    } else {
-      Timber.w("Null object in ListAdapter!!");
-    }
-    return handled;
-  }
+@Override
+public boolean onChildClick(final ExpandableListView parent, final View v,
+                            final int groupPosition, final int childPosition,
+                            final long id) {
+	boolean handled = false;
+	OCUpload OCUpload =
+		(OCUpload)mAdapter.getChild(groupPosition, childPosition);
+	if (OCUpload != null) {
+		// notify the click to container Activity
+		handled = mContainerActivity.onUploadItemClick(OCUpload);
+	} else {
+		Timber.w("Null object in ListAdapter!!");
+	}
+	return handled;
+}
 
-  /**
-   * Interface to implement by any Activity that includes some instance of
-   * UploadListFragment
-   *
-   * @author LukeOwncloud
-   */
-  public interface ContainerActivity {
+/**
+ * Interface to implement by any Activity that includes some instance of
+ * UploadListFragment
+ *
+ * @author LukeOwncloud
+ */
+public interface ContainerActivity {
 
-    /**
-     * Callback method invoked when an upload item is clicked by the user on
-     * the upload list
-     *
-     * @param file
-     * @return return true if click was handled.
-     */
-    boolean onUploadItemClick(OCUpload file);
-  }
+/**
+ * Callback method invoked when an upload item is clicked by the user on
+ * the upload list
+ *
+ * @param file
+ * @return return true if click was handled.
+ */
+boolean onUploadItemClick(OCUpload file);
+}
 
-  public void binderReady() {
-    if (mAdapter != null) {
-      mAdapter.addBinder();
-    }
-  }
+public void binderReady() {
+	if (mAdapter != null) {
+		mAdapter.addBinder();
+	}
+}
 
-  public void updateUploads() {
-    if (mAdapter != null) {
-      mAdapter.refreshView();
-    }
-  }
+public void updateUploads() {
+	if (mAdapter != null) {
+		mAdapter.refreshView();
+	}
+}
 }

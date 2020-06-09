@@ -29,144 +29,146 @@ import timber.log.Timber;
 
 public class CameraUploadsSyncStorageManager extends Observable {
 
-  private ContentResolver mContentResolver;
+private ContentResolver mContentResolver;
 
-  public CameraUploadsSyncStorageManager(
-      final ContentResolver contentResolver) {
-    if (contentResolver == null) {
-      throw new IllegalArgumentException(
-          "Cannot create an instance with a NULL contentResolver");
-    }
-    mContentResolver = contentResolver;
-  }
+public CameraUploadsSyncStorageManager(
+	final ContentResolver contentResolver) {
+	if (contentResolver == null) {
+		throw new IllegalArgumentException(
+			      "Cannot create an instance with a NULL contentResolver");
+	}
+	mContentResolver = contentResolver;
+}
 
-  /**
-   * Stores a camera upload sync object in DB
-   *
-   * @param ocCameraUploadSync      Camera upload sync object to store
-   * @return camera upload sync id, -1 if the insert process fails
-   */
-  public long
-  storeCameraUploadSync(final OCCameraUploadSync ocCameraUploadSync) {
-    Timber.v(
-        "Inserting camera upload sync with timestamp of last pictures synchronization " +
-        ocCameraUploadSync.getPicturesLastSync() +
-        " and timestamp of last videos "
-        + "synchronzization" + ocCameraUploadSync.getVideosLastSync());
+/**
+ * Stores a camera upload sync object in DB
+ *
+ * @param ocCameraUploadSync      Camera upload sync object to store
+ * @return camera upload sync id, -1 if the insert process fails
+ */
+public long
+storeCameraUploadSync(final OCCameraUploadSync ocCameraUploadSync) {
+	Timber.v(
+		"Inserting camera upload sync with timestamp of last pictures synchronization " +
+		ocCameraUploadSync.getPicturesLastSync() +
+		" and timestamp of last videos "
+		+ "synchronzization" + ocCameraUploadSync.getVideosLastSync());
 
-    ContentValues cv = new ContentValues();
-    cv.put(ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP,
-           ocCameraUploadSync.getPicturesLastSync());
-    cv.put(ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP,
-           ocCameraUploadSync.getVideosLastSync());
+	ContentValues cv = new ContentValues();
+	cv.put(ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP,
+	       ocCameraUploadSync.getPicturesLastSync());
+	cv.put(ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP,
+	       ocCameraUploadSync.getVideosLastSync());
 
-    Uri result = getDB().insert(
-        ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC, cv);
+	Uri result = getDB().insert(
+		ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC, cv);
 
-    Timber.d("storeUpload returns with: " + result +
-             " for camera upload sync " + ocCameraUploadSync.getId());
-    if (result == null) {
-      Timber.e("Failed to insert camera upload sync " +
-               ocCameraUploadSync.getId() + " into camera uploads sync db.");
-      return -1;
-    } else {
-      long new_id = Long.parseLong(result.getPathSegments().get(1));
-      ocCameraUploadSync.setId(new_id);
-      notifyObserversNow();
-      return new_id;
-    }
-  }
+	Timber.d("storeUpload returns with: " + result +
+	         " for camera upload sync " + ocCameraUploadSync.getId());
+	if (result == null) {
+		Timber.e("Failed to insert camera upload sync " +
+		         ocCameraUploadSync.getId() + " into camera uploads sync db.");
+		return -1;
+	} else {
+		long new_id = Long.parseLong(result.getPathSegments().get(1));
+		ocCameraUploadSync.setId(new_id);
+		notifyObserversNow();
+		return new_id;
+	}
+}
 
-  /**
-   * Update a camera upload sync object in DB.
-   *
-   * @param ocCameraUploadSync Camera upload sync object with state to update
-   * @return num of updated camera upload sync
-   */
-  public int
-  updateCameraUploadSync(final OCCameraUploadSync ocCameraUploadSync) {
-    Timber.v("Updating %s", ocCameraUploadSync.getId());
+/**
+ * Update a camera upload sync object in DB.
+ *
+ * @param ocCameraUploadSync Camera upload sync object with state to update
+ * @return num of updated camera upload sync
+ */
+public int
+updateCameraUploadSync(final OCCameraUploadSync ocCameraUploadSync) {
+	Timber.v("Updating %s", ocCameraUploadSync.getId());
 
-    ContentValues cv = new ContentValues();
-    cv.put(ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP,
-           ocCameraUploadSync.getPicturesLastSync());
-    cv.put(ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP,
-           ocCameraUploadSync.getVideosLastSync());
+	ContentValues cv = new ContentValues();
+	cv.put(ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP,
+	       ocCameraUploadSync.getPicturesLastSync());
+	cv.put(ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP,
+	       ocCameraUploadSync.getVideosLastSync());
 
-    int result = getDB().update(
-        ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC, cv,
-        ProviderMeta.ProviderTableMeta._ID + "=?",
-        new String[] {String.valueOf(ocCameraUploadSync.getId())});
+	int result = getDB().update(
+		ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC, cv,
+		ProviderMeta.ProviderTableMeta._ID + "=?",
+		new String[] {String.valueOf(ocCameraUploadSync.getId())});
 
-    Timber.d("updateCameraUploadSync returns with: " + result +
-             " for camera upload sync: " + ocCameraUploadSync.getId());
-    if (result != 1) {
-      Timber.e("Failed to update item " + ocCameraUploadSync.getId() + " into "
-               + "camera upload sync db.");
-    } else {
-      notifyObserversNow();
-    }
+	Timber.d("updateCameraUploadSync returns with: " + result +
+	         " for camera upload sync: " + ocCameraUploadSync.getId());
+	if (result != 1) {
+		Timber.e("Failed to update item " + ocCameraUploadSync.getId() + " into "
+		         + "camera upload sync db.");
+	} else {
+		notifyObserversNow();
+	}
 
-    return result;
-  }
+	return result;
+}
 
-  /**
-   * Retrieves a camera upload sync object from DB
-   * @param selection filter declaring which rows to return, formatted as an SQL
-   *     WHERE clause
-   * @param selectionArgs include ?s in selection, which will be replaced by the
-   *     values from here
-   * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause
-   * @return camera upload sync object
-   */
-  public OCCameraUploadSync getCameraUploadSync(final String selection,
-                                                final String[] selectionArgs,
-                                                final String sortOrder) {
-    Cursor c = getDB().query(
-        ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC, null,
-        selection, selectionArgs, sortOrder);
+/**
+ * Retrieves a camera upload sync object from DB
+ * @param selection filter declaring which rows to return, formatted as an SQL
+ *     WHERE clause
+ * @param selectionArgs include ?s in selection, which will be replaced by the
+ *     values from here
+ * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause
+ * @return camera upload sync object
+ */
+public OCCameraUploadSync getCameraUploadSync(final String selection,
+                                              final String[] selectionArgs,
+                                              final String sortOrder) {
+	Cursor c = getDB().query(
+		ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC, null,
+		selection, selectionArgs, sortOrder);
 
-    OCCameraUploadSync ocCameraUploadSync = null;
+	OCCameraUploadSync ocCameraUploadSync = null;
 
-    if (c.moveToFirst()) {
-      ocCameraUploadSync = createOCCameraUploadSyncFromCursor(c);
-      if (ocCameraUploadSync == null) {
-        Timber.e("Camera upload sync could not be created from cursor");
-      }
-    }
+	if (c.moveToFirst()) {
+		ocCameraUploadSync = createOCCameraUploadSyncFromCursor(c);
+		if (ocCameraUploadSync == null) {
+			Timber.e("Camera upload sync could not be created from cursor");
+		}
+	}
 
-    c.close();
+	c.close();
 
-    return ocCameraUploadSync;
-  }
+	return ocCameraUploadSync;
+}
 
-  private OCCameraUploadSync
-  createOCCameraUploadSyncFromCursor(final Cursor c) {
-    OCCameraUploadSync cameraUploadSync = null;
-    if (c != null) {
-      long picturesLastSync = c.getLong(c.getColumnIndex(
-          ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP));
-      long videosLastSync = c.getLong(c.getColumnIndex(
-          ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP));
+private OCCameraUploadSync
+createOCCameraUploadSyncFromCursor(final Cursor c) {
+	OCCameraUploadSync cameraUploadSync = null;
+	if (c != null) {
+		long picturesLastSync = c.getLong(c.getColumnIndex(
+							  ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP));
+		long videosLastSync = c.getLong(c.getColumnIndex(
+							ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP));
 
-      cameraUploadSync =
-          new OCCameraUploadSync(picturesLastSync, videosLastSync);
+		cameraUploadSync =
+			new OCCameraUploadSync(picturesLastSync, videosLastSync);
 
-      cameraUploadSync.setId(
-          c.getLong(c.getColumnIndex(ProviderMeta.ProviderTableMeta._ID)));
-    }
-    return cameraUploadSync;
-  }
+		cameraUploadSync.setId(
+			c.getLong(c.getColumnIndex(ProviderMeta.ProviderTableMeta._ID)));
+	}
+	return cameraUploadSync;
+}
 
-  private ContentResolver getDB() { return mContentResolver; }
+private ContentResolver getDB() {
+	return mContentResolver;
+}
 
-  /**
-   * Should be called when some value of this DB was changed. All observers
-   * are informed.
-   */
-  private void notifyObserversNow() {
-    Timber.d("notifyObserversNow");
-    setChanged();
-    notifyObservers();
-  }
+/**
+ * Should be called when some value of this DB was changed. All observers
+ * are informed.
+ */
+private void notifyObserversNow() {
+	Timber.d("notifyObserversNow");
+	setChanged();
+	notifyObservers();
+}
 }

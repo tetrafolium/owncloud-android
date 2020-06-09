@@ -26,53 +26,53 @@ import com.owncloud.android.ui.fragment.FileFragment;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 
 public class UploadPathActivity extends FolderPickerActivity
-    implements FileFragment.ContainerActivity, OnClickListener,
-               OnEnforceableRefreshListener {
+	implements FileFragment.ContainerActivity, OnClickListener,
+	                                OnEnforceableRefreshListener {
 
-  public static final String KEY_CAMERA_UPLOAD_PATH = "CAMERA_UPLOAD_PATH";
+public static final String KEY_CAMERA_UPLOAD_PATH = "CAMERA_UPLOAD_PATH";
 
-  @Override
-  protected void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+@Override
+protected void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-    String cameraUploadPath =
-        getIntent().getStringExtra(KEY_CAMERA_UPLOAD_PATH);
+	String cameraUploadPath =
+		getIntent().getStringExtra(KEY_CAMERA_UPLOAD_PATH);
 
-    // The caller activity (Preferences) is not a FileActivity, so it has no
-    // OCFile, only a path.
-    OCFile folder = new OCFile(cameraUploadPath);
+	// The caller activity (Preferences) is not a FileActivity, so it has no
+	// OCFile, only a path.
+	OCFile folder = new OCFile(cameraUploadPath);
 
-    setFile(folder);
-  }
+	setFile(folder);
+}
 
-  /**
-   * Called when the ownCloud {@link Account} associated to the Activity was
-   * just updated.
-   */
-  @Override
-  protected void onAccountSet(final boolean stateWasRecovered) {
-    super.onAccountSet(stateWasRecovered);
-    if (getAccount() != null) {
+/**
+ * Called when the ownCloud {@link Account} associated to the Activity was
+ * just updated.
+ */
+@Override
+protected void onAccountSet(final boolean stateWasRecovered) {
+	super.onAccountSet(stateWasRecovered);
+	if (getAccount() != null) {
 
-      updateFileFromDB();
+		updateFileFromDB();
 
-      OCFile folder = getFile();
-      if (folder == null || !folder.isFolder()) {
-        // fall back to root folder
-        setFile(getStorageManager().getFileByPath(OCFile.ROOT_PATH));
-        folder = getFile();
-      }
+		OCFile folder = getFile();
+		if (folder == null || !folder.isFolder()) {
+			// fall back to root folder
+			setFile(getStorageManager().getFileByPath(OCFile.ROOT_PATH));
+			folder = getFile();
+		}
 
-      onBrowsedDownTo(folder);
+		onBrowsedDownTo(folder);
 
-      if (!stateWasRecovered) {
-        OCFileListFragment listOfFolders = getListOfFilesFragment();
-        listOfFolders.listDirectory(folder);
+		if (!stateWasRecovered) {
+			OCFileListFragment listOfFolders = getListOfFilesFragment();
+			listOfFolders.listDirectory(folder);
 
-        startSyncFolderOperation(folder, false);
-      }
+			startSyncFolderOperation(folder, false);
+		}
 
-      updateNavigationElementsInActionBar();
-    }
-  }
+		updateNavigationElementsInActionBar();
+	}
+}
 }

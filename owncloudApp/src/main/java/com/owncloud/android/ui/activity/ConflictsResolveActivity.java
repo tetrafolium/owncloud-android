@@ -37,77 +37,77 @@ import timber.log.Timber;
  * by external application.
  */
 public class ConflictsResolveActivity
-    extends FileActivity implements OnConflictDecisionMadeListener {
+	extends FileActivity implements OnConflictDecisionMadeListener {
 
-  @Override
-  protected void onCreate(final Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-  }
+@Override
+protected void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+}
 
-  @Override
-  public void conflictDecisionMade(final Decision decision) {
+@Override
+public void conflictDecisionMade(final Decision decision) {
 
-    Integer behaviour = null;
-    Boolean forceOverwrite = null;
+	Integer behaviour = null;
+	Boolean forceOverwrite = null;
 
-    switch (decision) {
-    case CANCEL:
-      finish();
-      return;
-    case OVERWRITE:
-      // use local version -> overwrite on server
-      forceOverwrite = true;
-      break;
-    case KEEP_BOTH:
-      behaviour = FileUploader.LOCAL_BEHAVIOUR_MOVE;
-      break;
-    case SERVER:
-      // use server version -> delete local, request download
-      Intent intent = new Intent(this, FileDownloader.class);
-      intent.putExtra(FileDownloader.KEY_ACCOUNT, getAccount());
-      intent.putExtra(FileDownloader.KEY_FILE, getFile());
-      startService(intent);
-      finish();
-      return;
-    default:
-      Timber.e("Unhandled conflict decision %s", decision);
-      return;
-    }
+	switch (decision) {
+	case CANCEL:
+		finish();
+		return;
+	case OVERWRITE:
+		// use local version -> overwrite on server
+		forceOverwrite = true;
+		break;
+	case KEEP_BOTH:
+		behaviour = FileUploader.LOCAL_BEHAVIOUR_MOVE;
+		break;
+	case SERVER:
+		// use server version -> delete local, request download
+		Intent intent = new Intent(this, FileDownloader.class);
+		intent.putExtra(FileDownloader.KEY_ACCOUNT, getAccount());
+		intent.putExtra(FileDownloader.KEY_FILE, getFile());
+		startService(intent);
+		finish();
+		return;
+	default:
+		Timber.e("Unhandled conflict decision %s", decision);
+		return;
+	}
 
-    TransferRequester requester = new TransferRequester();
-    requester.uploadUpdate(this, getAccount(), getFile(), behaviour,
-                           forceOverwrite, false);
-    finish();
-  }
+	TransferRequester requester = new TransferRequester();
+	requester.uploadUpdate(this, getAccount(), getFile(), behaviour,
+	                       forceOverwrite, false);
+	finish();
+}
 
-  @Override
-  protected void onAccountSet(final boolean stateWasRecovered) {
-    super.onAccountSet(stateWasRecovered);
-    if (getAccount() != null) {
-      OCFile file = getFile();
-      if (getFile() == null) {
-        Timber.e("No conflictive file received");
-        finish();
-      } else {
-        /// Check whether the 'main' OCFile handled by the Activity is contained
-        /// in the current Account
-        file = getStorageManager().getFileByPath(
-            file.getRemotePath()); // file = null if not in the
-        // current Account
-        if (file != null) {
-          setFile(file);
-          ConflictsResolveDialog d =
-              ConflictsResolveDialog.newInstance(file.getRemotePath(), this);
-          d.showDialog(this);
+@Override
+protected void onAccountSet(final boolean stateWasRecovered) {
+	super.onAccountSet(stateWasRecovered);
+	if (getAccount() != null) {
+		OCFile file = getFile();
+		if (getFile() == null) {
+			Timber.e("No conflictive file received");
+			finish();
+		} else {
+			/// Check whether the 'main' OCFile handled by the Activity is contained
+			/// in the current Account
+			file = getStorageManager().getFileByPath(
+				file.getRemotePath()); // file = null if not in the
+			// current Account
+			if (file != null) {
+				setFile(file);
+				ConflictsResolveDialog d =
+					ConflictsResolveDialog.newInstance(file.getRemotePath(), this);
+				d.showDialog(this);
 
-        } else {
-          // account was changed to a different one - just finish
-          finish();
-        }
-      }
+			} else {
+				// account was changed to a different one - just finish
+				finish();
+			}
+		}
 
-    } else {
-      finish();
-    }
-  }
+	} else {
+		finish();
+	}
+}
 }

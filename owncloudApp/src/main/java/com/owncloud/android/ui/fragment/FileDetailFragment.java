@@ -118,12 +118,12 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
         if (mLayout == R.layout.file_details_fragment) {
             RelativeLayout fileDetailsLayout = getActivity().findViewById(R.id.fileDetailsLayout);
             fileDetailsLayout.setFilterTouchesWhenObscured(
-                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
             );
         } else {
             LinearLayout fileDetailsEmptyLayout = getActivity().findViewById(R.id.fileDetailsEmptyLayout);
             fileDetailsEmptyLayout.setFilterTouchesWhenObscured(
-                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
             );
         }
     }
@@ -231,15 +231,15 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
 
         if (mContainerActivity.getStorageManager() != null) {
             FileMenuFilter mf = new FileMenuFilter(
-                    getFile(),
-                    mContainerActivity.getStorageManager().getAccount(),
-                    mContainerActivity,
-                    getActivity()
+                getFile(),
+                mContainerActivity.getStorageManager().getAccount(),
+                mContainerActivity,
+                getActivity()
             );
             mf.filter(menu, false, false, false, false);
         }
 
-        // additional restriction for this fragment 
+        // additional restriction for this fragment
         MenuItem item = menu.findItem(R.id.action_see_details);
         if (item != null) {
             item.setVisible(false);
@@ -291,65 +291,65 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_share_file: {
-                mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-                return true;
+        case R.id.action_share_file: {
+            mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+            return true;
+        }
+        case R.id.action_open_file_with: {
+            mContainerActivity.getFileOperationsHelper().openFile(getFile());
+            return true;
+        }
+        case R.id.action_remove_file: {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), FTAG_CONFIRMATION);
+            return true;
+        }
+        case R.id.action_rename_file: {
+            RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), FTAG_RENAME_FILE);
+            return true;
+        }
+        case R.id.action_cancel_sync: {
+            ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
+            return true;
+        }
+        case R.id.action_download_file:
+        case R.id.action_sync_file: {
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        }
+        case R.id.action_send_file: {
+            // Obtain the file
+            if (!getFile().isDown()) {  // Download the file
+                Timber.d("%s : File must be downloaded", getFile().getRemotePath());
+                ((FileDisplayActivity) mContainerActivity).startDownloadForSending(getFile());
+            } else {
+                mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
             }
-            case R.id.action_open_file_with: {
-                mContainerActivity.getFileOperationsHelper().openFile(getFile());
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_rename_file: {
-                RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), FTAG_RENAME_FILE);
-                return true;
-            }
-            case R.id.action_cancel_sync: {
-                ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
-                return true;
-            }
-            case R.id.action_download_file:
-            case R.id.action_sync_file: {
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_send_file: {
-                // Obtain the file
-                if (!getFile().isDown()) {  // Download the file                    
-                    Timber.d("%s : File must be downloaded", getFile().getRemotePath());
-                    ((FileDisplayActivity) mContainerActivity).startDownloadForSending(getFile());
-                } else {
-                    mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
-                }
-                return true;
-            }
-            case R.id.action_set_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
-                return true;
-            }
-            case R.id.action_unset_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+            return true;
+        }
+        case R.id.action_set_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
+            return true;
+        }
+        case R.id.action_unset_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
+            return true;
+        }
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.fdCancelBtn: {
-                ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
-                break;
-            }
-            default:
-                Timber.e("Incorrect view clicked!");
+        case R.id.fdCancelBtn: {
+            ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
+            break;
+        }
+        default:
+            Timber.e("Incorrect view clicked!");
         }
     }
 
@@ -392,7 +392,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
             if (forcedTransferring ||
                     (downloaderBinder != null && downloaderBinder.isDownloading(mAccount, file)) ||
                     (uploaderBinder != null && uploaderBinder.isUploading(mAccount, file))
-            ) {
+               ) {
                 setButtonsForTransferring();
 
             } else if (file.isDown()) {
@@ -459,18 +459,18 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
                     // generate new Thumbnail
                     if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(file, iv)) {
                         final ThumbnailsCacheManager.ThumbnailGenerationTask task =
-                                new ThumbnailsCacheManager.ThumbnailGenerationTask(
-                                        iv, mContainerActivity.getStorageManager(), mAccount
-                                );
+                            new ThumbnailsCacheManager.ThumbnailGenerationTask(
+                            iv, mContainerActivity.getStorageManager(), mAccount
+                        );
                         if (thumbnail == null) {
                             thumbnail = ThumbnailsCacheManager.mDefaultImg;
                         }
                         final ThumbnailsCacheManager.AsyncThumbnailDrawable asyncDrawable =
-                                new ThumbnailsCacheManager.AsyncThumbnailDrawable(
-                                        MainApp.Companion.getAppContext().getResources(),
-                                        thumbnail,
-                                        task
-                                );
+                            new ThumbnailsCacheManager.AsyncThumbnailDrawable(
+                            MainApp.Companion.getAppContext().getResources(),
+                            thumbnail,
+                            task
+                        );
                         iv.setImageDrawable(asyncDrawable);
                         task.execute(file);
                     }

@@ -68,7 +68,7 @@ public class ExtendedListView extends ListView {
      *
      * The position is saved here and checked in onDraw().
      *
-     * @param position         Position (in the list of items) of the item to center in the visible area.     
+     * @param position         Position (in the list of items) of the item to center in the visible area.
      */
     public void setAndCenterSelection(int position) {
         mPositionToSetAndCenter = position;

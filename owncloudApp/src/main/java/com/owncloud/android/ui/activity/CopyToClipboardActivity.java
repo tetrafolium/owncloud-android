@@ -51,9 +51,9 @@ public class CopyToClipboardActivity extends Activity {
             if (text != null && text.length() > 0) {
                 // minimum API level >= 11 -> only modern Clipboard
                 ClipData clip = ClipData.newPlainText(
-                        getString(R.string.clipboard_label, getString(R.string.app_name)),
-                        text
-                );
+                                    getString(R.string.clipboard_label, getString(R.string.app_name)),
+                                    text
+                                );
                 clipboardManager.setPrimaryClip(clip);
 
                 // API level < 11 -> legacy Clipboard - NOT SUPPORTED ANYMORE

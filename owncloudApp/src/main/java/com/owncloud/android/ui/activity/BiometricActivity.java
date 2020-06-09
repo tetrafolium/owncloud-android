@@ -105,16 +105,16 @@ public class BiometricActivity extends AppCompatActivity {
 
     private void showBiometricPrompt() {
         BiometricPrompt.PromptInfo promptInfo =
-                new BiometricPrompt.PromptInfo.Builder()
-                        .setTitle(getString(R.string.biometric_prompt_title))
-                        .setSubtitle(getString(R.string.biometric_prompt_subtitle))
-                        .setNegativeButtonText(getString(android.R.string.cancel))
-                        .setConfirmationRequired(true)
-                        .setDeviceCredentialAllowed(false)
-                        .build();
+            new BiometricPrompt.PromptInfo.Builder()
+        .setTitle(getString(R.string.biometric_prompt_title))
+        .setSubtitle(getString(R.string.biometric_prompt_subtitle))
+        .setNegativeButtonText(getString(android.R.string.cancel))
+        .setConfirmationRequired(true)
+        .setDeviceCredentialAllowed(false)
+        .build();
 
         BiometricPrompt biometricPrompt = new BiometricPrompt(BiometricActivity.this,
-                executor, new BiometricPrompt.AuthenticationCallback() {
+        executor, new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
@@ -176,14 +176,14 @@ public class BiometricActivity extends AppCompatActivity {
             // Generate and save the encryption key
             mKeyStore.load(null);
             mKeyGenerator.init(new
-                    KeyGenParameterSpec.Builder(KEY_NAME,
-                    KeyProperties.PURPOSE_ENCRYPT |
-                            KeyProperties.PURPOSE_DECRYPT)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                    .setUserAuthenticationRequired(true)
-                    .setEncryptionPaddings(
-                            KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                    .build());
+                               KeyGenParameterSpec.Builder(KEY_NAME,
+                                       KeyProperties.PURPOSE_ENCRYPT |
+                                       KeyProperties.PURPOSE_DECRYPT)
+                               .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                               .setUserAuthenticationRequired(true)
+                               .setEncryptionPaddings(
+                                   KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                               .build());
             mKeyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | CertificateException | IOException e) {
             Timber.e(e, "Failed while generating and saving the encryption key");
@@ -201,9 +201,9 @@ public class BiometricActivity extends AppCompatActivity {
 
         try {
             mCipher = Cipher.getInstance(
-                    KeyProperties.KEY_ALGORITHM_AES + "/"
-                            + KeyProperties.BLOCK_MODE_CBC + "/"
-                            + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+                          KeyProperties.KEY_ALGORITHM_AES + "/"
+                          + KeyProperties.BLOCK_MODE_CBC + "/"
+                          + KeyProperties.ENCRYPTION_PADDING_PKCS7);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             Timber.e(e, "Error while generating and saving the encryption key");
         }
@@ -218,7 +218,7 @@ public class BiometricActivity extends AppCompatActivity {
             Timber.e(e, "Key permanently invalidated while initializing the cipher");
             return false;
         } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException |
-                NoSuchAlgorithmException | InvalidKeyException e) {
+                     NoSuchAlgorithmException | InvalidKeyException e) {
             Timber.e(e, "Failed while initializing the cipher");
             return false;
         }

@@ -71,20 +71,20 @@ public class UserProfilesRepository {
             // map avatar properties to columns
             ContentValues avatarValues = new ContentValues();
             avatarValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME,
-                    userProfile.getAccountName()
+                ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME,
+                userProfile.getAccountName()
             );
             avatarValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_AVATARS__CACHE_KEY,
-                    userProfile.getAvatar().getCacheKey()
+                ProviderMeta.ProviderTableMeta.USER_AVATARS__CACHE_KEY,
+                userProfile.getAvatar().getCacheKey()
             );
             avatarValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_AVATARS__ETAG,
-                    userProfile.getAvatar().getEtag()
+                ProviderMeta.ProviderTableMeta.USER_AVATARS__ETAG,
+                userProfile.getAvatar().getEtag()
             );
             avatarValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_AVATARS__MIME_TYPE,
-                    userProfile.getAvatar().getMimeType()
+                ProviderMeta.ProviderTableMeta.USER_AVATARS__MIME_TYPE,
+                userProfile.getAvatar().getMimeType()
             );
 
             database.beginTransaction();
@@ -92,19 +92,19 @@ public class UserProfilesRepository {
                 if (avatarExists(userProfile)) {
                     // not new, UPDATE
                     database.update(
-                            ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
-                            avatarValues,
-                            ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME + "=?",
-                            new String[]{String.valueOf(userProfile.getAccountName())}
+                        ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
+                        avatarValues,
+                        ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME + "=?",
+                        new String[] {String.valueOf(userProfile.getAccountName())}
                     );
                     Timber.d("Avatar updated");
 
                 } else {
                     // new, CREATE
                     database.insert(
-                            ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
-                            null,
-                            avatarValues
+                        ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
+                        null,
+                        avatarValues
                     );
                     Timber.d("Avatar inserted");
                 }
@@ -119,24 +119,24 @@ public class UserProfilesRepository {
             // map quota properties to columns
             ContentValues quotaValues = new ContentValues();
             quotaValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_QUOTAS__ACCOUNT_NAME,
-                    userProfile.getAccountName()
+                ProviderMeta.ProviderTableMeta.USER_QUOTAS__ACCOUNT_NAME,
+                userProfile.getAccountName()
             );
             quotaValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_QUOTAS__FREE,
-                    userProfile.getQuota().getFree()
+                ProviderMeta.ProviderTableMeta.USER_QUOTAS__FREE,
+                userProfile.getQuota().getFree()
             );
             quotaValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_QUOTAS__RELATIVE,
-                    userProfile.getQuota().getRelative()
+                ProviderMeta.ProviderTableMeta.USER_QUOTAS__RELATIVE,
+                userProfile.getQuota().getRelative()
             );
             quotaValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_QUOTAS__TOTAL,
-                    userProfile.getQuota().getTotal()
+                ProviderMeta.ProviderTableMeta.USER_QUOTAS__TOTAL,
+                userProfile.getQuota().getTotal()
             );
             quotaValues.put(
-                    ProviderMeta.ProviderTableMeta.USER_QUOTAS__USED,
-                    userProfile.getQuota().getUsed()
+                ProviderMeta.ProviderTableMeta.USER_QUOTAS__USED,
+                userProfile.getQuota().getUsed()
             );
 
             database.beginTransaction();
@@ -144,19 +144,19 @@ public class UserProfilesRepository {
                 if (quotaExists(userProfile)) {
                     // not new, UPDATE
                     database.update(
-                            ProviderMeta.ProviderTableMeta.USER_QUOTAS_TABLE_NAME,
-                            quotaValues,
-                            ProviderMeta.ProviderTableMeta.USER_QUOTAS__ACCOUNT_NAME + "=?",
-                            new String[]{String.valueOf(userProfile.getAccountName())}
+                        ProviderMeta.ProviderTableMeta.USER_QUOTAS_TABLE_NAME,
+                        quotaValues,
+                        ProviderMeta.ProviderTableMeta.USER_QUOTAS__ACCOUNT_NAME + "=?",
+                        new String[] {String.valueOf(userProfile.getAccountName())}
                     );
                     Timber.d("Quota updated");
 
                 } else {
                     // new, CREATE
                     database.insert(
-                            ProviderMeta.ProviderTableMeta.USER_QUOTAS_TABLE_NAME,
-                            null,
-                            quotaValues
+                        ProviderMeta.ProviderTableMeta.USER_QUOTAS_TABLE_NAME,
+                        null,
+                        quotaValues
                     );
                     Timber.d("Quota inserted");
                 }
@@ -187,20 +187,20 @@ public class UserProfilesRepository {
                     ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
                     null,
                     ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME + "=?",
-                    new String[]{accountName},
+                    new String[] {accountName},
                     null, null, null
-            );
+                );
             if (c != null && c.moveToFirst()) {
                 avatar = new UserProfile.UserAvatar(
-                        c.getString(c.getColumnIndex(
-                                ProviderMeta.ProviderTableMeta.USER_AVATARS__CACHE_KEY
-                        )),
-                        c.getString(c.getColumnIndex(
-                                ProviderMeta.ProviderTableMeta.USER_AVATARS__MIME_TYPE
-                        )),
-                        c.getString(
-                                c.getColumnIndex(ProviderMeta.ProviderTableMeta.USER_AVATARS__ETAG
-                                ))
+                    c.getString(c.getColumnIndex(
+                                    ProviderMeta.ProviderTableMeta.USER_AVATARS__CACHE_KEY
+                                )),
+                    c.getString(c.getColumnIndex(
+                                    ProviderMeta.ProviderTableMeta.USER_AVATARS__MIME_TYPE
+                                )),
+                    c.getString(
+                        c.getColumnIndex(ProviderMeta.ProviderTableMeta.USER_AVATARS__ETAG
+                                        ))
                 );
             }   // else, no avatar to return
         } catch (Exception e) {
@@ -221,24 +221,24 @@ public class UserProfilesRepository {
                     ProviderMeta.ProviderTableMeta.USER_QUOTAS_TABLE_NAME,
                     null,
                     ProviderMeta.ProviderTableMeta.USER_QUOTAS__ACCOUNT_NAME + "=?",
-                    new String[]{accountName},
+                    new String[] {accountName},
                     null, null, null
-            );
+                );
             if (c != null && c.moveToFirst()) {
 
                 userQuota = new UserProfile.UserQuota(
-                        c.getLong(c.getColumnIndex(
-                                ProviderMeta.ProviderTableMeta.USER_QUOTAS__FREE
-                        )),
-                        c.getDouble(c.getColumnIndex(
-                                ProviderMeta.ProviderTableMeta.USER_QUOTAS__RELATIVE
-                        )),
-                        c.getLong(c.getColumnIndex(
-                                ProviderMeta.ProviderTableMeta.USER_QUOTAS__TOTAL
-                        )),
-                        c.getLong(c.getColumnIndex(
-                                ProviderMeta.ProviderTableMeta.USER_QUOTAS__USED
-                        ))
+                    c.getLong(c.getColumnIndex(
+                                  ProviderMeta.ProviderTableMeta.USER_QUOTAS__FREE
+                              )),
+                    c.getDouble(c.getColumnIndex(
+                                    ProviderMeta.ProviderTableMeta.USER_QUOTAS__RELATIVE
+                                )),
+                    c.getLong(c.getColumnIndex(
+                                  ProviderMeta.ProviderTableMeta.USER_QUOTAS__TOTAL
+                              )),
+                    c.getLong(c.getColumnIndex(
+                                  ProviderMeta.ProviderTableMeta.USER_QUOTAS__USED
+                              ))
                 );
             }
         } catch (Exception e) {
@@ -254,9 +254,9 @@ public class UserProfilesRepository {
     public void deleteAvatar(String accountName) {
         try {
             getSqLiteDatabase().delete(
-                    ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
-                    ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME + "=?",
-                    new String[]{String.valueOf(accountName)}
+                ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
+                ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME + "=?",
+                new String[] {String.valueOf(accountName)}
             );
             Timber.d("Avatar deleted");
 
@@ -273,9 +273,9 @@ public class UserProfilesRepository {
                     ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
                     null,
                     ProviderMeta.ProviderTableMeta.USER_AVATARS__ACCOUNT_NAME + "=?",
-                    new String[]{userProfile.getAccountName()},
+                    new String[] {userProfile.getAccountName()},
                     null, null, null
-            );
+                );
             exists = (c != null && c.moveToFirst());
         } finally {
             if (c != null) {
@@ -293,9 +293,9 @@ public class UserProfilesRepository {
                     ProviderMeta.ProviderTableMeta.USER_QUOTAS_TABLE_NAME,
                     null,
                     ProviderMeta.ProviderTableMeta.USER_QUOTAS__ACCOUNT_NAME + "=?",
-                    new String[]{userProfile.getAccountName()},
+                    new String[] {userProfile.getAccountName()},
                     null, null, null
-            );
+                );
             exists = (c != null && c.moveToFirst());
         } finally {
             if (c != null) {
@@ -317,10 +317,10 @@ public class UserProfilesRepository {
         if (database == null) {
 
             database = SQLiteDatabase.openDatabase(
-                    dbFile.getAbsolutePath(),
-                    null,
-                    SQLiteDatabase.OPEN_READWRITE
-            );
+                           dbFile.getAbsolutePath(),
+                           null,
+                           SQLiteDatabase.OPEN_READWRITE
+                       );
         }
 
         return database;

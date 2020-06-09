@@ -97,7 +97,7 @@ public class OperationsService extends Service {
     public static final String ACTION_OPERATION_FINISHED = OperationsService.class.getName() + ".OPERATION_FINISHED";
 
     private ConcurrentMap<Integer, Pair<RemoteOperation, RemoteOperationResult>>
-            mUndispatchedFinishedOperations = new ConcurrentHashMap<>();
+    mUndispatchedFinishedOperations = new ConcurrentHashMap<>();
 
     private static class Target {
         public Uri mServerUrl;
@@ -291,7 +291,7 @@ public class OperationsService extends Service {
                 mServiceHandler.mPendingOperations.add(itemToQueue);
                 Intent executeOperation = new Intent(OperationsService.this, OperationsService.class);
                 executeOperation.putExtra(EXTRA_IS_LAST_FILE_TO_REMOVE,
-                        operationIntent.getBooleanExtra(EXTRA_IS_LAST_FILE_TO_REMOVE, false));
+                                          operationIntent.getBooleanExtra(EXTRA_IS_LAST_FILE_TO_REMOVE, false));
                 startService(executeOperation);
                 return itemToQueue.second.hashCode();
             } else {
@@ -301,7 +301,7 @@ public class OperationsService extends Service {
 
         public boolean dispatchResultIfFinished(int operationId, OnRemoteOperationListener listener) {
             Pair<RemoteOperation, RemoteOperationResult> undispatched =
-                    mUndispatchedFinishedOperations.remove(operationId);
+                mUndispatchedFinishedOperations.remove(operationId);
             if (undispatched != null) {
                 listener.onRemoteOperationFinish(undispatched.first, undispatched.second);
                 return true;
@@ -339,7 +339,7 @@ public class OperationsService extends Service {
         OperationsService mService;
 
         private final ConcurrentLinkedQueue<Pair<Target, RemoteOperation>> mPendingOperations =
-                new ConcurrentLinkedQueue<>();
+            new ConcurrentLinkedQueue<>();
         private Target mLastTarget = null;
         private OwnCloudClient mOwnCloudClient = null;
         private FileDataStorageManager mStorageManager;
@@ -380,24 +380,24 @@ public class OperationsService extends Service {
                         if (mLastTarget.mAccount != null) {
                             ocAccount = new OwnCloudAccount(mLastTarget.mAccount, mService);
                             mOwnCloudClient = SingleSessionManager.getDefaultSingleton().
-                                    getClientFor(ocAccount, mService);
+                                              getClientFor(ocAccount, mService);
 
                             OwnCloudVersion version = com.owncloud.android.authentication.AccountUtils.getServerVersion(
-                                    mLastTarget.mAccount
-                            );
+                                                          mLastTarget.mAccount
+                                                      );
                             mOwnCloudClient.setOwnCloudVersion(version);
 
                             mStorageManager = new FileDataStorageManager(
-                                    mService,
-                                    mLastTarget.mAccount,
-                                    mService.getContentResolver()
+                                mService,
+                                mLastTarget.mAccount,
+                                mService.getContentResolver()
                             );
                         } else {
                             OwnCloudCredentials credentials = null;
                             ocAccount = new OwnCloudAccount(mLastTarget.mServerUrl, credentials);
 
                             mOwnCloudClient = SingleSessionManager.getDefaultSingleton().
-                                    getClientFor(ocAccount, mService);
+                                              getClientFor(ocAccount, mService);
 
                             mStorageManager = null;
                         }
@@ -459,90 +459,90 @@ public class OperationsService extends Service {
                 String serverUrl = operationIntent.getStringExtra(EXTRA_SERVER_URL);
                 String cookie = operationIntent.getStringExtra(EXTRA_COOKIE);
                 target = new Target(
-                        account,
-                        (serverUrl == null) ? null : Uri.parse(serverUrl),
-                        cookie
+                    account,
+                    (serverUrl == null) ? null : Uri.parse(serverUrl),
+                    cookie
                 );
 
                 String action = operationIntent.getAction();
                 if (action != null) {
                     switch (action) {
-                        case ACTION_GET_USER_NAME:
-                            // Get User Name
-                            operation = new GetRemoteUserInfoOperation();
+                    case ACTION_GET_USER_NAME:
+                        // Get User Name
+                        operation = new GetRemoteUserInfoOperation();
 
-                            break;
-                        case ACTION_RENAME: {
-                            // Rename file or folder
-                            String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                            String newName = operationIntent.getStringExtra(EXTRA_NEWNAME);
-                            operation = new RenameFileOperation(remotePath, newName);
+                        break;
+                    case ACTION_RENAME: {
+                        // Rename file or folder
+                        String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        String newName = operationIntent.getStringExtra(EXTRA_NEWNAME);
+                        operation = new RenameFileOperation(remotePath, newName);
 
-                            break;
-                        }
-                        case ACTION_REMOVE: {
-                            // Remove file or folder
-                            String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                            boolean onlyLocalCopy = operationIntent.getBooleanExtra(EXTRA_REMOVE_ONLY_LOCAL, false);
-                            operation = new RemoveFileOperation(remotePath, onlyLocalCopy,
-                                    operationIntent.getBooleanExtra(EXTRA_IS_LAST_FILE_TO_REMOVE, false));
+                        break;
+                    }
+                    case ACTION_REMOVE: {
+                        // Remove file or folder
+                        String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        boolean onlyLocalCopy = operationIntent.getBooleanExtra(EXTRA_REMOVE_ONLY_LOCAL, false);
+                        operation = new RemoveFileOperation(remotePath, onlyLocalCopy,
+                                                            operationIntent.getBooleanExtra(EXTRA_IS_LAST_FILE_TO_REMOVE, false));
 
-                            break;
-                        }
-                        case ACTION_CREATE_FOLDER: {
-                            // Create Folder
-                            String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                            boolean createFullPath = operationIntent.getBooleanExtra(EXTRA_CREATE_FULL_PATH, true);
-                            operation = new CreateFolderOperation(remotePath, createFullPath);
+                        break;
+                    }
+                    case ACTION_CREATE_FOLDER: {
+                        // Create Folder
+                        String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        boolean createFullPath = operationIntent.getBooleanExtra(EXTRA_CREATE_FULL_PATH, true);
+                        operation = new CreateFolderOperation(remotePath, createFullPath);
 
-                            break;
-                        }
-                        case ACTION_SYNC_FILE: {
-                            // Sync file
-                            String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                            operation = new SynchronizeFileOperation(remotePath, account, getApplicationContext());
+                        break;
+                    }
+                    case ACTION_SYNC_FILE: {
+                        // Sync file
+                        String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        operation = new SynchronizeFileOperation(remotePath, account, getApplicationContext());
 
-                            break;
-                        }
-                        case ACTION_SYNC_FOLDER: {
-                            // Sync folder (all its descendant files are sync'ed)
-                            String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                            boolean pushOnly = operationIntent.getBooleanExtra(EXTRA_PUSH_ONLY, false);
-                            boolean syncContentOfRegularFiles =
-                                    operationIntent.getBooleanExtra(EXTRA_SYNC_REGULAR_FILES, false);
-                            operation = new SynchronizeFolderOperation(
-                                    this,                       // TODO remove this dependency from construction time
-                                    remotePath,
-                                    account,
-                                    System.currentTimeMillis(),  // TODO remove this dependency from construction time
-                                    pushOnly,
-                                    false,
-                                    syncContentOfRegularFiles
-                            );
+                        break;
+                    }
+                    case ACTION_SYNC_FOLDER: {
+                        // Sync folder (all its descendant files are sync'ed)
+                        String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        boolean pushOnly = operationIntent.getBooleanExtra(EXTRA_PUSH_ONLY, false);
+                        boolean syncContentOfRegularFiles =
+                            operationIntent.getBooleanExtra(EXTRA_SYNC_REGULAR_FILES, false);
+                        operation = new SynchronizeFolderOperation(
+                            this,                       // TODO remove this dependency from construction time
+                            remotePath,
+                            account,
+                            System.currentTimeMillis(),  // TODO remove this dependency from construction time
+                            pushOnly,
+                            false,
+                            syncContentOfRegularFiles
+                        );
 
-                            break;
-                        }
-                        case ACTION_MOVE_FILE: {
-                            // Move file/folder
-                            String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                            String newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
-                            operation = new MoveFileOperation(remotePath, newParentPath);
+                        break;
+                    }
+                    case ACTION_MOVE_FILE: {
+                        // Move file/folder
+                        String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        String newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
+                        operation = new MoveFileOperation(remotePath, newParentPath);
 
-                            break;
-                        }
-                        case ACTION_COPY_FILE: {
-                            // Copy file/folder
-                            String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
-                            String newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
-                            operation = new CopyFileOperation(remotePath, newParentPath);
+                        break;
+                    }
+                    case ACTION_COPY_FILE: {
+                        // Copy file/folder
+                        String remotePath = operationIntent.getStringExtra(EXTRA_REMOTE_PATH);
+                        String newParentPath = operationIntent.getStringExtra(EXTRA_NEW_PARENT_PATH);
+                        operation = new CopyFileOperation(remotePath, newParentPath);
 
-                            break;
-                        }
-                        case ACTION_CHECK_CURRENT_CREDENTIALS:
-                            // Check validity of currently stored credentials for a given account
-                            operation = new CheckCurrentCredentialsOperation(account);
+                        break;
+                    }
+                    case ACTION_CHECK_CURRENT_CREDENTIALS:
+                        // Check validity of currently stored credentials for a given account
+                        operation = new CheckCurrentCredentialsOperation(account);
 
-                            break;
+                        break;
                     }
                 }
             }
@@ -565,7 +565,7 @@ public class OperationsService extends Service {
      * @param result    Result of the operation.
      */
     protected void dispatchResultToOperationListeners(
-            final RemoteOperation operation, final RemoteOperationResult result
+        final RemoteOperation operation, final RemoteOperationResult result
     ) {
         int count = 0;
         for (OnRemoteOperationListener listener : mOperationsBinder.mBoundListeners.keySet()) {

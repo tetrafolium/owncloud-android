@@ -22,7 +22,7 @@ public class PermissionUtil {
      */
     public static boolean checkSelfPermission(Context context, String permission) {
         return ContextCompat.checkSelfPermission(context, permission)
-                != android.content.pm.PackageManager.PERMISSION_GRANTED;
+               != android.content.pm.PackageManager.PERMISSION_GRANTED;
     }
 
     /**
@@ -47,7 +47,7 @@ public class PermissionUtil {
      */
     public static void requestWriteExternalStoreagePermission(Activity activity) {
         ActivityCompat.requestPermissions(activity,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+                                          new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                          PERMISSIONS_WRITE_EXTERNAL_STORAGE);
     }
 }

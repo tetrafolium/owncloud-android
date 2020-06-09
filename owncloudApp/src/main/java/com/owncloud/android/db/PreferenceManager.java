@@ -98,49 +98,49 @@ public abstract class PreferenceManager {
         CameraUploadsConfiguration result = new CameraUploadsConfiguration();
         SharedPreferences prefs = getDefaultSharedPreferences(context);
         result.setEnabledForPictures(
-                prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_ENABLED, false)
+            prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_ENABLED, false)
         );
         result.setEnabledForVideos(
-                prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_ENABLED, false)
+            prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_ENABLED, false)
         );
         result.setWifiOnlyForPictures(
-                prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY, false)
+            prefs.getBoolean(PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY, false)
         );
         result.setWifiOnlyForVideos(
-                prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY, false)
+            prefs.getBoolean(PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY, false)
         );
         Account currentAccount = AccountUtils.getCurrentOwnCloudAccount(context);
         result.setUploadAccountName(
-                prefs.getString(
-                        PREF__CAMERA_UPLOADS_ACCOUNT_NAME,
-                        (currentAccount == null) ? "" : currentAccount.name
-                )
+            prefs.getString(
+                PREF__CAMERA_UPLOADS_ACCOUNT_NAME,
+                (currentAccount == null) ? "" : currentAccount.name
+            )
         );
         String uploadPath = prefs.getString(
-                PREF__CAMERA_PICTURE_UPLOADS_PATH,
-                PREF__CAMERA_UPLOADS_DEFAULT_PATH + OCFile.PATH_SEPARATOR
-        );
+                                PREF__CAMERA_PICTURE_UPLOADS_PATH,
+                                PREF__CAMERA_UPLOADS_DEFAULT_PATH + OCFile.PATH_SEPARATOR
+                            );
         result.setUploadPathForPictures(
-                uploadPath.endsWith(File.separator) ? uploadPath : uploadPath + File.separator
+            uploadPath.endsWith(File.separator) ? uploadPath : uploadPath + File.separator
         );
         uploadPath = prefs.getString(
-                PREF__CAMERA_VIDEO_UPLOADS_PATH,
-                PREF__CAMERA_UPLOADS_DEFAULT_PATH + OCFile.PATH_SEPARATOR
-        );
+                         PREF__CAMERA_VIDEO_UPLOADS_PATH,
+                         PREF__CAMERA_UPLOADS_DEFAULT_PATH + OCFile.PATH_SEPARATOR
+                     );
         result.setUploadPathForVideos(
-                uploadPath.endsWith(File.separator) ? uploadPath : uploadPath + File.separator
+            uploadPath.endsWith(File.separator) ? uploadPath : uploadPath + File.separator
         );
         result.setBehaviourAfterUpload(
-                prefs.getString(
-                        PREF__CAMERA_UPLOADS_BEHAVIOUR,
-                        context.getResources().getStringArray(R.array.pref_behaviour_entryValues)[0]
-                )
+            prefs.getString(
+                PREF__CAMERA_UPLOADS_BEHAVIOUR,
+                context.getResources().getStringArray(R.array.pref_behaviour_entryValues)[0]
+            )
         );
         result.setSourcePath(
-                prefs.getString(
-                        PREF__CAMERA_UPLOADS_SOURCE,
-                        CameraUploadsConfiguration.DEFAULT_SOURCE_PATH
-                )
+            prefs.getString(
+                PREF__CAMERA_UPLOADS_SOURCE,
+                CameraUploadsConfiguration.DEFAULT_SOURCE_PATH
+            )
         );
         return result;
     }
@@ -175,10 +175,10 @@ public abstract class PreferenceManager {
     public static int getSortOrder(Context context, int flag) {
         if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
             return getDefaultSharedPreferences(context)
-                    .getInt(AUTO_PREF__SORT_ORDER_FILE_DISP, FileStorageUtils.SORT_NAME);
+                   .getInt(AUTO_PREF__SORT_ORDER_FILE_DISP, FileStorageUtils.SORT_NAME);
         } else {
             return getDefaultSharedPreferences(context)
-                    .getInt(AUTO_PREF__SORT_ORDER_UPLOAD, FileStorageUtils.SORT_DATE);
+                   .getInt(AUTO_PREF__SORT_ORDER_UPLOAD, FileStorageUtils.SORT_DATE);
         }
     }
 
@@ -205,10 +205,10 @@ public abstract class PreferenceManager {
     public static boolean getSortAscending(Context context, int flag) {
         if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
             return getDefaultSharedPreferences(context)
-                    .getBoolean(AUTO_PREF__SORT_ASCENDING_FILE_DISP, true);
+                   .getBoolean(AUTO_PREF__SORT_ASCENDING_FILE_DISP, true);
         } else {
             return getDefaultSharedPreferences(context)
-                    .getBoolean(AUTO_PREF__SORT_ASCENDING_UPLOAD, true);
+                   .getBoolean(AUTO_PREF__SORT_ASCENDING_UPLOAD, true);
         }
     }
 
@@ -254,8 +254,8 @@ public abstract class PreferenceManager {
     public static class CameraUploadsConfiguration {
 
         public static final String DEFAULT_SOURCE_PATH = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM
-        ).getAbsolutePath() + "/Camera";
+                    Environment.DIRECTORY_DCIM
+                ).getAbsolutePath() + "/Camera";
 
         private boolean mEnabledForPictures;
         private boolean mEnabledForVideos;

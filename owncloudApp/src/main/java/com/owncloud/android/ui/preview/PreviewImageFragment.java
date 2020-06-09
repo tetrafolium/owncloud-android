@@ -100,9 +100,9 @@ public class PreviewImageFragment extends FileFragment {
      * @return Fragment ready to be used.
      */
     public static PreviewImageFragment newInstance(
-            OCFile file,
-            Account account,
-            boolean ignoreFirstSavedState
+        OCFile file,
+        Account account,
+        boolean ignoreFirstSavedState
     ) {
         PreviewImageFragment frag = new PreviewImageFragment();
         Bundle args = new Bundle();
@@ -151,7 +151,7 @@ public class PreviewImageFragment extends FileFragment {
 
         View view = inflater.inflate(R.layout.preview_image_fragment, container, false);
         view.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         mProgressBar = view.findViewById(R.id.syncProgressBar);
@@ -245,15 +245,15 @@ public class PreviewImageFragment extends FileFragment {
             setFile(mContainerActivity.getStorageManager().getFileById(getFile().getFileId()));
 
             FileMenuFilter mf = new FileMenuFilter(
-                    getFile(),
-                    mContainerActivity.getStorageManager().getAccount(),
-                    mContainerActivity,
-                    getActivity()
+                getFile(),
+                mContainerActivity.getStorageManager().getAccount(),
+                mContainerActivity,
+                getActivity()
             );
             mf.filter(menu, false, false, false, false);
         }
 
-        // additional restriction for this fragment 
+        // additional restriction for this fragment
         // TODO allow renaming in PreviewImageFragment
         MenuItem item = menu.findItem(R.id.action_rename_file);
         if (item != null) {
@@ -261,7 +261,7 @@ public class PreviewImageFragment extends FileFragment {
             item.setEnabled(false);
         }
 
-        // additional restriction for this fragment 
+        // additional restriction for this fragment
         // TODO allow refresh file in PreviewImageFragment
         item = menu.findItem(R.id.action_sync_file);
         if (item != null) {
@@ -291,41 +291,41 @@ public class PreviewImageFragment extends FileFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_share_file: {
-                mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-                return true;
-            }
-            case R.id.action_open_file_with: {
-                openFile();
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_see_details: {
-                seeDetails();
-                return true;
-            }
-            case R.id.action_send_file: {
-                mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
-                return true;
-            }
-            case R.id.action_sync_file: {
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_set_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
-                return true;
-            }
-            case R.id.action_unset_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+        case R.id.action_share_file: {
+            mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+            return true;
+        }
+        case R.id.action_open_file_with: {
+            openFile();
+            return true;
+        }
+        case R.id.action_remove_file: {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
+            return true;
+        }
+        case R.id.action_see_details: {
+            seeDetails();
+            return true;
+        }
+        case R.id.action_send_file: {
+            mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
+            return true;
+        }
+        case R.id.action_sync_file: {
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        }
+        case R.id.action_set_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
+            return true;
+        }
+        case R.id.action_unset_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
+            return true;
+        }
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -395,24 +395,24 @@ public class PreviewImageFragment extends FileFragment {
     private void loadAndShowImage() {
 
         Glide.with(getContext())
-                .load(new File(getFile().getStoragePath()))
-                .listener(new RequestListener<Drawable>() {
+        .load(new File(getFile().getStoragePath()))
+        .listener(new RequestListener<Drawable>() {
 
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
-                                                boolean isFirstResource) {
-                        Timber.e(e, "Error loading image");
-                        return false;
-                    }
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
+                                        boolean isFirstResource) {
+                Timber.e(e, "Error loading image");
+                return false;
+            }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
-                                                   DataSource dataSource, boolean isFirstResource) {
-                        Timber.d("Loading image %s", getFile().getFileName());
-                        return false;
-                    }
-                })
-                .into(mImageView);
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
+                                           DataSource dataSource, boolean isFirstResource) {
+                Timber.d("Loading image %s", getFile().getFileName());
+                return false;
+            }
+        })
+        .into(mImageView);
 
         mImageView.setVisibility(View.VISIBLE);
     }

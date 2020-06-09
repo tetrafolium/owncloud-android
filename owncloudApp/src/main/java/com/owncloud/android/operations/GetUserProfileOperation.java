@@ -85,39 +85,39 @@ public class GetUserProfileOperation extends SyncOperation {
                 Timber.d("User info recovered from UseCaseHelper:GetUserInfo -> %s", userInfo.toString());
                 Account storedAccount = getStorageManager().getAccount();
                 accountManager.setUserData(
-                        storedAccount,
-                        AccountUtils.Constants.KEY_DISPLAY_NAME,    // keep also there, for the moment
-                        userInfo.getDisplayName()
+                    storedAccount,
+                    AccountUtils.Constants.KEY_DISPLAY_NAME,    // keep also there, for the moment
+                    userInfo.getDisplayName()
                 );
                 accountManager.setUserData(
-                        storedAccount,
-                        AccountUtils.Constants.KEY_ID,
-                        userInfo.getId()
+                    storedAccount,
+                    AccountUtils.Constants.KEY_ID,
+                    userInfo.getId()
                 );
 
                 // map user info into UserProfile instance
                 userProfile = new UserProfile(
-                        storedAccount.name,
-                        userInfo.getId(),
-                        userInfo.getDisplayName(),
-                        userInfo.getEmail()
+                    storedAccount.name,
+                    userInfo.getId(),
+                    userInfo.getDisplayName(),
+                    userInfo.getEmail()
                 );
 
                 /// get quota
                 GetRemoteUserQuotaOperation getRemoteUserQuotaOperation = new GetRemoteUserQuotaOperation(mRemotePath);
 
                 final RemoteOperationResult<RemoteQuota> quotaOperationResult =
-                        getRemoteUserQuotaOperation.execute(client);
+                    getRemoteUserQuotaOperation.execute(client);
 
                 if (quotaOperationResult.isSuccess()) {
 
                     RemoteQuota remoteQuota = quotaOperationResult.getData();
 
                     UserProfile.UserQuota userQuota = new UserProfile.UserQuota(
-                            remoteQuota.getFree(),
-                            remoteQuota.getRelative(),
-                            remoteQuota.getTotal(),
-                            remoteQuota.getUsed()
+                        remoteQuota.getFree(),
+                        remoteQuota.getRelative(),
+                        remoteQuota.getTotal(),
+                        remoteQuota.getUsed()
                     );
 
                     userProfile.setQuota(userQuota);
@@ -128,20 +128,20 @@ public class GetUserProfileOperation extends SyncOperation {
                     GetRemoteUserAvatarOperation getAvatarOperation = new GetRemoteUserAvatarOperation(dimension);
 
                     RemoteOperationResult<GetRemoteUserAvatarOperation.ResultData> avatarOperationResult =
-                            getAvatarOperation.execute(client);
+                        getAvatarOperation.execute(client);
 
                     if (avatarOperationResult.isSuccess()) {
                         GetRemoteUserAvatarOperation.ResultData avatar = avatarOperationResult.getData();
 
                         byte[] avatarData = avatar.getAvatarData();
                         String avatarKey = ThumbnailsCacheManager.addAvatarToCache(
-                                storedAccount.name,
-                                avatarData,
-                                dimension
-                        );
+                                               storedAccount.name,
+                                               avatarData,
+                                               dimension
+                                           );
 
                         UserProfile.UserAvatar userAvatar = new UserProfile.UserAvatar(
-                                avatarKey, avatar.getMimeType(), avatar.getEtag()
+                            avatarKey, avatar.getMimeType(), avatar.getEtag()
                         );
                         userProfile.setAvatar(userAvatar);
 
@@ -157,7 +157,7 @@ public class GetUserProfileOperation extends SyncOperation {
                     userProfilesRepository.update(userProfile);
 
                     RemoteOperationResult<UserProfile> result =
-                            new RemoteOperationResult<>(RemoteOperationResult.ResultCode.OK);
+                        new RemoteOperationResult<>(RemoteOperationResult.ResultCode.OK);
                     result.setData(userProfile);
 
                     return result;

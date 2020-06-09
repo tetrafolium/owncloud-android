@@ -71,7 +71,7 @@ import timber.log.Timber;
  * produce an {@link IllegalStateException}.
  */
 public class PreviewVideoFragment extends FileFragment implements View.OnClickListener,
-        ExoPlayer.EventListener, PrepareVideoPlayerAsyncTask.OnPrepareVideoPlayerTaskListener {
+    ExoPlayer.EventListener, PrepareVideoPlayerAsyncTask.OnPrepareVideoPlayerTaskListener {
 
     public static final String EXTRA_FILE = "FILE";
     public static final String EXTRA_ACCOUNT = "ACCOUNT";
@@ -114,10 +114,10 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * @return Fragment ready to be used.
      */
     public static PreviewVideoFragment newInstance(
-            OCFile file,
-            Account account,
-            int startPlaybackPosition,
-            boolean autoplay
+        OCFile file,
+        Account account,
+        int startPlaybackPosition,
+        boolean autoplay
     ) {
         PreviewVideoFragment frag = new PreviewVideoFragment();
         Bundle args = new Bundle();
@@ -339,10 +339,10 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
         super.onPrepareOptionsMenu(menu);
 
         FileMenuFilter mf = new FileMenuFilter(
-                getFile(),
-                mAccount,
-                mContainerActivity,
-                getActivity()
+            getFile(),
+            mAccount,
+            mContainerActivity,
+            getActivity()
         );
         mf.filter(menu, false, false, false, false);
 
@@ -379,54 +379,54 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_share_file: {
-                releasePlayer();
-                mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-                return true;
-            }
-            case R.id.action_open_file_with: {
-                openFile();
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_see_details: {
-                seeDetails();
-                return true;
-            }
-            case R.id.action_send_file: {
-                releasePlayer();
-                mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
-                return true;
-            }
-            case R.id.action_sync_file: {
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_set_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
-                return true;
-            }
-            case R.id.action_unset_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
-                return true;
-            }
-            case R.id.action_download_file: {
-                releasePlayer();
-                // Show progress bar
-                mProgressBar.setVisibility(View.VISIBLE);
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_cancel_sync: {
-                ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+        case R.id.action_share_file: {
+            releasePlayer();
+            mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+            return true;
+        }
+        case R.id.action_open_file_with: {
+            openFile();
+            return true;
+        }
+        case R.id.action_remove_file: {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
+            return true;
+        }
+        case R.id.action_see_details: {
+            seeDetails();
+            return true;
+        }
+        case R.id.action_send_file: {
+            releasePlayer();
+            mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
+            return true;
+        }
+        case R.id.action_sync_file: {
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        }
+        case R.id.action_set_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
+            return true;
+        }
+        case R.id.action_unset_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
+            return true;
+        }
+        case R.id.action_download_file: {
+            releasePlayer();
+            // Show progress bar
+            mProgressBar.setVisibility(View.VISIBLE);
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        }
+        case R.id.action_cancel_sync: {
+            ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
+            return true;
+        }
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -436,14 +436,14 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
         // Create a default TrackSelector
         mainHandler = new Handler();
         TrackSelection.Factory videoTrackSelectionFactory =
-                new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
+            new AdaptiveVideoTrackSelection.Factory(BANDWIDTH_METER);
         trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
 
         // Video streaming is only supported at Jelly Bean or higher Android versions (>= API 16)
 
         // Create the player
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector,
-                new DefaultLoadControl());
+                 new DefaultLoadControl());
 
         player.addListener(this);
 
@@ -452,7 +452,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
 
         // Prepare video player asynchronously
         new PrepareVideoPlayerAsyncTask(getActivity(), this,
-                getFile(), mAccount, mainHandler).execute();
+                                        getFile(), mAccount, mainHandler).execute();
     }
 
     /**
@@ -498,26 +498,26 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      */
     private void showAlertDialog(final PreviewVideoError previewVideoError) {
         new AlertDialog.Builder(getActivity())
-                .setMessage(previewVideoError.getErrorMessage())
-                .setPositiveButton(android.R.string.VideoView_error_button,
-                        (dialog, whichButton) -> {
-                            if (previewVideoError.isFileSyncNeeded() && mContainerActivity != null) {
-                                // Initialize the file download
-                                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                            }
+        .setMessage(previewVideoError.getErrorMessage())
+        .setPositiveButton(android.R.string.VideoView_error_button,
+        (dialog, whichButton) -> {
+            if (previewVideoError.isFileSyncNeeded() && mContainerActivity != null) {
+                // Initialize the file download
+                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            }
 
-                            // This solution is not the best one but is an easy way to handle
-                            // expiration error from here, without modifying so much code
-                            // or involving other parts
-                            if (previewVideoError.isParentFolderSyncNeeded()) {
-                                // Start to sync the parent file folder
-                                OCFile folder = new OCFile(getFile().getParentRemotePath());
-                                ((FileDisplayActivity) getActivity()).
-                                        startSyncFolderOperation(folder, false);
-                            }
-                        })
-                .setCancelable(false)
-                .show();
+            // This solution is not the best one but is an easy way to handle
+            // expiration error from here, without modifying so much code
+            // or involving other parts
+            if (previewVideoError.isParentFolderSyncNeeded()) {
+                // Start to sync the parent file folder
+                OCFile folder = new OCFile(getFile().getParentRemotePath());
+                ((FileDisplayActivity) getActivity()).
+                startSyncFolderOperation(folder, false);
+            }
+        })
+        .setCancelable(false)
+        .show();
     }
 
     @Override

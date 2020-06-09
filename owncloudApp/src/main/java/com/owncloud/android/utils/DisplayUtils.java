@@ -100,15 +100,15 @@ public class DisplayUtils {
             }
 
             BigDecimal readableResult = new BigDecimal(result).setScale(
-                    sizeScales[attachedSuff],
-                    BigDecimal.ROUND_HALF_UP
+                sizeScales[attachedSuff],
+                BigDecimal.ROUND_HALF_UP
             ).stripTrailingZeros();
 
             // Unscale only values with ten exponent
             return (readableResult.scale() < 0 ?
                     readableResult.setScale(0) :
                     readableResult
-            ) + " " + sizeSuffixes[attachedSuff];
+                   ) + " " + sizeSuffixes[attachedSuff];
         }
     }
 
@@ -193,11 +193,11 @@ public class DisplayUtils {
      */
     public static CharSequence getRelativeTimestamp(Context context, long modificationTimestamp) {
         return getRelativeDateTimeString(context, modificationTimestamp, DateUtils.SECOND_IN_MILLIS,
-                DateUtils.WEEK_IN_MILLIS, 0);
+                                         DateUtils.WEEK_IN_MILLIS, 0);
     }
 
     public static CharSequence getRelativeDateTimeString(
-            Context c, long time, long minResolution, long transitionResolution, int flags
+        Context c, long time, long minResolution, long transitionResolution, int flags
     ) {
 
         CharSequence dateString;
@@ -283,19 +283,19 @@ public class DisplayUtils {
      *                        generated instead. USE WITH CARE, probably to be removed in the future.
      */
     public static void showAccountAvatar(
-            Account account,
-            ImageView displayView,
-            float displayRadius,
-            boolean fetchFromServer
+        Account account,
+        ImageView displayView,
+        float displayRadius,
+        boolean fetchFromServer
     ) {
         if (account != null) {
             // not just accessibility support, used to know what account is bound to each imageView
             displayView.setContentDescription(account.name);
 
             final ThumbnailsCacheManager.GetAvatarTask task =
-                    new ThumbnailsCacheManager.GetAvatarTask(
-                            displayView, account, displayRadius, fetchFromServer
-                    );
+                new ThumbnailsCacheManager.GetAvatarTask(
+                displayView, account, displayRadius, fetchFromServer
+            );
             task.execute();
         }
     }

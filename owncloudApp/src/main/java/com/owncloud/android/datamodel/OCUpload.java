@@ -285,7 +285,7 @@ public class OCUpload implements Parcelable {
     }
 
     /**
-     * Returns owncloud account as {@link Account} object.  
+     * Returns owncloud account as {@link Account} object.
      */
     public Account getAccount(Context context) {
         return AccountUtils.getOwnCloudAccountByName(context, getAccountName());
@@ -322,7 +322,7 @@ public class OCUpload implements Parcelable {
         try {
             String localPath = getLocalPath() != null ? getLocalPath() : "";
             return localPath + " status:" + getUploadStatus() + " result:" +
-                    (getLastResult() == null ? "null" : getLastResult().getValue());
+                   (getLastResult() == null ? "null" : getLastResult().getValue());
         } catch (NullPointerException e) {
             Timber.d("Exception %s", e.toString());
             return (e.toString());

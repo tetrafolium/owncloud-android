@@ -74,8 +74,8 @@ public class PreviewTextFragment extends FileFragment {
      * @return Fragment ready to be used.
      */
     public static PreviewTextFragment newInstance(
-            OCFile file,
-            Account account
+        OCFile file,
+        Account account
     ) {
         PreviewTextFragment frag = new PreviewTextFragment();
         Bundle args = new Bundle();
@@ -110,7 +110,7 @@ public class PreviewTextFragment extends FileFragment {
 
         View ret = inflater.inflate(R.layout.preview_text_fragment, container, false);
         ret.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         mProgressBar = ret.findViewById(R.id.syncProgressBar);
@@ -195,7 +195,7 @@ public class PreviewTextFragment extends FileFragment {
         protected StringWriter doInBackground(java.lang.Object... params) {
             if (params.length != 1) {
                 throw new IllegalArgumentException("The parameter to " + TextLoadAsyncTask.class.getName() + " must " +
-                        "be (1) the file location");
+                                                   "be (1) the file location");
             }
             final String location = (String) params[0];
 
@@ -296,10 +296,10 @@ public class PreviewTextFragment extends FileFragment {
 
         if (mContainerActivity.getStorageManager() != null) {
             FileMenuFilter mf = new FileMenuFilter(
-                    getFile(),
-                    mContainerActivity.getStorageManager().getAccount(),
-                    mContainerActivity,
-                    getActivity()
+                getFile(),
+                mContainerActivity.getStorageManager().getAccount(),
+                mContainerActivity,
+                getActivity()
             );
             mf.filter(menu, false, false, false, false);
         }
@@ -368,41 +368,41 @@ public class PreviewTextFragment extends FileFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_share_file: {
-                mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-                return true;
-            }
-            case R.id.action_open_file_with: {
-                openFile();
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_see_details: {
-                seeDetails();
-                return true;
-            }
-            case R.id.action_send_file: {
-                mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
-                return true;
-            }
-            case R.id.action_sync_file: {
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_set_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
-                return true;
-            }
-            case R.id.action_unset_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+        case R.id.action_share_file: {
+            mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+            return true;
+        }
+        case R.id.action_open_file_with: {
+            openFile();
+            return true;
+        }
+        case R.id.action_remove_file: {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
+            return true;
+        }
+        case R.id.action_see_details: {
+            seeDetails();
+            return true;
+        }
+        case R.id.action_send_file: {
+            mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
+            return true;
+        }
+        case R.id.action_sync_file: {
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        }
+        case R.id.action_set_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
+            return true;
+        }
+        case R.id.action_unset_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
+            return true;
+        }
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -486,7 +486,7 @@ public class PreviewTextFragment extends FileFragment {
         return (file != null && file.isDown() && file.isText() &&
                 !unsupportedTypes.contains(file.getMimetype()) &&
                 !unsupportedTypes.contains(file.getMimeTypeFromName())
-        );
+               );
     }
 
     /**

@@ -96,19 +96,19 @@ public class PassCodeActivity extends BaseActivity {
         // Allow or disallow touches with other visible windows
         LinearLayout passcodeLockLayout = findViewById(R.id.passcodeLockLayout);
         passcodeLockLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         mBCancel = findViewById(R.id.cancel);
         mPassCodeHdr = findViewById(R.id.header);
         mPassCodeHdrExplanation = findViewById(R.id.explanation);
         mPassCodeHdrExplanation.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
         mPassCodeEditTexts[0] = findViewById(R.id.txt0);
         mPassCodeEditTexts[0].requestFocus();
         getWindow().setSoftInputMode(
-                android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         mPassCodeEditTexts[1] = findViewById(R.id.txt1);
         mPassCodeEditTexts[2] = findViewById(R.id.txt2);
         mPassCodeEditTexts[3] = findViewById(R.id.txt3);
@@ -316,7 +316,7 @@ public class PassCodeActivity extends BaseActivity {
 
             } else {
                 showErrorAndRestart(R.string.pass_code_wrong, R.string.pass_code_enter_pass_code,
-                        View.INVISIBLE);
+                                    View.INVISIBLE);
             }
 
         } else if (ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
@@ -329,7 +329,7 @@ public class PassCodeActivity extends BaseActivity {
                 finish();
             } else {
                 showErrorAndRestart(R.string.pass_code_wrong, R.string.pass_code_enter_pass_code,
-                        View.INVISIBLE);
+                                    View.INVISIBLE);
             }
 
         } else if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction())) {
@@ -343,7 +343,7 @@ public class PassCodeActivity extends BaseActivity {
 
             } else {
                 showErrorAndRestart(
-                        R.string.pass_code_mismatch, R.string.pass_code_configure_your_pass_code, View.VISIBLE
+                    R.string.pass_code_mismatch, R.string.pass_code_configure_your_pass_code, View.VISIBLE
                 );
             }
         }
@@ -354,10 +354,10 @@ public class PassCodeActivity extends BaseActivity {
         Arrays.fill(mPassCodeDigits, null);
         CharSequence errorSeq = getString(errorMessage);
         Snackbar snackbar = Snackbar.make(
-                findViewById(android.R.id.content),
-                errorSeq,
-                Snackbar.LENGTH_LONG
-        );
+                                findViewById(android.R.id.content),
+                                errorSeq,
+                                Snackbar.LENGTH_LONG
+                            );
         snackbar.show();
         mPassCodeHdr.setText(headerMessage);                // TODO check if really needed
         mPassCodeHdrExplanation.setVisibility(explanationVisibility); // TODO check if really needed
@@ -382,7 +382,7 @@ public class PassCodeActivity extends BaseActivity {
      */
     protected boolean checkPassCode() {
         SharedPreferences appPrefs = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
+                                     .getDefaultSharedPreferences(getApplicationContext());
 
         String[] savedPassCodeDigits = new String[4];
         savedPassCodeDigits[0] = appPrefs.getString(PREFERENCE_PASSCODE_D1, null);
@@ -393,7 +393,7 @@ public class PassCodeActivity extends BaseActivity {
         boolean result = true;
         for (int i = 0; i < mPassCodeDigits.length && result; i++) {
             result = (mPassCodeDigits[i] != null) &&
-                    mPassCodeDigits[i].equals(savedPassCodeDigits[i]);
+                     mPassCodeDigits[i].equals(savedPassCodeDigits[i]);
         }
         return result;
     }
@@ -450,7 +450,7 @@ public class PassCodeActivity extends BaseActivity {
     protected void savePassCodeAndExit() {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(KEY_PASSCODE,
-                mPassCodeDigits[0] + mPassCodeDigits[1] + mPassCodeDigits[2] + mPassCodeDigits[3]);
+                              mPassCodeDigits[0] + mPassCodeDigits[1] + mPassCodeDigits[2] + mPassCodeDigits[3]);
 
         setResult(RESULT_OK, resultIntent);
         DocumentProviderUtils.Companion.notifyDocumentProviderRoots(getApplicationContext());
@@ -482,8 +482,8 @@ public class PassCodeActivity extends BaseActivity {
             mLastOne = lastOne;
             if (mIndex < 0) {
                 throw new IllegalArgumentException(
-                        "Invalid index in " + PassCodeDigitTextWatcher.class.getSimpleName() +
-                                " constructor"
+                    "Invalid index in " + PassCodeDigitTextWatcher.class.getSimpleName() +
+                    " constructor"
                 );
             }
         }

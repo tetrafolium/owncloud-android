@@ -48,7 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Dialog showing a list activities able to resolve a given Intent, 
+ * Dialog showing a list activities able to resolve a given Intent,
  * filtering out the activities matching give package names.
  */
 public class ShareLinkToDialog extends DialogFragment {
@@ -80,11 +80,11 @@ public class ShareLinkToDialog extends DialogFragment {
         mIntent = getArguments().getParcelable(ARG_INTENT);
         String[] packagesToExclude = getArguments().getStringArray(ARG_PACKAGES_TO_EXCLUDE);
         List<String> packagesToExcludeList = Arrays.asList(packagesToExclude != null ?
-                packagesToExclude : new String[0]);
+                                             packagesToExclude : new String[0]);
 
         PackageManager pm = getActivity().getPackageManager();
         List<ResolveInfo> activities = pm.queryIntentActivities(mIntent,
-                PackageManager.MATCH_DEFAULT_ONLY);
+                                       PackageManager.MATCH_DEFAULT_ONLY);
         Iterator<ResolveInfo> it = activities.iterator();
         ResolveInfo resolveInfo;
         while (it.hasNext()) {
@@ -122,23 +122,23 @@ public class ShareLinkToDialog extends DialogFragment {
         }
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(titleId)
-                .setAdapter(mAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Add the information of the chosen activity to the intent to send
-                        ResolveInfo chosen = mAdapter.getItem(which);
-                        ActivityInfo actInfo = chosen.activityInfo;
-                        ComponentName name = new ComponentName(
-                                actInfo.applicationInfo.packageName,
-                                actInfo.name);
-                        mIntent.setComponent(name);
+               .setTitle(titleId)
+        .setAdapter(mAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Add the information of the chosen activity to the intent to send
+                ResolveInfo chosen = mAdapter.getItem(which);
+                ActivityInfo actInfo = chosen.activityInfo;
+                ComponentName name = new ComponentName(
+                    actInfo.applicationInfo.packageName,
+                    actInfo.name);
+                mIntent.setComponent(name);
 
-                        // Send the file
-                        getActivity().startActivity(mIntent);
-                    }
-                })
-                .create();
+                // Send the file
+                getActivity().startActivity(mIntent);
+            }
+        })
+        .create();
     }
 
     class ActivityAdapter extends ArrayAdapter<ResolveInfo> {

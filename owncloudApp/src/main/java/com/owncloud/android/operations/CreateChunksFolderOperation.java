@@ -38,8 +38,8 @@ public class CreateChunksFolderOperation extends CreateFolderOperation {
     @Override
     protected RemoteOperationResult run(OwnCloudClient client) {
         CreateRemoteChunkFolderOperation createRemoteChunkFolderOperation = new CreateRemoteChunkFolderOperation(
-                mRemotePath,
-                mCreateFullPath
+            mRemotePath,
+            mCreateFullPath
         );
 
         RemoteOperationResult result = createRemoteChunkFolderOperation.execute(client);

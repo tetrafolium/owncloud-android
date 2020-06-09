@@ -47,7 +47,7 @@ public class ChunkedUploadFileOperation extends UploadFileOperation {
 
     @Override
     protected RemoteOperationResult uploadRemoteFile(OwnCloudClient client, File temporalFile, File originalFile,
-                                                     String expectedPath, File expectedFile, String timeStamp) {
+            String expectedPath, File expectedFile, String timeStamp) {
         try {
             RemoteOperationResult result;
 
@@ -97,10 +97,10 @@ public class ChunkedUploadFileOperation extends UploadFileOperation {
 
     private RemoteOperationResult moveChunksFileToFinalDestination(String fileLastModifTimestamp, long fileLength) {
         SyncOperation syncOperation = new MoveChunksFileOperation(
-                String.valueOf(mTransferId + FileUtils.PATH_SEPARATOR + FileUtils.FINAL_CHUNKS_FILE),
-                mFile.getRemotePath(),
-                fileLastModifTimestamp,
-                fileLength
+            String.valueOf(mTransferId + FileUtils.PATH_SEPARATOR + FileUtils.FINAL_CHUNKS_FILE),
+            mFile.getRemotePath(),
+            fileLastModifTimestamp,
+            fileLength
         );
         return syncOperation.execute(getClient(), getStorageManager());
     }

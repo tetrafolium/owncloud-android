@@ -72,7 +72,7 @@ public abstract class FileFragment extends Fragment {
 
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement " +
-                    ContainerActivity.class.getSimpleName());
+                                         ContainerActivity.class.getSimpleName());
         }
     }
 

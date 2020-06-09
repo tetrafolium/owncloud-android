@@ -88,7 +88,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     }
 
     public static SslUntrustedCertDialog newInstanceForFullSslError(X509Certificate cert, SslError error,
-                                                                    SslErrorHandler handler) {
+            SslErrorHandler handler) {
         if (cert == null) {
             throw new IllegalArgumentException("Trying to create instance with parameter cert == null");
         }

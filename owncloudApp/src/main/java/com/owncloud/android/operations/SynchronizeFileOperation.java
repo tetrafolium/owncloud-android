@@ -70,9 +70,9 @@ public class SynchronizeFileOperation extends SyncOperation {
      * @param context          Android context; needed to start transfers.
      */
     public SynchronizeFileOperation(
-            String remotePath,
-            Account account,
-            Context context
+        String remotePath,
+        Account account,
+        Context context
     ) {
 
         mRemotePath = remotePath;
@@ -106,12 +106,12 @@ public class SynchronizeFileOperation extends SyncOperation {
      * @param requestedFromAvOfflineJobService When 'true' will perform some specific operations
      */
     public SynchronizeFileOperation(
-            OCFile localFile,
-            OCFile serverFile,
-            Account account,
-            boolean pushOnly,
-            Context context,
-            boolean requestedFromAvOfflineJobService
+        OCFile localFile,
+        OCFile serverFile,
+        Account account,
+        boolean pushOnly,
+        Context context,
+        boolean requestedFromAvOfflineJobService
     ) {
 
         mLocalFile = localFile;
@@ -120,7 +120,7 @@ public class SynchronizeFileOperation extends SyncOperation {
             mRemotePath = mLocalFile.getRemotePath();
             if (mServerFile != null && !mServerFile.getRemotePath().equals(mRemotePath)) {
                 throw new IllegalArgumentException("serverFile and localFile do not correspond" +
-                        " to the same OC file");
+                                                   " to the same OC file");
             }
         } else if (mServerFile != null) {
             mRemotePath = mServerFile.getRemotePath();
@@ -171,16 +171,16 @@ public class SynchronizeFileOperation extends SyncOperation {
                     // file uploaded (null) or downloaded ("")
                     // before upgrade to version 1.8.0; this is legacy condition
                     serverChanged = mServerFile.getModificationTimestamp() !=
-                            mLocalFile.getModificationTimestampAtLastSyncForData();
+                                    mLocalFile.getModificationTimestampAtLastSyncForData();
                 } else {
                     serverChanged = (!mServerFile.getEtag().equals(mLocalFile.getEtag()));
                 }
 
                 /// decide if file changed in local device
                 boolean localChanged = (
-                        mLocalFile.getLocalModificationTimestamp() >
-                                mLocalFile.getLastSyncDateForData()
-                );
+                                           mLocalFile.getLocalModificationTimestamp() >
+                                           mLocalFile.getLastSyncDateForData()
+                                       );
 
                 /// decide action to perform depending upon changes
                 if (localChanged && serverChanged) {
@@ -233,7 +233,7 @@ public class SynchronizeFileOperation extends SyncOperation {
     private void requestForUpload(OCFile file) {
         TransferRequester requester = new TransferRequester();
         requester.uploadUpdate(mContext, mAccount, file, FileUploader.LOCAL_BEHAVIOUR_MOVE, true,
-                mRequestedFromAvOfflineJobService);
+                               mRequestedFromAvOfflineJobService);
 
         mTransferWasRequested = true;
     }

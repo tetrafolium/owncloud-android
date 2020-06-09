@@ -56,11 +56,11 @@ public class DownloadFileOperation extends RemoteOperation {
     public DownloadFileOperation(Account account, OCFile file) {
         if (account == null) {
             throw new IllegalArgumentException("Illegal null account in DownloadFileOperation " +
-                    "creation");
+                                               "creation");
         }
         if (file == null) {
             throw new IllegalArgumentException("Illegal null file in DownloadFileOperation " +
-                    "creation");
+                                               "creation");
         }
 
         mAccount = account;
@@ -101,9 +101,9 @@ public class DownloadFileOperation extends RemoteOperation {
         if (mimeType == null || mimeType.length() <= 0) {
             try {
                 mimeType = MimeTypeMap.getSingleton()
-                        .getMimeTypeFromExtension(
-                                mFile.getRemotePath().substring(
-                                        mFile.getRemotePath().lastIndexOf('.') + 1));
+                           .getMimeTypeFromExtension(
+                               mFile.getRemotePath().substring(
+                                   mFile.getRemotePath().lastIndexOf('.') + 1));
             } catch (IndexOutOfBoundsException e) {
                 Timber.e("Trying to find out MIME type of a file without extension: %s", mFile.getRemotePath());
             }
@@ -120,7 +120,7 @@ public class DownloadFileOperation extends RemoteOperation {
 
     public long getModificationTimestamp() {
         return (mModificationTimestamp > 0) ? mModificationTimestamp :
-                mFile.getModificationTimestamp();
+               mFile.getModificationTimestamp();
     }
 
     public String getEtag() {
@@ -170,7 +170,7 @@ public class DownloadFileOperation extends RemoteOperation {
             Timber.d("New file " + newFile.getAbsolutePath() + " is directory: " + newFile.isDirectory());
             if (!moved) {
                 result = new RemoteOperationResult<>(
-                        RemoteOperationResult.ResultCode.LOCAL_STORAGE_NOT_MOVED);
+                    RemoteOperationResult.ResultCode.LOCAL_STORAGE_NOT_MOVED);
             }
         }
         Timber.i("Download of " + mFile.getRemotePath() + " to " + getSavePath() + ": " + result.getLogMessage());

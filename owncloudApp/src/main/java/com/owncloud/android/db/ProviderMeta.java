@@ -50,7 +50,7 @@ public class ProviderMeta {
         public static final String USER_QUOTAS_TABLE_NAME = "user_quotas";
 
         public static final Uri CONTENT_URI = Uri.parse("content://"
-                + MainApp.Companion.getAuthority() + "/");
+                                              + MainApp.Companion.getAuthority() + "/");
         public static final Uri CONTENT_URI_FILE = Uri.parse("content://"
                 + MainApp.Companion.getAuthority() + "/file");
         public static final Uri CONTENT_URI_DIR = Uri.parse("content://"
@@ -137,17 +137,17 @@ public class ProviderMeta {
         public static final String CAPABILITIES_SHARING_PUBLIC_ENABLED = "sharing_public_enabled";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED = "sharing_public_password_enforced";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED_READ_ONLY =
-                "sharing_public_password_enforced_read_only";
+            "sharing_public_password_enforced_read_only";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED_READ_WRITE =
-                "sharing_public_password_enforced_read_write";
+            "sharing_public_password_enforced_read_write";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED_UPLOAD_ONLY =
-                "sharing_public_password_enforced_public_only";
+            "sharing_public_password_enforced_public_only";
         public static final String CAPABILITIES_SHARING_PUBLIC_EXPIRE_DATE_ENABLED =
-                "sharing_public_expire_date_enabled";
+            "sharing_public_expire_date_enabled";
         public static final String CAPABILITIES_SHARING_PUBLIC_EXPIRE_DATE_DAYS =
-                "sharing_public_expire_date_days";
+            "sharing_public_expire_date_days";
         public static final String CAPABILITIES_SHARING_PUBLIC_EXPIRE_DATE_ENFORCED =
-                "sharing_public_expire_date_enforced";
+            "sharing_public_expire_date_enforced";
         public static final String CAPABILITIES_SHARING_PUBLIC_UPLOAD = "sharing_public_upload";
         public static final String CAPABILITIES_SHARING_PUBLIC_MULTIPLE = "sharing_public_multiple";
         public static final String CAPABILITIES_SHARING_PUBLIC_SUPPORTS_UPLOAD_ONLY = "supports_upload_only";
@@ -177,7 +177,7 @@ public class ProviderMeta {
         public static final String UPLOADS_TRANSFER_ID = "transfer_id";
 
         public static final String UPLOADS_DEFAULT_SORT_ORDER =
-                ProviderTableMeta._ID + " collate nocase desc";
+            ProviderTableMeta._ID + " collate nocase desc";
 
         // Columns of user_avatars table
         public static final String USER_AVATARS__ACCOUNT_NAME = "account_name";
@@ -189,7 +189,7 @@ public class ProviderMeta {
         public static final String PICTURES_LAST_SYNC_TIMESTAMP = "pictures_last_sync_date";
         public static final String VIDEOS_LAST_SYNC_TIMESTAMP = "videos_last_sync_date";
         public static final String CAMERA_UPLOADS_SYNC_DEFAULT_SORT_ORDER =
-                ProviderTableMeta._ID + " collate nocase asc";
+            ProviderTableMeta._ID + " collate nocase asc";
 
         // Columns of user_quotas table
         public static final String USER_QUOTAS__ACCOUNT_NAME = "account_name";
@@ -198,6 +198,6 @@ public class ProviderMeta {
         public static final String USER_QUOTAS__TOTAL = "total";
         public static final String USER_QUOTAS__USED = "used";
         public static final String USER_QUOTAS_DEFAULT_SORT_ORDER =
-                ProviderTableMeta._ID + " collate nocase asc";
+            ProviderTableMeta._ID + " collate nocase asc";
     }
 }

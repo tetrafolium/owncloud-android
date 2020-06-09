@@ -81,26 +81,26 @@ public class CreateFolderDialogFragment extends DialogFragment implements Dialog
 
         // Allow or disallow touches with other visible windows
         v.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         CoordinatorLayout coordinatorLayout = requireActivity().findViewById(R.id.coordinator_layout);
 
         coordinatorLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
-        // Setup layout 
+        // Setup layout
         EditText inputText = v.findViewById(R.id.user_input);
         inputText.setText("");
         inputText.requestFocus();
 
-        // Build the dialog  
+        // Build the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setView(v)
-                .setPositiveButton(android.R.string.ok, this)
-                .setNegativeButton(android.R.string.cancel, this)
-                .setTitle(R.string.uploader_info_dirname);
+        .setPositiveButton(android.R.string.ok, this)
+        .setNegativeButton(android.R.string.cancel, this)
+        .setTitle(R.string.uploader_info_dirname);
         Dialog d = builder.create();
         d.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return d;
@@ -110,7 +110,7 @@ public class CreateFolderDialogFragment extends DialogFragment implements Dialog
     public void onClick(DialogInterface dialog, int which) {
         if (which == AlertDialog.BUTTON_POSITIVE) {
             String newFolderName =
-                    ((TextView) (requireDialog().findViewById(R.id.user_input))).getText().toString().trim();
+                ((TextView) (requireDialog().findViewById(R.id.user_input))).getText().toString().trim();
 
             if (newFolderName.length() <= 0) {
                 showSnackMessage(R.string.filename_empty);
@@ -135,10 +135,10 @@ public class CreateFolderDialogFragment extends DialogFragment implements Dialog
      */
     private void showSnackMessage(int messageResource) {
         Snackbar snackbar = Snackbar.make(
-                requireActivity().findViewById(R.id.coordinator_layout),
-                messageResource,
-                Snackbar.LENGTH_LONG
-        );
+                                requireActivity().findViewById(R.id.coordinator_layout),
+                                messageResource,
+                                Snackbar.LENGTH_LONG
+                            );
         snackbar.show();
     }
 

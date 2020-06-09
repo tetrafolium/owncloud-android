@@ -133,7 +133,7 @@ public class UriUtils {
 
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),
-                        Long.valueOf(id));
+                                       Long.valueOf(id));
 
                 return UriUtils.getDataColumn(context, contentUri, null, null);
             }
@@ -153,7 +153,7 @@ public class UriUtils {
                 }
 
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[]{split[1]};
+                final String[] selectionArgs = new String[] {split[1]};
 
                 return UriUtils.getDataColumn(context, contentUri, selection, selectionArgs);
             }
@@ -242,12 +242,12 @@ public class UriUtils {
             Cursor cursor = null;
             try {
                 cursor = context.getContentResolver().query(
-                        uri,
-                        new String[]{displayNameColumn},
-                        null,
-                        null,
-                        null
-                );
+                             uri,
+                             new String[] {displayNameColumn},
+                             null,
+                             null,
+                             null
+                         );
                 if (cursor != null) {
                     cursor.moveToFirst();
                     displayName = cursor.getString(cursor.getColumnIndex(displayNameColumn));

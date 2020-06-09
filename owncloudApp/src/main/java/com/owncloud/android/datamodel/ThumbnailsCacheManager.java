@@ -72,10 +72,10 @@ public class ThumbnailsCacheManager {
     private static OwnCloudClient mClient = null;
 
     public static Bitmap mDefaultImg =
-            BitmapFactory.decodeResource(
-                    MainApp.Companion.getAppContext().getResources(),
-                    R.drawable.file_image
-            );
+        BitmapFactory.decodeResource(
+            MainApp.Companion.getAppContext().getResources(),
+            R.drawable.file_image
+        );
 
     public static class InitDiskCacheTask extends AsyncTask<File, Void, Void> {
 
@@ -89,15 +89,15 @@ public class ThumbnailsCacheManager {
                         // Check if media is mounted or storage is built-in, if so,
                         // try and use external cache dir; otherwise use internal cache dir
                         final String cachePath =
-                                MainApp.Companion.getAppContext().getExternalCacheDir().getPath() +
-                                        File.separator + CACHE_FOLDER;
+                            MainApp.Companion.getAppContext().getExternalCacheDir().getPath() +
+                            File.separator + CACHE_FOLDER;
                         Timber.d("create dir: %s", cachePath);
                         final File diskCacheDir = new File(cachePath);
                         mThumbnailCache = new DiskLruImageCache(
-                                diskCacheDir,
-                                DISK_CACHE_SIZE,
-                                mCompressFormat,
-                                mCompressQuality
+                            diskCacheDir,
+                            DISK_CACHE_SIZE,
+                            mCompressFormat,
+                            mCompressQuality
                         );
                     } catch (Exception e) {
                         Timber.e(e, "Thumbnail cache could not be opened ");
@@ -173,11 +173,11 @@ public class ThumbnailsCacheManager {
             try {
                 if (mAccount != null) {
                     OwnCloudAccount ocAccount = new OwnCloudAccount(
-                            mAccount,
-                            MainApp.Companion.getAppContext()
+                        mAccount,
+                        MainApp.Companion.getAppContext()
                     );
                     mClient = SingleSessionManager.getDefaultSingleton().
-                            getClientFor(ocAccount, MainApp.Companion.getAppContext());
+                              getClientFor(ocAccount, MainApp.Companion.getAppContext());
                 }
 
                 mFile = params[0];
@@ -266,7 +266,7 @@ public class ThumbnailsCacheManager {
 
                 if (file.isDown()) {
                     Bitmap temp = BitmapUtils.decodeSampledBitmapFromFile(
-                            file.getStoragePath(), px, px);
+                                      file.getStoragePath(), px, px);
                     Bitmap bitmap = ThumbnailUtils.extractThumbnail(temp, px, px);
 
                     if (bitmap != null) {
@@ -288,8 +288,8 @@ public class ThumbnailsCacheManager {
                         GetMethod get;
                         try {
                             String uri = mClient.getBaseUri() + "" +
-                                    "/index.php/apps/files/api/v1/thumbnail/" +
-                                    px + "/" + px + Uri.encode(file.getRemotePath(), "/");
+                                         "/index.php/apps/files/api/v1/thumbnail/" +
+                                         px + "/" + px + Uri.encode(file.getRemotePath(), "/");
                             Timber.d("URI: %s", uri);
                             get = new GetMethod(new URL(uri));
                             int status = mClient.executeHttpMethod(get);
@@ -323,8 +323,8 @@ public class ThumbnailsCacheManager {
 
         private Bitmap handlePNG(Bitmap bitmap, int px) {
             Bitmap resultBitmap = Bitmap.createBitmap(px,
-                    px,
-                    Bitmap.Config.ARGB_8888);
+                                  px,
+                                  Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(resultBitmap);
 
             c.drawColor(ContextCompat.getColor(MainApp.Companion.getAppContext(), R.color.background_color));
@@ -347,7 +347,7 @@ public class ThumbnailsCacheManager {
                 int px = getThumbnailDimension();
 
                 Bitmap bitmap = BitmapUtils.decodeSampledBitmapFromFile(
-                        file.getAbsolutePath(), px, px);
+                                    file.getAbsolutePath(), px, px);
 
                 if (bitmap != null) {
                     thumbnail = addThumbnailToCache(imageKey, bitmap, file.getPath(), px);
@@ -429,7 +429,7 @@ public class ThumbnailsCacheManager {
                 OwnCloudAccount ocAccount = new OwnCloudAccount(mAccount,
                         MainApp.Companion.getAppContext());
                 mClient = SingleSessionManager.getDefaultSingleton().
-                        getClientFor(ocAccount, MainApp.Companion.getAppContext());
+                          getClientFor(ocAccount, MainApp.Companion.getAppContext());
 
                 mUsername = mAccount.name;
                 thumbnail = doAvatarInBackground();
@@ -455,7 +455,7 @@ public class ThumbnailsCacheManager {
                     } else {
                         // really needed?
                         imageView.setImageResource(
-                                R.drawable.ic_account_circle
+                            R.drawable.ic_account_circle
                         );
                     }
                 }
@@ -467,7 +467,7 @@ public class ThumbnailsCacheManager {
                     } else {
                         // really needed
                         menuItem.setIcon(
-                                R.drawable.ic_account_circle
+                            R.drawable.ic_account_circle
                         );
                     }
                 }
@@ -496,9 +496,9 @@ public class ThumbnailsCacheManager {
 
             if (avatarBitmap != null) {
                 avatarDrawable = BitmapUtils.bitmapToCircularBitmapDrawable(
-                        MainApp.Companion.getAppContext().getResources(),
-                        avatarBitmap
-                );
+                                     MainApp.Companion.getAppContext().getResources(),
+                                     avatarBitmap
+                                 );
 
             } else {
                 // Not found in disk cache
@@ -511,7 +511,7 @@ public class ThumbnailsCacheManager {
                         GetMethod get;
                         try {
                             String uri = mClient.getBaseUri() + "" +
-                                    "/index.php/avatar/" + AccountUtils.getUsernameOfAccount(mUsername) + "/" + px;
+                                         "/index.php/avatar/" + AccountUtils.getUsernameOfAccount(mUsername) + "/" + px;
                             Timber.d("URI: %s", uri);
                             get = new GetMethod(new URL(uri));
                             int status = mClient.executeHttpMethod(get);
@@ -534,9 +534,9 @@ public class ThumbnailsCacheManager {
                 }
                 if (avatarBitmap != null) {
                     avatarDrawable = BitmapUtils.bitmapToCircularBitmapDrawable(
-                            MainApp.Companion.getAppContext().getResources(),
-                            avatarBitmap
-                    );
+                                         MainApp.Companion.getAppContext().getResources(),
+                                         avatarBitmap
+                                     );
 
                 } else {
                     // generate placeholder from user name
@@ -605,7 +605,7 @@ public class ThumbnailsCacheManager {
         private final WeakReference<ThumbnailGenerationTask> bitmapWorkerTaskReference;
 
         public AsyncThumbnailDrawable(
-                Resources res, Bitmap bitmap, ThumbnailGenerationTask bitmapWorkerTask
+            Resources res, Bitmap bitmap, ThumbnailGenerationTask bitmapWorkerTask
         ) {
 
             super(res, bitmap);

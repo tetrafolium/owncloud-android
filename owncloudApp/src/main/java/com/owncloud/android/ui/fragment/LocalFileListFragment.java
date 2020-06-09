@@ -82,7 +82,7 @@ public class LocalFileListFragment extends ExtendedListFragment {
             mContainerActivity = (ContainerActivity) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement " +
-                    LocalFileListFragment.ContainerActivity.class.getSimpleName());
+                                         LocalFileListFragment.ContainerActivity.class.getSimpleName());
         }
     }
 
@@ -97,9 +97,9 @@ public class LocalFileListFragment extends ExtendedListFragment {
         setSwipeEnabled(false); // Disable pull-to-refresh
         setFabEnabled(false); // Disable FAB
         setMessageForEmptyList(
-                isShowingJustFolders() ?
-                        getString(R.string.local_file_list_empty_just_folders) :
-                        getString(R.string.local_file_list_empty)
+            isShowingJustFolders() ?
+            getString(R.string.local_file_list_empty_just_folders) :
+            getString(R.string.local_file_list_empty)
         );
         Timber.i("onCreateView() end");
         return v;
@@ -124,7 +124,7 @@ public class LocalFileListFragment extends ExtendedListFragment {
         CoordinatorLayout coordinatorLayout = getActivity().findViewById(R.id.coordinator_layout);
         if (coordinatorLayout != null) {
             coordinatorLayout.setFilterTouchesWhenObscured(
-                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
             );
         }
         Timber.i("onActivityCreated() stop");

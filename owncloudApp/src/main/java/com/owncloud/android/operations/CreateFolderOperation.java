@@ -54,16 +54,16 @@ public class CreateFolderOperation extends SyncOperation {
     @Override
     protected RemoteOperationResult run(OwnCloudClient client) {
         CreateRemoteFolderOperation createRemoteFolderOperation = new CreateRemoteFolderOperation(
-                mRemotePath,
-                mCreateFullPath
+            mRemotePath,
+            mCreateFullPath
         );
         RemoteOperationResult result = createRemoteFolderOperation.execute(client);
 
         if (result.isSuccess()) {
             OCFile newDir = saveFolderInDB();
             String localPath = FileStorageUtils.getDefaultSavePathFor(
-                    getStorageManager().getAccount().name, newDir
-            );
+                                   getStorageManager().getAccount().name, newDir
+                               );
             File localFile = new File(localPath);
             boolean created = localFile.mkdirs();
             if (!created) {
@@ -102,7 +102,7 @@ public class CreateFolderOperation extends SyncOperation {
             newDir = new OCFile(mRemotePath);
             newDir.setMimetype("DIR");
             long parentId = getStorageManager().
-                    getFileByPath(FileStorageUtils.getParentPath(mRemotePath)).getFileId();
+                            getFileByPath(FileStorageUtils.getParentPath(mRemotePath)).getFileId();
             newDir.setParentId(parentId);
             newDir.setModificationTimestamp(System.currentTimeMillis());
             getStorageManager().saveFile(newDir);

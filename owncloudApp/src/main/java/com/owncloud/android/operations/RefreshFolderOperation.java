@@ -60,9 +60,9 @@ import java.util.Vector;
 public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>> {
 
     public static final String EVENT_SINGLE_FOLDER_CONTENTS_SYNCED =
-            RefreshFolderOperation.class.getName() + ".EVENT_SINGLE_FOLDER_CONTENTS_SYNCED";
+        RefreshFolderOperation.class.getName() + ".EVENT_SINGLE_FOLDER_CONTENTS_SYNCED";
     public static final String EVENT_SINGLE_FOLDER_SHARES_SYNCED =
-            RefreshFolderOperation.class.getName() + ".EVENT_SINGLE_FOLDER_SHARES_SYNCED";
+        RefreshFolderOperation.class.getName() + ".EVENT_SINGLE_FOLDER_SHARES_SYNCED";
 
     /**
      * Locally cached information about folder to synchronize
@@ -132,13 +132,13 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
 
         // sync list of files, and contents of available offline files & folders
         SynchronizeFolderOperation syncOp = new SynchronizeFolderOperation(
-                mContext,
-                mLocalFolder.getRemotePath(),
-                mAccount,
-                System.currentTimeMillis(),
-                false,
-                false,
-                false
+            mContext,
+            mLocalFolder.getRemotePath(),
+            mAccount,
+            System.currentTimeMillis(),
+            false,
+            false,
+            false
         );
         result = syncOp.execute(client, getStorageManager());
 
@@ -192,7 +192,7 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
 
         // remote request
         GetRemoteSharesForFileOperation operation =
-                new GetRemoteSharesForFileOperation(mLocalFolder.getRemotePath(), true, true);
+            new GetRemoteSharesForFileOperation(mLocalFolder.getRemotePath(), true, true);
         result = operation.execute(client);
 
         if (result.isSuccess()) {
@@ -204,8 +204,8 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
                     if (shareType.equals(ShareType.PUBLIC_LINK)) {
                         file.setSharedViaLink(true);
                     } else if (shareType.equals(ShareType.USER) ||
-                            shareType.equals(ShareType.FEDERATED) ||
-                            shareType.equals(ShareType.GROUP)) {
+                               shareType.equals(ShareType.FEDERATED) ||
+                               shareType.equals(ShareType.GROUP)) {
                         file.setSharedWithSharee(true);
                     }
                     getStorageManager().saveFile(file);

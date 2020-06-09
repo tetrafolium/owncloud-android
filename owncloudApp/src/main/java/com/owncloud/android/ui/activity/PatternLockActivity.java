@@ -81,7 +81,7 @@ public class PatternLockActivity extends AppCompatActivity {
         // Allow or disallow touches with other visible windows
         LinearLayout activityPatternLockLayout = findViewById(R.id.activityPatternLockLayout);
         activityPatternLockLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         String mPatternHeaderViewText = "";
@@ -194,7 +194,7 @@ public class PatternLockActivity extends AppCompatActivity {
                 finish();
             } else {
                 showErrorAndRestart(R.string.pattern_incorrect_pattern,
-                        R.string.pattern_enter_pattern, View.INVISIBLE);
+                                    R.string.pattern_enter_pattern, View.INVISIBLE);
             }
         } else if (ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
             //This block is executed when the user is removing the pattern lock (i.e disabling the pattern lock)
@@ -206,7 +206,7 @@ public class PatternLockActivity extends AppCompatActivity {
                 finish();
             } else {
                 showErrorAndRestart(R.string.pattern_incorrect_pattern,
-                        R.string.pattern_enter_pattern, View.INVISIBLE);
+                                    R.string.pattern_enter_pattern, View.INVISIBLE);
             }
         } else if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction())) {
             //This block is executed when the user is setting the pattern lock (i.e enabling the pattern lock)
@@ -216,7 +216,7 @@ public class PatternLockActivity extends AppCompatActivity {
                 savePatternAndExit();
             } else {
                 showErrorAndRestart(R.string.pattern_not_same_pattern,
-                        R.string.pattern_enter_pattern, View.VISIBLE);
+                                    R.string.pattern_enter_pattern, View.VISIBLE);
             }
         }
     }
@@ -262,10 +262,10 @@ public class PatternLockActivity extends AppCompatActivity {
         mPatternValue = null;
         CharSequence errorSeq = getString(errorMessage);
         Snackbar snackbar = Snackbar.make(
-                findViewById(android.R.id.content),
-                errorSeq,
-                Snackbar.LENGTH_LONG
-        );
+                                findViewById(android.R.id.content),
+                                errorSeq,
+                                Snackbar.LENGTH_LONG
+                            );
         snackbar.show();
         mPatternHeader.setText(headerMessage);
         mPatternExplanation.setVisibility(explanationVisibility);
@@ -273,7 +273,7 @@ public class PatternLockActivity extends AppCompatActivity {
 
     protected boolean checkPattern() {
         SharedPreferences appPrefs = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
+                                     .getDefaultSharedPreferences(getApplicationContext());
         String savedPattern = appPrefs.getString(KEY_PATTERN, null);
         return savedPattern != null && savedPattern.equals(mPatternValue);
     }

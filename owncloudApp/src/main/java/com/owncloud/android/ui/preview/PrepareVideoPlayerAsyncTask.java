@@ -62,7 +62,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
         try {
             // If the file is already downloaded, reproduce it locally, if not, do streaming
             uri = mFile.isDown() ? mFile.getStorageUri() :
-                    Uri.parse(AccountUtils.getWebDavUrlForAccount(mContext, mAccount) +
+                  Uri.parse(AccountUtils.getWebDavUrlForAccount(mContext, mAccount) +
                             Uri.encode(mFile.getRemotePath(), "/"));
 
             boolean useBandwidthMeter = true;
@@ -70,7 +70,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
             DefaultBandwidthMeter bandwidthMeter = useBandwidthMeter ? BANDWIDTH_METER : null;
 
             HttpDataSource.Factory httpDataSourceFactory =
-                    buildHttpDataSourceFactory(bandwidthMeter, mFile, mAccount);
+                buildHttpDataSourceFactory(bandwidthMeter, mFile, mAccount);
 
             // Produces DataSource instances through which media data is loaded.
             DataSource.Factory mediaDataSourceFactory = new DefaultDataSourceFactory(mContext,
@@ -95,7 +95,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
      */
     private MediaSource buildMediaSource(DataSource.Factory mediaDataSourceFactory, Uri uri) {
         return new ExtractorMediaSource(uri, mediaDataSourceFactory, new DefaultExtractorsFactory(),
-                mHandler, null);
+                                        mHandler, null);
     }
 
     /**
@@ -106,9 +106,9 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
      * @return A new HttpDataSource factory.
      */
     private HttpDataSource.Factory buildHttpDataSourceFactory(
-            DefaultBandwidthMeter bandwidthMeter,
-            OCFile file,
-            Account account) {
+        DefaultBandwidthMeter bandwidthMeter,
+        OCFile file,
+        Account account) {
 
         if (file.isDown()) {
 
@@ -118,7 +118,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
 
             try {
                 OwnCloudCredentials credentials = AccountUtils.
-                        getCredentialsForAccount(MainApp.Companion.getAppContext(), account);
+                                                  getCredentialsForAccount(MainApp.Companion.getAppContext(), account);
 
                 String login = credentials.getUsername();
                 String password = credentials.getAuthToken();
@@ -136,7 +136,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
                 }
 
                 return new CustomHttpDataSourceFactory(MainApp.Companion.getUserAgent(),
-                        bandwidthMeter, params);
+                                                       bandwidthMeter, params);
 
             } catch (AuthenticatorException | IOException | OperationCanceledException e) {
                 Timber.e(e);

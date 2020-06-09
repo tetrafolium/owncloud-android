@@ -78,7 +78,7 @@ public class RenameFileOperation extends SyncOperation {
             }
             String parent = (new File(mFile.getRemotePath())).getParent();
             parent = (parent.endsWith(OCFile.PATH_SEPARATOR)) ? parent : parent +
-                    OCFile.PATH_SEPARATOR;
+                     OCFile.PATH_SEPARATOR;
             mNewRemotePath = parent + mNewName;
             if (mFile.isFolder()) {
                 mNewRemotePath += OCFile.PATH_SEPARATOR;
@@ -105,7 +105,7 @@ public class RenameFileOperation extends SyncOperation {
 
         } catch (IOException e) {
             Timber.e(e, "Rename " + mFile.getRemotePath() + " to " + ((mNewRemotePath == null) ? mNewName :
-                    mNewRemotePath) + " failed");
+                     mNewRemotePath) + " failed");
         }
 
         return result;

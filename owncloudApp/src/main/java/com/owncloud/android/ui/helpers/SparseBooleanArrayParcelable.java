@@ -30,32 +30,32 @@ import android.util.SparseBooleanArray;
 public class SparseBooleanArrayParcelable implements Parcelable {
 
     public static Parcelable.Creator<SparseBooleanArrayParcelable> CREATOR =
-            new Parcelable.Creator<SparseBooleanArrayParcelable>() {
+    new Parcelable.Creator<SparseBooleanArrayParcelable>() {
 
-                @Override
-                public SparseBooleanArrayParcelable createFromParcel(Parcel source) {
-                    // read size of array from source
-                    int size = source.readInt();
+        @Override
+        public SparseBooleanArrayParcelable createFromParcel(Parcel source) {
+            // read size of array from source
+            int size = source.readInt();
 
-                    // then pairs of (key, value)s, in the object to wrap
-                    SparseBooleanArray sba = new SparseBooleanArray();
-                    int key;
-                    boolean value;
-                    for (int i = 0; i < size; i++) {
-                        key = source.readInt();
-                        value = (source.readInt() != 0);
-                        sba.put(key, value);
-                    }
+            // then pairs of (key, value)s, in the object to wrap
+            SparseBooleanArray sba = new SparseBooleanArray();
+            int key;
+            boolean value;
+            for (int i = 0; i < size; i++) {
+                key = source.readInt();
+                value = (source.readInt() != 0);
+                sba.put(key, value);
+            }
 
-                    // wrap SparseBooleanArray
-                    return new SparseBooleanArrayParcelable(sba);
-                }
+            // wrap SparseBooleanArray
+            return new SparseBooleanArrayParcelable(sba);
+        }
 
-                @Override
-                public SparseBooleanArrayParcelable[] newArray(int size) {
-                    return new SparseBooleanArrayParcelable[size];
-                }
-            };
+        @Override
+        public SparseBooleanArrayParcelable[] newArray(int size) {
+            return new SparseBooleanArrayParcelable[size];
+        }
+    };
 
     private final SparseBooleanArray mSba;
 

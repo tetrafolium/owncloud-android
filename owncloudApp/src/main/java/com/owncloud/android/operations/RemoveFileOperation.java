@@ -42,9 +42,9 @@ public class RemoveFileOperation extends SyncOperation {
     /**
      * Constructor
      *
-     * @param remotePath            RemotePath of the OCFile instance describing the remote file or 
+     * @param remotePath            RemotePath of the OCFile instance describing the remote file or
      *                              folder to remove from the server
-     * @param onlyLocalCopy         When 'true', and a local copy of the file exists, only this is 
+     * @param onlyLocalCopy         When 'true', and a local copy of the file exists, only this is
      *                              removed.
      */
     public RemoveFileOperation(String remotePath, boolean onlyLocalCopy, boolean isLastFile) {
@@ -62,7 +62,7 @@ public class RemoveFileOperation extends SyncOperation {
         return mFileToRemove;
     }
 
-    public boolean isLastFileToRemove(){
+    public boolean isLastFileToRemove() {
         return mIsLastFile;
     }
 

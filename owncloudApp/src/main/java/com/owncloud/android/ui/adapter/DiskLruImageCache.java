@@ -45,18 +45,18 @@ public class DiskLruImageCache {
 
     //public DiskLruImageCache( Context context,String uniqueName, int diskCacheSize,
     public DiskLruImageCache(
-            File diskCacheDir, int diskCacheSize, CompressFormat compressFormat, int quality
+        File diskCacheDir, int diskCacheSize, CompressFormat compressFormat, int quality
     ) throws IOException {
 
         mDiskCache = DiskLruCache.open(
-                diskCacheDir, CACHE_VERSION, VALUE_COUNT, diskCacheSize
-        );
+                         diskCacheDir, CACHE_VERSION, VALUE_COUNT, diskCacheSize
+                     );
         mCompressFormat = compressFormat;
         mCompressQuality = quality;
     }
 
     private boolean writeBitmapToFile(Bitmap bitmap, DiskLruCache.Editor editor)
-            throws IOException {
+    throws IOException {
         OutputStream out = null;
         try {
             out = new BufferedOutputStream(editor.newOutputStream(0), IO_BUFFER_SIZE);
@@ -82,7 +82,7 @@ public class DiskLruImageCache {
                 mDiskCache.flush();
                 editor.commit();
                 if (MainApp.Companion.isDeveloper()) {
-                   Timber.d( "cache_test_DISK_ image put on disk cache %s", validKey );
+                    Timber.d( "cache_test_DISK_ image put on disk cache %s", validKey );
                 }
             } else {
                 editor.abort();
@@ -118,7 +118,7 @@ public class DiskLruImageCache {
             final InputStream in = snapshot.getInputStream(0);
             if (in != null) {
                 final BufferedInputStream buffIn =
-                        new BufferedInputStream(in, IO_BUFFER_SIZE);
+                    new BufferedInputStream(in, IO_BUFFER_SIZE);
                 bitmap = BitmapFactory.decodeStream(buffIn);
             }
         } catch (IOException e) {
@@ -151,7 +151,7 @@ public class DiskLruImageCache {
             mDiskCache.remove(validKey);
             Timber.d("removeKey from cache: %s", validKey);
         } catch (IOException e) {
-Timber.e(e);
+            Timber.e(e);
         }
     }
 }

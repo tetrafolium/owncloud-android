@@ -58,7 +58,7 @@ public class ExpandableListFragment extends ExtendedListFragment implements OnCh
 
         // Allow or disallow touches with other visible windows
         v.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         mEmptyListMessage = v.findViewById(R.id.empty_list_view);

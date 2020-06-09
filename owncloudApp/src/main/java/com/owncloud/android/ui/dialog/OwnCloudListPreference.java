@@ -39,23 +39,23 @@ public class OwnCloudListPreference extends ListPreference {
     protected void showDialog(Bundle state) {
         if (getEntries() == null || getEntryValues() == null) {
             throw new IllegalStateException(
-                    "ListPreference requires an entries array and an entryValues array.");
+                "ListPreference requires an entries array and an entryValues array.");
         }
 
         int preselect = findIndexOfValue(getValue());
 
         // same thing happens for the Standard ListPreference though
         androidx.appcompat.app.AlertDialog.Builder builder =
-                new androidx.appcompat.app.AlertDialog.Builder(mContext)
-                        .setTitle(getDialogTitle())
-                        .setIcon(getDialogIcon())
-                        .setSingleChoiceItems(getEntries(), preselect, this);
+            new androidx.appcompat.app.AlertDialog.Builder(mContext)
+        .setTitle(getDialogTitle())
+        .setIcon(getDialogIcon())
+        .setSingleChoiceItems(getEntries(), preselect, this);
 
         PreferenceManager pm = getPreferenceManager();
         try {
             Method method = pm.getClass().getDeclaredMethod(
-                    "registerOnActivityDestroyListener",
-                    PreferenceManager.OnActivityDestroyListener.class);
+                                "registerOnActivityDestroyListener",
+                                PreferenceManager.OnActivityDestroyListener.class);
             method.setAccessible(true);
             method.invoke(pm, this);
         } catch (Exception e) {

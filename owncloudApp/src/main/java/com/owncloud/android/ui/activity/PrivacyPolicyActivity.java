@@ -58,7 +58,7 @@ public class PrivacyPolicyActivity extends ToolbarActivity {
         // Allow or disallow touches with other visible windows
         LinearLayout activityPrivacyPolicyLayout = findViewById(R.id.activityPrivacyPolicyLayout);
         activityPrivacyPolicyLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         WebView webview = findViewById(R.id.privacyPolicyWebview);
@@ -85,10 +85,10 @@ public class PrivacyPolicyActivity extends ToolbarActivity {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 
                 Snackbar snackbar = Snackbar.make(
-                        findViewById(android.R.id.content),
-                        getString(R.string.privacy_policy_error) + description,
-                        Snackbar.LENGTH_LONG
-                );
+                                        findViewById(android.R.id.content),
+                                        getString(R.string.privacy_policy_error) + description,
+                                        Snackbar.LENGTH_LONG
+                                    );
                 snackbar.show();
             }
         });
@@ -101,11 +101,11 @@ public class PrivacyPolicyActivity extends ToolbarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            default:
-                retval = super.onOptionsItemSelected(item);
+        case android.R.id.home:
+            finish();
+            break;
+        default:
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }

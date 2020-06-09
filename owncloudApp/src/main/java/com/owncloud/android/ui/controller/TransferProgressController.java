@@ -117,11 +117,11 @@ public class TransferProgressController implements OnDatatransferProgressListene
     public void stopListeningProgressFor(OCFile file, Account account) {
         if (mComponentsGetter.getFileDownloaderBinder() != null) {
             mComponentsGetter.getFileDownloaderBinder().
-                    removeDatatransferProgressListener(this, account, file);
+            removeDatatransferProgressListener(this, account, file);
         }
         if (mComponentsGetter.getFileUploaderBinder() != null) {
             mComponentsGetter.getFileUploaderBinder().
-                    removeDatatransferProgressListener(this, account, file);
+            removeDatatransferProgressListener(this, account, file);
         }
         if (mProgressBar != null) {
             mProgressBar.setIndeterminate(false);
@@ -139,24 +139,24 @@ public class TransferProgressController implements OnDatatransferProgressListene
      */
     @Override
     public void onTransferProgress(
-            long progressRate,
-            long totalTransferredSoFar,
-            long totalToTransfer,
-            String filename
+        long progressRate,
+        long totalTransferredSoFar,
+        long totalToTransfer,
+        String filename
     ) {
         if (mProgressBar != null) {
             final int percent = (int) (100.0 * ((double) totalTransferredSoFar) / ((double) totalToTransfer));
             if (percent != mLastPercent) {
                 mProgressBar.post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressBar.setVisibility(View.VISIBLE);
-                                mProgressBar.setIndeterminate(false);
-                                mProgressBar.setProgress(percent);
-                                mProgressBar.invalidate();
-                            }
-                        }
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        mProgressBar.setIndeterminate(false);
+                        mProgressBar.setProgress(percent);
+                        mProgressBar.invalidate();
+                    }
+                }
                 );
             }
             mLastPercent = percent;

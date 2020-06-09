@@ -79,7 +79,7 @@ public class RateMeDialog extends DialogFragment {
 
         // Allow or disallow touches with other visible windows
         view.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         Button rateNowButton = view.findViewById(R.id.button_rate_now);
@@ -101,14 +101,14 @@ public class RateMeDialog extends DialogFragment {
             /// To count with Play market back stack, After pressing back button,
             /// to taken back to our application, we need to add following flags to intent.
             int flags =
-                    Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
+            Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
             goToMarket.addFlags(flags);
 
             try {
                 startActivity(goToMarket);
             } catch (ActivityNotFoundException e) {
                 getActivity().startActivity(new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(PLAY_STORE_URI + packageName)));
+                                                       Uri.parse(PLAY_STORE_URI + packageName)));
             }
             dialog.dismiss();
         });
@@ -116,7 +116,7 @@ public class RateMeDialog extends DialogFragment {
         laterButton.setOnClickListener(laterButtonView -> {
             Timber.d("Rate later button was pressed");
             SharedPreferences preferences = getActivity().getSharedPreferences
-                    (AppRater.APP_RATER_PREF_TITLE, 0);
+            (AppRater.APP_RATER_PREF_TITLE, 0);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putLong(AppRater.APP_RATER_PREF_DATE_NEUTRAL, System.currentTimeMillis());
             editor.apply();
@@ -126,7 +126,7 @@ public class RateMeDialog extends DialogFragment {
         noThanksButton.setOnClickListener(noThanksButtonView -> {
             Timber.d("Button to not show the rate dialog anymore was pressed");
             SharedPreferences preferences = getActivity().getSharedPreferences
-                    (AppRater.APP_RATER_PREF_TITLE, 0);
+            (AppRater.APP_RATER_PREF_TITLE, 0);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean(AppRater.APP_RATER_PREF_DONT_SHOW, true);
             editor.apply();

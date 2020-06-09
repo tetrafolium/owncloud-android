@@ -58,17 +58,17 @@ public class NotificationUtils {
      */
     public static NotificationCompat.Builder newNotificationBuilder(Context context) {
         return new NotificationCompat.Builder(context).
-                setColor(context.getResources().getColor(R.color.primary));
+               setColor(context.getResources().getColor(R.color.primary));
     }
 
     public static void cancelWithDelay(
-            final NotificationManager notificationManager,
-            final int notificationId,
-            long delayInMillis) {
+        final NotificationManager notificationManager,
+        final int notificationId,
+        long delayInMillis) {
 
         HandlerThread thread = new HandlerThread(
-                "NotificationDelayerThread_" + (new Random(System.currentTimeMillis())).nextInt(),
-                Process.THREAD_PRIORITY_BACKGROUND);
+            "NotificationDelayerThread_" + (new Random(System.currentTimeMillis())).nextInt(),
+            Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
 
         Handler handler = new Handler(thread.getLooper());
@@ -96,9 +96,9 @@ public class NotificationUtils {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel;
             CharSequence name = context.
-                    getString(R.string.file_sync_notification_channel_name);
+                                getString(R.string.file_sync_notification_channel_name);
             String description = context.
-                    getString(R.string.file_sync_notification_channel_description);
+                                 getString(R.string.file_sync_notification_channel_description);
             int importance = NotificationManager.IMPORTANCE_LOW;
             notificationChannel = new NotificationChannel(FILE_SYNC_CONFLICT_CHANNEL_ID,
                     name, importance);
@@ -107,25 +107,25 @@ public class NotificationUtils {
         }
 
         notificationBuilder
-                .setChannelId(FILE_SYNC_CONFLICT_CHANNEL_ID)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setTicker(context.getString(R.string.conflict_title))
-                .setContentTitle(context.getString(R.string.conflict_title))
-                .setContentText(String.format(
-                        context.getString(R.string.conflict_description),
-                        fileInConflict.getRemotePath())
-                )
-                .setAutoCancel(true);
+        .setChannelId(FILE_SYNC_CONFLICT_CHANNEL_ID)
+        .setSmallIcon(R.drawable.notification_icon)
+        .setTicker(context.getString(R.string.conflict_title))
+        .setContentTitle(context.getString(R.string.conflict_title))
+        .setContentText(String.format(
+                            context.getString(R.string.conflict_description),
+                            fileInConflict.getRemotePath())
+                       )
+        .setAutoCancel(true);
 
         Intent showConflictActivityIntent = new Intent(context, ConflictsResolveActivity.class);
         showConflictActivityIntent.setFlags(showConflictActivityIntent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK |
-                Intent.FLAG_FROM_BACKGROUND);
+                                            Intent.FLAG_FROM_BACKGROUND);
         showConflictActivityIntent.putExtra(ConflictsResolveActivity.EXTRA_FILE, fileInConflict);
         showConflictActivityIntent.putExtra(ConflictsResolveActivity.EXTRA_ACCOUNT, account);
 
         notificationBuilder.setContentIntent(
-                PendingIntent.getActivity(context, (int) System.currentTimeMillis(),
-                        showConflictActivityIntent, 0)
+            PendingIntent.getActivity(context, (int) System.currentTimeMillis(),
+                                      showConflictActivityIntent, 0)
         );
 
         int notificationId = 0;

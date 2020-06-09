@@ -50,11 +50,11 @@ public class MoveChunksFileOperation extends MoveFileOperation {
     protected RemoteOperationResult run(OwnCloudClient client) {
 
         MoveRemoteChunksFileOperation operation = new MoveRemoteChunksFileOperation(
-                mSrcPath,
-                mTargetParentPath,
-                false,
-                mFileLastModifTimestamp,
-                mFileLength
+            mSrcPath,
+            mTargetParentPath,
+            false,
+            mFileLastModifTimestamp,
+            mFileLength
         );
 
         return operation.execute(client);

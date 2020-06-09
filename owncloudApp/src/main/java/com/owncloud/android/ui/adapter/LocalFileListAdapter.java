@@ -102,13 +102,13 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
         View view = convertView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) mContext
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                      .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             view = inflater.inflate(R.layout.item_file_list, null);
 
             // Allow or disallow touches with other visible windows
             view.setFilterTouchesWhenObscured(
-                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
+                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
             );
         }
         if (mFiles != null && mFiles.length > position) {
@@ -155,8 +155,8 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
                 if (BitmapUtils.isImage(file)) {
                     // Thumbnail in Cache?
                     Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
-                            String.valueOf(file.hashCode())
-                    );
+                                           String.valueOf(file.hashCode())
+                                       );
                     if (thumbnail != null) {
                         fileIcon.setImageBitmap(thumbnail);
                     } else {
@@ -164,14 +164,14 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
                         // generate new Thumbnail
                         if (allowedToCreateNewThumbnail) {
                             final ThumbnailsCacheManager.ThumbnailGenerationTask task =
-                                    new ThumbnailsCacheManager.ThumbnailGenerationTask(fileIcon);
+                                new ThumbnailsCacheManager.ThumbnailGenerationTask(fileIcon);
                             thumbnail = ThumbnailsCacheManager.mDefaultImg;
                             final ThumbnailsCacheManager.AsyncThumbnailDrawable asyncDrawable =
-                                    new ThumbnailsCacheManager.AsyncThumbnailDrawable(
-                                            mContext.getResources(),
-                                            thumbnail,
-                                            task
-                                    );
+                                new ThumbnailsCacheManager.AsyncThumbnailDrawable(
+                                mContext.getResources(),
+                                thumbnail,
+                                task
+                            );
                             fileIcon.setImageDrawable(asyncDrawable);
                             task.execute(file);
                             Timber.v("Executing task to generate a new thumbnail");

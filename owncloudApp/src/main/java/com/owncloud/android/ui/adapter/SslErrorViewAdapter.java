@@ -44,7 +44,7 @@ public class SslErrorViewAdapter implements SslUntrustedCertDialog.ErrorViewAdap
         // Allow or disallow touches with other visible windows
         LinearLayout manageSpace = dialogView.findViewById(R.id.root);
         manageSpace.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(dialogView.getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(dialogView.getContext())
         );
 
         /// clean

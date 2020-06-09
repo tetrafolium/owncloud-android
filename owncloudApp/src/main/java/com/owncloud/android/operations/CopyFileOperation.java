@@ -84,9 +84,9 @@ public class CopyFileOperation extends SyncOperation {
             finalRemotePath += OCFile.PATH_SEPARATOR;
         }
         CopyRemoteFileOperation operation = new CopyRemoteFileOperation(
-                mSrcPath,
-                finalRemotePath,
-                false
+            mSrcPath,
+            finalRemotePath,
+            false
         );
         result = operation.execute(client);
         String targetFileRemoteId = (String) result.getData();

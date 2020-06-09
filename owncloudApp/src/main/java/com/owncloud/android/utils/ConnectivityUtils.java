@@ -30,9 +30,9 @@ public class ConnectivityUtils {
     public static boolean isAppConnectedViaWiFi(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         boolean result =
-                cm != null && cm.getActiveNetworkInfo() != null
-                        && cm.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI
-                        && cm.getActiveNetworkInfo().getState() == NetworkInfo.State.CONNECTED;
+            cm != null && cm.getActiveNetworkInfo() != null
+            && cm.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI
+            && cm.getActiveNetworkInfo().getState() == NetworkInfo.State.CONNECTED;
         Timber.d("isAppConnectedViaWifi returns %s", result);
         return result;
     }
@@ -45,7 +45,7 @@ public class ConnectivityUtils {
     public static boolean isNetworkActive(Context context) {
 
         ConnectivityManager cm = (ConnectivityManager) context.
-                getSystemService(Context.CONNECTIVITY_SERVICE);
+                                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 

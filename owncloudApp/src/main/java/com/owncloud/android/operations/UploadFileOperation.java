@@ -69,7 +69,7 @@ public class UploadFileOperation extends SyncOperation {
     public static final int CREATED_AS_CAMERA_UPLOAD_VIDEO = 2;
 
     public static OCFile obtainNewOCFileToUpload(String remotePath, String localPath, String mimeType,
-                                                 Context context) {
+            Context context) {
 
         // MIME type
         if (mimeType == null || mimeType.length() <= 0) {
@@ -134,28 +134,28 @@ public class UploadFileOperation extends SyncOperation {
                                boolean forceOverwrite,
                                int localBehaviour,
                                Context context
-    ) {
+                              ) {
         if (account == null) {
             throw new IllegalArgumentException("Illegal NULL account in UploadFileOperation " +
-                    "creation");
+                                               "creation");
         }
         if (upload == null) {
             throw new IllegalArgumentException("Illegal NULL file in UploadFileOperation creation");
         }
         if (upload.getLocalPath() == null || upload.getLocalPath().length() <= 0) {
             throw new IllegalArgumentException(
-                    "Illegal file in UploadFileOperation; storage path invalid: "
-                            + upload.getLocalPath());
+                "Illegal file in UploadFileOperation; storage path invalid: "
+                + upload.getLocalPath());
         }
 
         mAccount = account;
         if (file == null) {
             mFile = obtainNewOCFileToUpload(
-                    upload.getRemotePath(),
-                    upload.getLocalPath(),
-                    upload.getMimeType(),
-                    context
-            );
+                        upload.getRemotePath(),
+                        upload.getLocalPath(),
+                        upload.getMimeType(),
+                        context
+                    );
         } else {
             mFile = file;
         }
@@ -295,7 +295,7 @@ public class UploadFileOperation extends SyncOperation {
             /// check the existence of the parent folder for the file to upload
             String remoteParentPath = new File(getRemotePath()).getParent();
             remoteParentPath = remoteParentPath.endsWith(OCFile.PATH_SEPARATOR) ?
-                    remoteParentPath : remoteParentPath + OCFile.PATH_SEPARATOR;
+                               remoteParentPath : remoteParentPath + OCFile.PATH_SEPARATOR;
             result = grantFolderExistence(remoteParentPath, client);
 
             if (!result.isSuccess()) {
@@ -364,14 +364,14 @@ public class UploadFileOperation extends SyncOperation {
             }
             if (result.isSuccess()) {
                 Timber.i("Upload of " + mOriginalStoragePath + " to " + mRemotePath + ": " +
-                        result.getLogMessage());
+                         result.getLogMessage());
             } else {
                 if (result.getException() != null) {
                     if (result.isCancelled()) {
                         Timber.w("Upload of " + mOriginalStoragePath + " to " + mRemotePath + ": " + result.getLogMessage());
                     } else {
                         Timber.e(result.getException(), "Upload of " + mOriginalStoragePath + " to " + mRemotePath +
-                                ": " + result.getLogMessage());
+                                 ": " + result.getLogMessage());
                     }
 
                 } else {
@@ -402,7 +402,7 @@ public class UploadFileOperation extends SyncOperation {
      * @return {@link RemoteOperationResult} representing the upload operation result
      */
     protected RemoteOperationResult uploadRemoteFile(OwnCloudClient client, File temporalFile, File originalFile,
-                                                     String expectedPath, File expectedFile, String timeStamp) {
+            String expectedPath, File expectedFile, String timeStamp) {
         RemoteOperationResult result;
 
         try {
@@ -444,8 +444,8 @@ public class UploadFileOperation extends SyncOperation {
      * @param
      */
     protected void moveTemporalOriginalFiles(File temporalFile, File originalFile, String expectedPath,
-                                             File expectedFile)
-            throws IOException {
+            File expectedFile)
+    throws IOException {
         if (mLocalBehaviour == FileUploader.LOCAL_BEHAVIOUR_FORGET) {
             String temporalPath = FileStorageUtils.getTemporalPath(mAccount.name) + mFile.getRemotePath();
             if (mOriginalStoragePath.equals(temporalPath)) {
@@ -476,15 +476,15 @@ public class UploadFileOperation extends SyncOperation {
      */
     private boolean delayForWifi() {
         boolean delayCameraUploadsPicture = (
-                isCameraUploadsPicture() && PreferenceManager.cameraPictureUploadViaWiFiOnly(mContext)
-        );
+                                                isCameraUploadsPicture() && PreferenceManager.cameraPictureUploadViaWiFiOnly(mContext)
+                                            );
         boolean delayCameraUploadsVideo = (
-                isCameraUploadsVideo() && PreferenceManager.cameraVideoUploadViaWiFiOnly(mContext)
-        );
+                                              isCameraUploadsVideo() && PreferenceManager.cameraVideoUploadViaWiFiOnly(mContext)
+                                          );
         return (
-                (delayCameraUploadsPicture || delayCameraUploadsVideo) &&
-                        !ConnectivityUtils.isAppConnectedViaWiFi(mContext)
-        );
+                   (delayCameraUploadsPicture || delayCameraUploadsVideo) &&
+                   !ConnectivityUtils.isAppConnectedViaWiFi(mContext)
+               );
     }
 
     /**
@@ -522,7 +522,7 @@ public class UploadFileOperation extends SyncOperation {
     private OCFile createLocalFolder(String remotePath) {
         String parentPath = new File(remotePath).getParent();
         parentPath = parentPath.endsWith(OCFile.PATH_SEPARATOR) ?
-                parentPath : parentPath + OCFile.PATH_SEPARATOR;
+                     parentPath : parentPath + OCFile.PATH_SEPARATOR;
         OCFile parent = getStorageManager().getFileByPath(parentPath);
         if (parent == null) {
             parent = createLocalFolder(parentPath);
@@ -551,7 +551,7 @@ public class UploadFileOperation extends SyncOperation {
         newFile.setMimetype(mFile.getMimetype());
         newFile.setModificationTimestamp(mFile.getModificationTimestamp());
         newFile.setModificationTimestampAtLastSyncForData(
-                mFile.getModificationTimestampAtLastSyncForData()
+            mFile.getModificationTimestampAtLastSyncForData()
         );
         newFile.setEtag(mFile.getEtag());
         newFile.setAvailableOfflineStatus(mFile.getAvailableOfflineStatus());
@@ -614,13 +614,13 @@ public class UploadFileOperation extends SyncOperation {
             temporalParent.mkdirs();
             if (!temporalParent.isDirectory()) {
                 throw new IOException(
-                        "Unexpected error: parent directory could not be created");
+                    "Unexpected error: parent directory could not be created");
             }
             Timber.d("Creating temporal file");
             targetFile.createNewFile();
             if (!targetFile.isFile()) {
                 throw new IOException(
-                        "Unexpected error: target file could not be created");
+                    "Unexpected error: target file could not be created");
             }
 
             Timber.d("Copying file contents");
@@ -663,7 +663,7 @@ public class UploadFileOperation extends SyncOperation {
                     }
                 } catch (Exception e) {
                     Timber.e(e, "Weird exception while closing input stream for " + mOriginalStoragePath + " " +
-                            "(ignoring)");
+                             "(ignoring)");
                 }
                 try {
                     if (out != null) {
@@ -671,7 +671,7 @@ public class UploadFileOperation extends SyncOperation {
                     }
                 } catch (Exception e) {
                     Timber.e(e, "Weird exception while closing output stream for " + targetFile.getAbsolutePath() +
-                            " (ignoring)");
+                             " (ignoring)");
                 }
             }
         }

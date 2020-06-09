@@ -76,20 +76,20 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
      * @return Correct array of parameters to be passed to {@link #execute(Object[])}
      */
     public static Object[] makeParamsToExecute(
-            Account account,
-            Uri[] sourceUris,
-            String[] remotePaths,
-            int behaviour,
-            ContentResolver contentResolver
+        Account account,
+        Uri[] sourceUris,
+        String[] remotePaths,
+        int behaviour,
+        ContentResolver contentResolver
     ) {
 
-        return new Object[]{
-                account,
-                sourceUris,
-                remotePaths,
-                behaviour,
-                contentResolver
-        };
+        return new Object[] {
+                   account,
+                   sourceUris,
+                   remotePaths,
+                   behaviour,
+                   contentResolver
+               };
     }
 
     /**
@@ -107,8 +107,8 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
     private final Context mAppContext;
 
     public CopyAndUploadContentUrisTask(
-            OnCopyTmpFilesTaskListener listener,
-            Context context
+        OnCopyTmpFilesTaskListener listener,
+        Context context
     ) {
         mListener = new WeakReference<>(listener);
         mAppContext = context.getApplicationContext();
@@ -159,11 +159,11 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
                 }
 
                 requestUpload(
-                        account,
-                        fullTempPath,
-                        currentRemotePath,
-                        behaviour,
-                        leakedContentResolver.getType(currentUri)
+                    account,
+                    fullTempPath,
+                    currentRemotePath,
+                    behaviour,
+                    leakedContentResolver.getType(currentUri)
                 );
                 fullTempPath = null;
             }
@@ -222,14 +222,14 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
     private void requestUpload(Account account, String localPath, String remotePath, int behaviour, String mimeType) {
         TransferRequester requester = new TransferRequester();
         requester.uploadNewFile(
-                mAppContext,
-                account,
-                localPath,
-                remotePath,
-                behaviour,
-                mimeType,
-                false,      // do not create parent folder if not existent
-                UploadFileOperation.CREATED_BY_USER
+            mAppContext,
+            account,
+            localPath,
+            remotePath,
+            behaviour,
+            mimeType,
+            false,      // do not create parent folder if not existent
+            UploadFileOperation.CREATED_BY_USER
         );
     }
 
@@ -245,22 +245,22 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
                 // if the user left the app, report background error in a Toast
                 int messageId;
                 switch (result) {
-                    case LOCAL_FILE_NOT_FOUND:
-                        messageId = R.string.uploader_error_message_source_file_not_found;
-                        break;
-                    case LOCAL_STORAGE_NOT_COPIED:
-                        messageId = R.string.uploader_error_message_source_file_not_copied;
-                        break;
-                    case FORBIDDEN:
-                        messageId = R.string.uploader_error_message_read_permission_not_granted;
-                        break;
-                    default:
-                        messageId = R.string.common_error_unknown;
+                case LOCAL_FILE_NOT_FOUND:
+                    messageId = R.string.uploader_error_message_source_file_not_found;
+                    break;
+                case LOCAL_STORAGE_NOT_COPIED:
+                    messageId = R.string.uploader_error_message_source_file_not_copied;
+                    break;
+                case FORBIDDEN:
+                    messageId = R.string.uploader_error_message_read_permission_not_granted;
+                    break;
+                default:
+                    messageId = R.string.common_error_unknown;
                 }
                 String message = String.format(
-                        mAppContext.getString(messageId),
-                        mAppContext.getString(R.string.app_name)
-                );
+                                     mAppContext.getString(messageId),
+                                     mAppContext.getString(R.string.app_name)
+                                 );
                 Toast.makeText(mAppContext, message, Toast.LENGTH_LONG).show();
             }
         }

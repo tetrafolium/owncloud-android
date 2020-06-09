@@ -54,7 +54,7 @@ public class FileOperationsHelper {
 
     private FileActivity mFileActivity;
 
-    /// Identifier of operation in progress which result shouldn't be lost 
+    /// Identifier of operation in progress which result shouldn't be lost
     private long mWaitingForOpId = Long.MAX_VALUE;
 
     public FileOperationsHelper(FileActivity fileActivity) {
@@ -67,28 +67,28 @@ public class FileOperationsHelper {
 
             Intent intentForSavedMimeType = new Intent(Intent.ACTION_VIEW);
             intentForSavedMimeType.setDataAndType(
-                    file.getExposedFileUri(mFileActivity),
-                    file.getMimetype()
+                file.getExposedFileUri(mFileActivity),
+                file.getMimetype()
             );
 
             intentForSavedMimeType.setFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             );
 
             Intent intentForGuessedMimeType = null;
             if (storagePath.lastIndexOf('.') >= 0) {
                 String guessedMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                        storagePath.substring(storagePath.lastIndexOf('.') + 1)
-                );
+                                             storagePath.substring(storagePath.lastIndexOf('.') + 1)
+                                         );
                 if (guessedMimeType != null && !guessedMimeType.equals(file.getMimetype())) {
                     intentForGuessedMimeType = new Intent(Intent.ACTION_VIEW);
                     intentForGuessedMimeType.setDataAndType(
-                            file.getExposedFileUri(mFileActivity),
-                            guessedMimeType
+                        file.getExposedFileUri(mFileActivity),
+                        guessedMimeType
                     );
                     intentForGuessedMimeType.setFlags(
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     );
                 }
             }
@@ -101,25 +101,25 @@ public class FileOperationsHelper {
             }
 
             List<ResolveInfo> launchables = mFileActivity.getPackageManager().
-                    queryIntentActivities(openFileWithIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                                            queryIntentActivities(openFileWithIntent, PackageManager.MATCH_DEFAULT_ONLY);
 
             if (launchables != null && launchables.size() > 0) {
                 try {
                     mFileActivity.startActivity(
-                            Intent.createChooser(
-                                    openFileWithIntent, mFileActivity.getString(R.string.actionbar_open_with)
-                            )
+                        Intent.createChooser(
+                            openFileWithIntent, mFileActivity.getString(R.string.actionbar_open_with)
+                        )
                     );
                 } catch (ActivityNotFoundException anfe) {
                     mFileActivity.showSnackMessage(
-                            mFileActivity.getString(
-                                    R.string.file_list_no_app_for_file_type
-                            )
+                        mFileActivity.getString(
+                            R.string.file_list_no_app_for_file_type
+                        )
                     );
                 }
             } else {
                 mFileActivity.showSnackMessage(
-                        mFileActivity.getString(R.string.file_list_no_app_for_file_type)
+                    mFileActivity.getString(R.string.file_list_no_app_for_file_type)
                 );
             }
 
@@ -141,7 +141,7 @@ public class FileOperationsHelper {
 
         if (privateLink == null || privateLink.isEmpty()) {
             mFileActivity.showSnackMessage(
-                    mFileActivity.getString(R.string.file_private_link_error)
+                mFileActivity.getString(R.string.file_private_link_error)
             );
             return;
         }
@@ -159,7 +159,7 @@ public class FileOperationsHelper {
         String link = share.getShareLink();
         if (link.length() <= 0) {
             mFileActivity.showSnackMessage(
-                    mFileActivity.getString(R.string.share_no_link_in_this_share)
+                mFileActivity.getString(R.string.share_no_link_in_this_share)
             );
             return;
         }
@@ -187,13 +187,13 @@ public class FileOperationsHelper {
             // set MimeType
             sendIntent.setType(file.getMimetype());
             sendIntent.putExtra(
-                    Intent.EXTRA_STREAM,
-                    file.getExposedFileUri(mFileActivity)
+                Intent.EXTRA_STREAM,
+                file.getExposedFileUri(mFileActivity)
             );
             sendIntent.putExtra(Intent.ACTION_SEND, true);      // Send Action
 
             // Show dialog, without the own app
-            String[] packagesToExclude = new String[]{mFileActivity.getPackageName()};
+            String[] packagesToExclude = new String[] {mFileActivity.getPackageName()};
             DialogFragment chooserDialog = ShareLinkToDialog.newInstance(sendIntent, packagesToExclude);
             chooserDialog.show(mFileActivity.getSupportFragmentManager(), FTAG_CHOOSER_DIALOG);
 
@@ -227,8 +227,8 @@ public class FileOperationsHelper {
             intent.putExtra(OperationsService.EXTRA_ACCOUNT, mFileActivity.getAccount());
             intent.putExtra(OperationsService.EXTRA_REMOTE_PATH, file.getRemotePath());
             intent.putExtra(
-                    OperationsService.EXTRA_SYNC_REGULAR_FILES,
-                    true
+                OperationsService.EXTRA_SYNC_REGULAR_FILES,
+                true
             );
             mFileActivity.startService(intent);
         }
@@ -244,7 +244,7 @@ public class FileOperationsHelper {
         if (OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE_PARENT == file.getAvailableOfflineStatus()) {
             /// files descending of an av-offline folder can't be toggled
             mFileActivity.showSnackMessage(
-                    mFileActivity.getString(R.string.available_offline_inherited_msg)
+                mFileActivity.getString(R.string.available_offline_inherited_msg)
             );
 
         } else {
@@ -258,7 +258,7 @@ public class FileOperationsHelper {
             if (success) {
                 // Schedule job to check to watch for local changes in available offline files and sync them
                 AvailableOfflineHandler availableOfflineHandler =
-                        new AvailableOfflineHandler(mFileActivity, mFileActivity.getAccount().name);
+                    new AvailableOfflineHandler(mFileActivity, mFileActivity.getAccount().name);
                 availableOfflineHandler.scheduleAvailableOfflineJob(mFileActivity);
 
                 /// immediate content synchronization
@@ -270,7 +270,7 @@ public class FileOperationsHelper {
             } else {
                 /// unexpected error
                 mFileActivity.showSnackMessage(
-                        mFileActivity.getString(R.string.common_error_unknown)
+                    mFileActivity.getString(R.string.common_error_unknown)
                 );
             }
         }
@@ -337,7 +337,7 @@ public class FileOperationsHelper {
         Account account = mFileActivity.getAccount();
         if (file.isFolder()) {
             OperationsService.OperationsServiceBinder opsBinder =
-                    mFileActivity.getOperationsServiceBinder();
+                mFileActivity.getOperationsServiceBinder();
             if (opsBinder != null) {
                 opsBinder.cancel(account, file);
             }
@@ -422,28 +422,28 @@ public class FileOperationsHelper {
         intentToShareLink.putExtra(Intent.EXTRA_TEXT, link);
         intentToShareLink.setType("text/plain");
         String username = com.owncloud.android.lib.common.accounts.AccountUtils.getUsernameForAccount(
-                mFileActivity.getAccount()
-        );
+                              mFileActivity.getAccount()
+                          );
         if (username != null) {
             intentToShareLink.putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    mFileActivity.getString(
-                            R.string.subject_user_shared_with_you,
-                            username,
-                            mFileActivity.getFile().getFileName()
-                    )
+                Intent.EXTRA_SUBJECT,
+                mFileActivity.getString(
+                    R.string.subject_user_shared_with_you,
+                    username,
+                    mFileActivity.getFile().getFileName()
+                )
             );
         } else {
             intentToShareLink.putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    mFileActivity.getString(
-                            R.string.subject_shared_with_you,
-                            mFileActivity.getFile().getFileName()
-                    )
+                Intent.EXTRA_SUBJECT,
+                mFileActivity.getString(
+                    R.string.subject_shared_with_you,
+                    mFileActivity.getFile().getFileName()
+                )
             );
         }
 
-        String[] packagesToExclude = new String[]{mFileActivity.getPackageName()};
+        String[] packagesToExclude = new String[] {mFileActivity.getPackageName()};
         DialogFragment chooserDialog = ShareLinkToDialog.newInstance(intentToShareLink, packagesToExclude);
         chooserDialog.show(mFileActivity.getSupportFragmentManager(), FTAG_CHOOSER_DIALOG);
     }

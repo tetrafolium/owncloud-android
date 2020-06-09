@@ -27,7 +27,7 @@ import com.owncloud.android.ui.fragment.FileFragment;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
 
 public class UploadPathActivity extends FolderPickerActivity implements FileFragment.ContainerActivity,
-        OnClickListener, OnEnforceableRefreshListener {
+    OnClickListener, OnEnforceableRefreshListener {
 
     public static final String KEY_CAMERA_UPLOAD_PATH = "CAMERA_UPLOAD_PATH";
 

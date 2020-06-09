@@ -116,7 +116,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             // Return an error
             bundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION);
             final String message = String.format(mContext.getString(R.string.auth_unsupported_multiaccount),
-                    mContext.getString(R.string.app_name));
+                                                 mContext.getString(R.string.app_name));
             bundle.putString(AccountManager.KEY_ERROR_MESSAGE, message);
 
             mHandler.post(() -> Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show());
@@ -139,7 +139,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         }
         Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-                response);
+                        response);
         intent.putExtra(KEY_ACCOUNT, account);
 
         setIntentFlags(intent);
@@ -217,7 +217,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                                     Account account, String authTokenType, Bundle options) {
         final Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-                response);
+                        response);
         intent.putExtra(KEY_ACCOUNT, account);
         intent.putExtra(KEY_AUTH_TOKEN_TYPE, authTokenType);
         setIntentFlags(intent);
@@ -229,8 +229,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAccountRemovalAllowed(
-            AccountAuthenticatorResponse response, Account account)
-            throws NetworkErrorException {
+        AccountAuthenticatorResponse response, Account account)
+    throws NetworkErrorException {
         return super.getAccountRemovalAllowed(response, account);
     }
 
@@ -241,19 +241,19 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     }
 
     private void validateAccountType(String type)
-            throws UnsupportedAccountTypeException {
+    throws UnsupportedAccountTypeException {
         if (!type.equals(MainApp.Companion.getAccountType())) {
             throw new UnsupportedAccountTypeException();
         }
     }
 
     private void validateAuthTokenType(String authTokenType)
-            throws UnsupportedAuthTokenTypeException {
+    throws UnsupportedAuthTokenTypeException {
         if (!authTokenType.equals(MainApp.Companion.getAuthTokenType()) &&
                 !authTokenType.equals(AccountTypeUtils.getAuthTokenTypePass(MainApp.Companion.getAccountType())) &&
                 !authTokenType.equals(AccountTypeUtils.getAuthTokenTypeAccessToken(MainApp.Companion.getAccountType())) &&
                 !authTokenType.equals(AccountTypeUtils.getAuthTokenTypeRefreshToken(MainApp.Companion.getAccountType()))
-        ) {
+           ) {
             throw new UnsupportedAuthTokenTypeException();
         }
     }
@@ -266,7 +266,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             mFailureBundle = new Bundle();
             mFailureBundle.putInt(AccountManager.KEY_ERROR_CODE, code);
             mFailureBundle
-                    .putString(AccountManager.KEY_ERROR_MESSAGE, errorMsg);
+            .putString(AccountManager.KEY_ERROR_MESSAGE, errorMsg);
         }
 
         Bundle getFailureBundle() {
@@ -275,42 +275,42 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     }
 
     public static class UnsupportedAccountTypeException extends
-            AuthenticatorException {
+        AuthenticatorException {
         private static final long serialVersionUID = 1L;
 
         UnsupportedAccountTypeException() {
             super(AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION,
-                    "Unsupported account type");
+                  "Unsupported account type");
         }
     }
 
     public static class UnsupportedAuthTokenTypeException extends
-            AuthenticatorException {
+        AuthenticatorException {
         private static final long serialVersionUID = 1L;
 
         UnsupportedAuthTokenTypeException() {
             super(AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION,
-                    "Unsupported auth token type");
+                  "Unsupported auth token type");
         }
     }
 
     private boolean canBeRefreshed(String authTokenType) {
         return (authTokenType.equals(AccountTypeUtils.getAuthTokenTypeAccessToken(MainApp.Companion.
-                getAccountType())));
+                                     getAccountType())));
     }
 
     private void refreshToken(
-            AccountAuthenticatorResponse accountAuthenticatorResponse,
-            Account account,
-            String authTokenType,
-            AccountManager accountManager,
-            Bundle options) {
+        AccountAuthenticatorResponse accountAuthenticatorResponse,
+        Account account,
+        String authTokenType,
+        AccountManager accountManager,
+        Bundle options) {
 
         // Prepare everything to perform the token request
         String refreshToken = accountManager.getUserData(
-                account,
-                KEY_OAUTH2_REFRESH_TOKEN
-        );
+                                  account,
+                                  KEY_OAUTH2_REFRESH_TOKEN
+                              );
 
         if (refreshToken == null || refreshToken.isEmpty()) {
             Timber.w("No refresh token stored for silent renewal of access token");
@@ -318,7 +318,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         }
 
         Timber.d("Get OAuth2 refresh token from account: %s, to exchange it for new access and refresh tokens",
-                refreshToken);
+                 refreshToken);
 
         AuthStateManager authStateManager = AuthStateManager.getInstance(mContext);
         AuthorizationServiceConfiguration authorizationServiceConfiguration = authStateManager.readState(account.name).
@@ -329,31 +329,31 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             // The code below is for users (already logged in) updating the app from previous versions, which do not have
             // an authState that is configured when doing a fresh log in
             String baseUrl = accountManager.getUserData(
-                    account,
-                    AccountUtils.Constants.KEY_OC_BASE_URL
-            );
+                                 account,
+                                 AccountUtils.Constants.KEY_OC_BASE_URL
+                             );
             authorizationServiceConfiguration = new AuthorizationServiceConfiguration(
-                    Uri.parse(baseUrl + PATH_SEPARATOR + mContext.getString(R.string.oauth2_url_endpoint_auth)), // auth endpoint
-                    Uri.parse(baseUrl + PATH_SEPARATOR + mContext.getString(R.string.oauth2_url_endpoint_access)) // token endpoint
+                Uri.parse(baseUrl + PATH_SEPARATOR + mContext.getString(R.string.oauth2_url_endpoint_auth)), // auth endpoint
+                Uri.parse(baseUrl + PATH_SEPARATOR + mContext.getString(R.string.oauth2_url_endpoint_access)) // token endpoint
             );
         }
 
 
         String scope = accountManager.getUserData(
-                account,
-                KEY_OAUTH2_SCOPE
-        );
+                           account,
+                           KEY_OAUTH2_SCOPE
+                       );
 
         TokenRequest tokenRequest = new TokenRequest.Builder(
-                authorizationServiceConfiguration,
-                mContext.getString(R.string.oauth2_client_id)
+            authorizationServiceConfiguration,
+            mContext.getString(R.string.oauth2_client_id)
         ).setGrantType(GrantTypeValues.REFRESH_TOKEN)
-                .setScope(scope)
-                .setRefreshToken(refreshToken)
-                .build();
+        .setScope(scope)
+        .setRefreshToken(refreshToken)
+        .build();
 
         ClientAuthentication clientAuth =
-                OAuthUtils.Companion.createClientSecretBasic(mContext.getString(R.string.oauth2_client_secret));
+            OAuthUtils.Companion.createClientSecretBasic(mContext.getString(R.string.oauth2_client_secret));
 
         AppAuthConfiguration.Builder appAuthConfigurationBuilder = new AppAuthConfiguration.Builder();
         appAuthConfigurationBuilder.setConnectionBuilder(new OAuthConnectionBuilder(mContext));
@@ -361,62 +361,62 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
         // Let's perform the token request
         authService.performTokenRequest(
-                tokenRequest,
-                clientAuth,
-                (tokenResponse, authorizationException) -> {
-                    if (tokenResponse != null && tokenResponse.accessToken != null) {
-                        String newAccessToken = tokenResponse.accessToken;
-                        Timber.d("Set OAuth2 new access token in account: %s", newAccessToken);
-                        accountManager.setAuthToken(account, authTokenType, newAccessToken);
+            tokenRequest,
+            clientAuth,
+        (tokenResponse, authorizationException) -> {
+            if (tokenResponse != null && tokenResponse.accessToken != null) {
+                String newAccessToken = tokenResponse.accessToken;
+                Timber.d("Set OAuth2 new access token in account: %s", newAccessToken);
+                accountManager.setAuthToken(account, authTokenType, newAccessToken);
 
-                        final Bundle result = new Bundle();
-                        result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-                        result.putString(AccountManager.KEY_ACCOUNT_TYPE, MainApp.Companion.getAccountType());
-                        result.putString(AccountManager.KEY_AUTHTOKEN, newAccessToken);
-                        accountAuthenticatorResponse.onResult(result);
+                final Bundle result = new Bundle();
+                result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+                result.putString(AccountManager.KEY_ACCOUNT_TYPE, MainApp.Companion.getAccountType());
+                result.putString(AccountManager.KEY_AUTHTOKEN, newAccessToken);
+                accountAuthenticatorResponse.onResult(result);
 
-                        String refreshTokenToUseFromNowOn;
+                String refreshTokenToUseFromNowOn;
 
-                        if (tokenResponse.refreshToken != null) {
-                            refreshTokenToUseFromNowOn = tokenResponse.refreshToken;
-                        } else {
-                            refreshTokenToUseFromNowOn = refreshToken;
-                        }
+                if (tokenResponse.refreshToken != null) {
+                    refreshTokenToUseFromNowOn = tokenResponse.refreshToken;
+                } else {
+                    refreshTokenToUseFromNowOn = refreshToken;
+                }
 
-                        Timber.d("Set OAuth2 new refresh token in account: %s", refreshTokenToUseFromNowOn);
-                        accountManager.setUserData(
-                                account,
-                                KEY_OAUTH2_REFRESH_TOKEN,
-                                refreshTokenToUseFromNowOn
-                        );
+                Timber.d("Set OAuth2 new refresh token in account: %s", refreshTokenToUseFromNowOn);
+                accountManager.setUserData(
+                    account,
+                    KEY_OAUTH2_REFRESH_TOKEN,
+                    refreshTokenToUseFromNowOn
+                );
 
-                    } else if (authorizationException != null) {
-                        Timber.e(authorizationException, "OAuth request to refresh access token failed");
-                        Bundle result = prepareBundleToAccessLoginActivity(accountAuthenticatorResponse, account,
+            } else if (authorizationException != null) {
+                Timber.e(authorizationException, "OAuth request to refresh access token failed");
+                Bundle result = prepareBundleToAccessLoginActivity(accountAuthenticatorResponse, account,
                                 authTokenType, options);
-                        accountAuthenticatorResponse.onResult(result);
-                    }
-                    authService.dispose(); // Authorization service no longer required, cleaning up...
-                });
+                accountAuthenticatorResponse.onResult(result);
+            }
+            authService.dispose(); // Authorization service no longer required, cleaning up...
+        });
     }
 
     /**
      * Return bundle with intent to access LoginActivity and UPDATE the token for the account
      */
     private Bundle prepareBundleToAccessLoginActivity(
-            AccountAuthenticatorResponse accountAuthenticatorResponse,
-            Account account,
-            String authTokenType,
-            Bundle options
+        AccountAuthenticatorResponse accountAuthenticatorResponse,
+        Account account,
+        String authTokenType,
+        Bundle options
     ) {
         final Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-                accountAuthenticatorResponse);
+                        accountAuthenticatorResponse);
         intent.putExtra(KEY_AUTH_TOKEN_TYPE, authTokenType);
         intent.putExtra(AuthenticatorConstants.EXTRA_ACCOUNT, account);
         intent.putExtra(
-                AuthenticatorConstants.EXTRA_ACTION,
-                AuthenticatorConstants.ACTION_UPDATE_EXPIRED_TOKEN
+            AuthenticatorConstants.EXTRA_ACTION,
+            AuthenticatorConstants.ACTION_UPDATE_EXPIRED_TOKEN
         );
 
         final Bundle bundle = new Bundle();

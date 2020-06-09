@@ -146,7 +146,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         File f = new File(file.getLocalPath());
         if (!f.exists()) {
             showSnackMessage(
-                    getString(R.string.local_file_not_found_toast)
+                getString(R.string.local_file_not_found_toast)
             );
 
         } else {
@@ -170,7 +170,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
             startActivity(myIntent);
         } catch (ActivityNotFoundException e) {
             showSnackMessage(
-                    getString(R.string.file_list_no_app_for_file_type)
+                getString(R.string.file_list_no_app_for_file_type)
             );
             Timber.i("Could not find app for sending log history.");
 
@@ -182,39 +182,39 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         boolean retval = true;
         UploadsStorageManager storageManager;
         UploadListFragment uploadListFragment =
-                (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
+            (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
         switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isDrawerOpen()) {
-                    closeDrawer();
-                } else {
-                    openDrawer();
-                }
-            case R.id.action_retry_uploads:
-                TransferRequester requester = new TransferRequester();
-                requester.retryFailedUploads(this, null, null, false);
-                break;
+        case android.R.id.home:
+            if (isDrawerOpen()) {
+                closeDrawer();
+            } else {
+                openDrawer();
+            }
+        case R.id.action_retry_uploads:
+            TransferRequester requester = new TransferRequester();
+            requester.retryFailedUploads(this, null, null, false);
+            break;
 
-            case R.id.action_clear_failed_uploads:
-                storageManager = new UploadsStorageManager(getContentResolver());
-                storageManager.clearFailedButNotDelayedForWifiUploads();
-                uploadListFragment.updateUploads();
-                break;
+        case R.id.action_clear_failed_uploads:
+            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager.clearFailedButNotDelayedForWifiUploads();
+            uploadListFragment.updateUploads();
+            break;
 
-            case R.id.action_clear_successfull_uploads:
-                storageManager = new UploadsStorageManager(getContentResolver());
-                storageManager.clearSuccessfulUploads();
-                uploadListFragment.updateUploads();
-                break;
+        case R.id.action_clear_successfull_uploads:
+            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager.clearSuccessfulUploads();
+            uploadListFragment.updateUploads();
+            break;
 
-            case R.id.action_clear_finished_uploads:
-                storageManager = new UploadsStorageManager(getContentResolver());
-                storageManager.clearAllFinishedButNotDelayedForWifiUploads();
-                uploadListFragment.updateUploads();
-                break;
+        case R.id.action_clear_finished_uploads:
+            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager.clearAllFinishedButNotDelayedForWifiUploads();
+            uploadListFragment.updateUploads();
+            break;
 
-            default:
-                retval = super.onOptionsItemSelected(item);
+        default:
+            retval = super.onOptionsItemSelected(item);
         }
 
         return retval;
@@ -233,15 +233,15 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         if (requestCode == FileActivity.REQUEST_CODE__UPDATE_CREDENTIALS && resultCode == RESULT_OK) {
             // Retry uploads of the updated account
             Account account = AccountUtils.getOwnCloudAccountByName(
-                    this,
-                    data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-            );
+                                  this,
+                                  data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+                              );
             TransferRequester requester = new TransferRequester();
             requester.retryFailedUploads(
-                    this,
-                    account,
-                    UploadResult.CREDENTIAL_ERROR,
-                    false
+                this,
+                account,
+                UploadResult.CREDENTIAL_ERROR,
+                false
             );
         }
     }
@@ -290,13 +290,13 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
                     Timber.d("UploadListActivity connected to Upload service. component: " + component + " service: " + service);
                     // Say to UploadListFragment that the Binder is READY in the Activity
                     UploadListFragment uploadListFragment =
-                            (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
+                        (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
                     if (uploadListFragment != null) {
                         uploadListFragment.binderReady();
                     }
                 } else {
                     Timber.d("mUploaderBinder already set. mUploaderBinder: " +
-                            mUploaderBinder + " service:" + service);
+                             mUploaderBinder + " service:" + service);
                 }
             } else {
                 Timber.d("UploadListActivity not connected to Upload service. component: " + component + " service: " + service);
@@ -322,7 +322,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         @Override
         public void onReceive(Context context, Intent intent) {
             UploadListFragment uploadListFragment =
-                    (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
+                (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
 
             uploadListFragment.updateUploads();
         }

@@ -53,42 +53,42 @@ public enum UploadResult {
 
     public static UploadResult fromValue(int value) {
         switch (value) {
-            case -1:
-                return UNKNOWN;
-            case 0:
-                return UPLOADED;
-            case 1:
-                return NETWORK_CONNECTION;
-            case 2:
-                return CREDENTIAL_ERROR;
-            case 3:
-                return FOLDER_ERROR;
-            case 4:
-                return CONFLICT_ERROR;
-            case 5:
-                return FILE_ERROR;
-            case 6:
-                return PRIVILEDGES_ERROR;
-            case 7:
-                return CANCELLED;
-            case 8:
-                return FILE_NOT_FOUND;
-            case 9:
-                return DELAYED_FOR_WIFI;
-            case 10:
-                return SERVICE_INTERRUPTED;
-            case 11:
-                return SERVICE_UNAVAILABLE;
-            case 12:
-                return QUOTA_EXCEEDED;
-            case 13:
-                return SSL_RECOVERABLE_PEER_UNVERIFIED;
-            case 14:
-                return SPECIFIC_FORBIDDEN;
-            case 15:
-                return SPECIFIC_SERVICE_UNAVAILABLE;
-            case 16:
-                return SPECIFIC_UNSUPPORTED_MEDIA_TYPE;
+        case -1:
+            return UNKNOWN;
+        case 0:
+            return UPLOADED;
+        case 1:
+            return NETWORK_CONNECTION;
+        case 2:
+            return CREDENTIAL_ERROR;
+        case 3:
+            return FOLDER_ERROR;
+        case 4:
+            return CONFLICT_ERROR;
+        case 5:
+            return FILE_ERROR;
+        case 6:
+            return PRIVILEDGES_ERROR;
+        case 7:
+            return CANCELLED;
+        case 8:
+            return FILE_NOT_FOUND;
+        case 9:
+            return DELAYED_FOR_WIFI;
+        case 10:
+            return SERVICE_INTERRUPTED;
+        case 11:
+            return SERVICE_UNAVAILABLE;
+        case 12:
+            return QUOTA_EXCEEDED;
+        case 13:
+            return SSL_RECOVERABLE_PEER_UNVERIFIED;
+        case 14:
+            return SPECIFIC_FORBIDDEN;
+        case 15:
+            return SPECIFIC_SERVICE_UNAVAILABLE;
+        case 16:
+            return SPECIFIC_UNSUPPORTED_MEDIA_TYPE;
         }
         return null;
     }
@@ -96,51 +96,51 @@ public enum UploadResult {
     public static UploadResult fromOperationResult(RemoteOperationResult result) {
         // messy :(
         switch (result.getCode()) {
-            case OK:
-                return UPLOADED;
-            case NO_NETWORK_CONNECTION:
-            case HOST_NOT_AVAILABLE:
-            case TIMEOUT:
-            case WRONG_CONNECTION:
-            case INCORRECT_ADDRESS:
-            case SSL_ERROR:
-                return NETWORK_CONNECTION;
-            case ACCOUNT_EXCEPTION:
-            case UNAUTHORIZED:
-                return CREDENTIAL_ERROR;
-            case FILE_NOT_FOUND:
-                return FOLDER_ERROR;
-            case LOCAL_FILE_NOT_FOUND:
-                return FILE_NOT_FOUND;
-            case CONFLICT:
-                return CONFLICT_ERROR;
-            case LOCAL_STORAGE_NOT_COPIED:
+        case OK:
+            return UPLOADED;
+        case NO_NETWORK_CONNECTION:
+        case HOST_NOT_AVAILABLE:
+        case TIMEOUT:
+        case WRONG_CONNECTION:
+        case INCORRECT_ADDRESS:
+        case SSL_ERROR:
+            return NETWORK_CONNECTION;
+        case ACCOUNT_EXCEPTION:
+        case UNAUTHORIZED:
+            return CREDENTIAL_ERROR;
+        case FILE_NOT_FOUND:
+            return FOLDER_ERROR;
+        case LOCAL_FILE_NOT_FOUND:
+            return FILE_NOT_FOUND;
+        case CONFLICT:
+            return CONFLICT_ERROR;
+        case LOCAL_STORAGE_NOT_COPIED:
+            return FILE_ERROR;
+        case FORBIDDEN:
+            return PRIVILEDGES_ERROR;
+        case CANCELLED:
+            return CANCELLED;
+        case DELAYED_FOR_WIFI:
+            return DELAYED_FOR_WIFI;
+        case SERVICE_UNAVAILABLE:
+            return SERVICE_UNAVAILABLE;
+        case QUOTA_EXCEEDED:
+            return QUOTA_EXCEEDED;
+        case SSL_RECOVERABLE_PEER_UNVERIFIED:
+            return SSL_RECOVERABLE_PEER_UNVERIFIED;
+        case SPECIFIC_FORBIDDEN:
+            return SPECIFIC_FORBIDDEN;
+        case SPECIFIC_SERVICE_UNAVAILABLE:
+            return SPECIFIC_SERVICE_UNAVAILABLE;
+        case SPECIFIC_UNSUPPORTED_MEDIA_TYPE:
+            return SPECIFIC_UNSUPPORTED_MEDIA_TYPE;
+        case UNKNOWN_ERROR:
+            if (result.getException() instanceof java.io.FileNotFoundException) {
                 return FILE_ERROR;
-            case FORBIDDEN:
-                return PRIVILEDGES_ERROR;
-            case CANCELLED:
-                return CANCELLED;
-            case DELAYED_FOR_WIFI:
-                return DELAYED_FOR_WIFI;
-            case SERVICE_UNAVAILABLE:
-                return SERVICE_UNAVAILABLE;
-            case QUOTA_EXCEEDED:
-                return QUOTA_EXCEEDED;
-            case SSL_RECOVERABLE_PEER_UNVERIFIED:
-                return SSL_RECOVERABLE_PEER_UNVERIFIED;
-            case SPECIFIC_FORBIDDEN:
-                return SPECIFIC_FORBIDDEN;
-            case SPECIFIC_SERVICE_UNAVAILABLE:
-                return SPECIFIC_SERVICE_UNAVAILABLE;
-            case SPECIFIC_UNSUPPORTED_MEDIA_TYPE:
-                return SPECIFIC_UNSUPPORTED_MEDIA_TYPE;
-            case UNKNOWN_ERROR:
-                if (result.getException() instanceof java.io.FileNotFoundException) {
-                    return FILE_ERROR;
-                }
-                return UNKNOWN;
-            default:
-                return UNKNOWN;
+            }
+            return UNKNOWN;
+        default:
+            return UNKNOWN;
         }
 
     }

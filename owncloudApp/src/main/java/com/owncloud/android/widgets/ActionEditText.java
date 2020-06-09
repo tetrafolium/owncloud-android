@@ -88,7 +88,7 @@ public class ActionEditText extends AppCompatEditText {
         p.setColor(Color.GRAY);
 
         canvas.drawText(s, mButtonRect.left + 3, mButtonRect.bottom
-                - (mTextBounds.height() / 2), p);
+                        - (mTextBounds.height() / 2), p);
 
         invalidate();
     }
@@ -114,7 +114,7 @@ public class ActionEditText extends AppCompatEditText {
                     try {
 
                         method = getContext().getClass().getMethod(
-                                badgeClickCallback, paramtypes);
+                                     badgeClickCallback, paramtypes);
                         method.invoke(getContext(), this, s);
 
                     } catch (NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
@@ -130,17 +130,17 @@ public class ActionEditText extends AppCompatEditText {
 
     private void getAttrs(AttributeSet attr) {
         TypedArray a = getContext().obtainStyledAttributes(attr,
-                R.styleable.ActionEditText);
+                       R.styleable.ActionEditText);
         optionOneString = a
-                .getString(R.styleable.ActionEditText_optionOneString);
+                          .getString(R.styleable.ActionEditText_optionOneString);
         optionTwoString = a
-                .getString(R.styleable.ActionEditText_optionTwoString);
+                          .getString(R.styleable.ActionEditText_optionTwoString);
         optionOneColor = a.getColor(R.styleable.ActionEditText_optionOneColor,
-                0x00ff00);
+                                    0x00ff00);
         optionTwoColor = a.getColor(R.styleable.ActionEditText_optionTwoColor,
-                0xff0000);
+                                    0xff0000);
         badgeClickCallback = a
-                .getString(R.styleable.ActionEditText_onBadgeClick);
+                             .getString(R.styleable.ActionEditText_onBadgeClick);
     }
 
 }

@@ -53,19 +53,19 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Service that handles media playback, both audio and video. 
+ * Service that handles media playback, both audio and video.
  *
  * Waits for Intents which signal the service to perform specific operations: Play, Pause,
  * Rewind, etc.
  */
 public class MediaService extends Service implements OnCompletionListener, OnPreparedListener,
-        OnErrorListener, AudioManager.OnAudioFocusChangeListener {
+    OnErrorListener, AudioManager.OnAudioFocusChangeListener {
 
     private static final String MY_PACKAGE = MediaService.class.getPackage() != null ?
             MediaService.class.getPackage().getName() : "com.owncloud.android.media";
 
     private static final String MEDIA_SERVICE_NOTIFICATION_CHANNEL_ID =
-            "MEDIA_SERVICE_NOTIFICATION_CHANNEL";
+        "MEDIA_SERVICE_NOTIFICATION_CHANNEL";
 
     /// Intent actions that we are prepared to handle
     public static final String ACTION_PLAY_FILE = MY_PACKAGE + ".action.PLAY_FILE";
@@ -180,14 +180,14 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         } else if (extra == MediaPlayer.MEDIA_ERROR_IO) {
             /*  Added in API level 17
                 File or network related operation errors.
-                Constant Value: -1004 (0xfffffc14) 
+                Constant Value: -1004 (0xfffffc14)
              */
             messageId = R.string.media_err_io;
 
         } else if (extra == MediaPlayer.MEDIA_ERROR_MALFORMED) {
             /*  Added in API level 17
                 Bitstream is not conforming to the related coding standard or file spec.
-                Constant Value: -1007 (0xfffffc11) 
+                Constant Value: -1007 (0xfffffc11)
              */
             messageId = R.string.media_err_malformed;
 
@@ -216,7 +216,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
                 Added in API level 1
                 Media server died. In this case, the application must release the MediaPlayer
                 object and instantiate a new one.
-                Constant Value: 100 (0x00000064) 
+                Constant Value: 100 (0x00000064)
              */
             messageId = R.string.media_err_unknown;
         }
@@ -234,7 +234,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         Timber.d("Creating ownCloud media service");
 
         mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).
-                createWifiLock(WifiManager.WIFI_MODE_FULL, MEDIA_WIFI_LOCK_TAG);
+                    createWifiLock(WifiManager.WIFI_MODE_FULL, MEDIA_WIFI_LOCK_TAG);
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -302,9 +302,9 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     /**
      * Processes a request to play a media file received as a parameter
      *
-     * TODO If a new request is received when a file is being prepared, it is ignored. Is this what we want? 
+     * TODO If a new request is received when a file is being prepared, it is ignored. Is this what we want?
      *
-     * @param intent    Intent received in the request with the data to identify the file to play. 
+     * @param intent    Intent received in the request with the data to identify the file to play.
      */
     private void processPlayFileRequest(Intent intent) {
         if (mState != State.PREPARING) {
@@ -359,7 +359,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     }
 
     /**
-     * Processes a request to pause the current playback 
+     * Processes a request to pause the current playback
      */
     protected void processPauseRequest() {
         if (mState == State.PLAYING) {
@@ -423,7 +423,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     }
 
     /**
-     * Reconfigures MediaPlayer according to audio focus settings and starts/restarts it. 
+     * Reconfigures MediaPlayer according to audio focus settings and starts/restarts it.
      */
     protected void configAndStartMediaPlayer() {
         if (mPlayer == null) {
@@ -451,21 +451,21 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     }
 
     /**
-     * Requests the audio focus to the Audio Manager 
+     * Requests the audio focus to the Audio Manager
      */
     private void tryToGetAudioFocus() {
         if (mAudioFocus != AudioFocus.FOCUS
                 && mAudioManager != null
                 && (AudioManager.AUDIOFOCUS_REQUEST_GRANTED == mAudioManager.requestAudioFocus(this,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN))
-        ) {
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.AUDIOFOCUS_GAIN))
+           ) {
             mAudioFocus = AudioFocus.FOCUS;
         }
     }
 
     /**
-     * Starts playing the current media file. 
+     * Starts playing the current media file.
      */
     protected void playMedia() {
         mState = State.STOPPED;
@@ -513,25 +513,25 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         } catch (SecurityException e) {
             Timber.e(e, "SecurityException playing " + mAccount.name + mFile.getRemotePath());
             Toast.makeText(this, String.format(getString(R.string.media_err_security_ex), mFile.getFileName()),
-                    Toast.LENGTH_LONG).show();
+                           Toast.LENGTH_LONG).show();
             processStopRequest(true);
 
         } catch (IOException e) {
             Timber.e(e, "IOException playing " + mAccount.name + mFile.getRemotePath());
             Toast.makeText(this, String.format(getString(R.string.media_err_io_ex), mFile.getFileName()),
-                    Toast.LENGTH_LONG).show();
+                           Toast.LENGTH_LONG).show();
             processStopRequest(true);
 
         } catch (IllegalStateException e) {
             Timber.e(e, "IllegalStateException " + mAccount.name + mFile.getRemotePath());
             Toast.makeText(this, String.format(getString(R.string.media_err_unexpected), mFile.getFileName()),
-                    Toast.LENGTH_LONG).show();
+                           Toast.LENGTH_LONG).show();
             processStopRequest(true);
 
         } catch (IllegalArgumentException e) {
             Timber.e(e, "IllegalArgumentException " + mAccount.name + mFile.getRemotePath());
             Toast.makeText(this, String.format(getString(R.string.media_err_unexpected), mFile.getFileName()),
-                    Toast.LENGTH_LONG).show();
+                           Toast.LENGTH_LONG).show();
             processStopRequest(true);
         }
     }
@@ -551,7 +551,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     /** Called when media player is done playing current song. */
     public void onCompletion(MediaPlayer player) {
         Toast.makeText(this, String.format(getString(R.string.media_event_done), mFile.getFileName()),
-                Toast.LENGTH_LONG).show();
+                       Toast.LENGTH_LONG).show();
         if (mMediaController != null) {
             // somebody is still bound to the service
             player.seekTo(0);
@@ -565,7 +565,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     }
 
     /**
-     * Called when media player is done preparing. 
+     * Called when media player is done preparing.
      *
      * Time to start.
      */
@@ -599,9 +599,9 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         showDetailsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         mNotificationBuilder.setContentIntent(PendingIntent.getActivity(getApplicationContext(),
-                (int) System.currentTimeMillis(),
-                showDetailsIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT));
+                                              (int) System.currentTimeMillis(),
+                                              showDetailsIntent,
+                                              PendingIntent.FLAG_UPDATE_CURRENT));
         mNotificationBuilder.setWhen(System.currentTimeMillis());
         mNotificationBuilder.setTicker(ticker);
         mNotificationBuilder.setContentTitle(ticker);
@@ -634,9 +634,9 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         showDetailsIntent.putExtra(FileActivity.EXTRA_ACCOUNT, mAccount);
         showDetailsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mNotificationBuilder.setContentIntent(PendingIntent.getActivity(getApplicationContext(),
-                (int) System.currentTimeMillis(),
-                showDetailsIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT));
+                                              (int) System.currentTimeMillis(),
+                                              showDetailsIntent,
+                                              PendingIntent.FLAG_UPDATE_CURRENT));
         mNotificationBuilder.setContentTitle(ticker);
         mNotificationBuilder.setContentText(content);
         mNotificationBuilder.setChannelId(MEDIA_SERVICE_NOTIFICATION_CHANNEL_ID);
@@ -645,7 +645,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     }
 
     /**
-     * Called when there's an error playing media. 
+     * Called when there's an error playing media.
      *
      * Warns the user about the error and resets the media player.
      */
@@ -725,7 +725,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     /**
      * Accesses the current MediaPlayer instance in the service.
      *
-     * To be handled carefully. Visibility is protected to be accessed only 
+     * To be handled carefully. Visibility is protected to be accessed only
      *
      * @return Current MediaPlayer instance handled by MediaService.
      */

@@ -68,9 +68,9 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
      * @param requestCode   If >= 0, this code will be returned in onActivityResult().
      */
     public static void startLocalFolderPickerActivityForResult(
-            Activity activity,
-            String startPath,
-            int requestCode
+        Activity activity,
+        String startPath,
+        int requestCode
     ) {
         Intent action = new Intent(activity, LocalFolderPickerActivity.class);
         action.putExtra(LocalFolderPickerActivity.EXTRA_PATH, startPath);
@@ -84,8 +84,8 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
 
         // set current folder
         String startPath = (savedInstanceState != null) ?
-                savedInstanceState.getString(LocalFolderPickerActivity.EXTRA_PATH) :
-                getIntent().getStringExtra(EXTRA_PATH);
+                           savedInstanceState.getString(LocalFolderPickerActivity.EXTRA_PATH) :
+                           getIntent().getStringExtra(EXTRA_PATH);
         if (startPath != null) {
             mCurrentFolder = new File(startPath);
         }
@@ -101,7 +101,7 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
         // Allow or disallow touches with other visible windows
         LinearLayout filesFolderPickerLayout = findViewById(R.id.filesFolderPickerLayout);
         filesFolderPickerLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         if (savedInstanceState == null) {
@@ -182,14 +182,14 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
-            case android.R.id.home: {
-                if (mayBrowseUp()) {
-                    onBackPressed();
-                }
-                break;
+        case android.R.id.home: {
+            if (mayBrowseUp()) {
+                onBackPressed();
             }
-            default:
-                retval = super.onOptionsItemSelected(item);
+            break;
+        }
+        default:
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }
@@ -250,8 +250,8 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
     @Nullable
     protected LocalFileListFragment getListFragment() {
         Fragment listOfFiles = getSupportFragmentManager().findFragmentByTag(
-                FTAG_LIST_OF_FOLDERS
-        );
+                                   FTAG_LIST_OF_FOLDERS
+                               );
         if (listOfFiles != null) {
             return (LocalFileListFragment) listOfFiles;
         }

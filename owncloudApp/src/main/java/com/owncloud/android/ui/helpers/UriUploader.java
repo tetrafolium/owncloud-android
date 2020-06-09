@@ -68,13 +68,13 @@ public class UriUploader {
     }
 
     public UriUploader(
-            FileActivity activity,
-            ArrayList<Uri> uris,
-            String uploadPath,
-            Account account,
-            int behaviour,
-            boolean showWaitingDialog,
-            CopyAndUploadContentUrisTask.OnCopyTmpFilesTaskListener copyTmpTaskListener
+        FileActivity activity,
+        ArrayList<Uri> uris,
+        String uploadPath,
+        Account account,
+        int behaviour,
+        boolean showWaitingDialog,
+        CopyAndUploadContentUrisTask.OnCopyTmpFilesTaskListener copyTmpTaskListener
     ) {
         mActivity = activity;
         mUrisToUpload = uris;
@@ -115,7 +115,7 @@ public class UriUploader {
             if (!contentUris.isEmpty()) {
                 /// content: uris will be copied to temporary files before calling {@link FileUploader}
                 copyThenUpload(contentUris.toArray(new Uri[0]),
-                        contentRemotePaths.toArray(new String[0]));
+                               contentRemotePaths.toArray(new String[0]));
 
             } else if (schemeFileCounter == 0) {
                 mCode = UriUploaderResultCode.ERROR_NO_FILE_TO_UPLOAD;
@@ -148,14 +148,14 @@ public class UriUploader {
     private void requestUpload(String localPath, String remotePath) {
         TransferRequester requester = new TransferRequester();
         requester.uploadNewFile(
-                mActivity,
-                mAccount,
-                localPath,
-                remotePath,
-                mBehaviour,
-                null,       // MIME type will be detected from file name
-                false,      // do not create parent folder if not existent
-                UploadFileOperation.CREATED_BY_USER
+            mActivity,
+            mAccount,
+            localPath,
+            remotePath,
+            mBehaviour,
+            null,       // MIME type will be detected from file name
+            false,      // do not create parent folder if not existent
+            UploadFileOperation.CREATED_BY_USER
         );
     }
 
@@ -170,26 +170,26 @@ public class UriUploader {
         }
 
         CopyAndUploadContentUrisTask copyTask = new CopyAndUploadContentUrisTask
-                (mCopyTmpTaskListener, mActivity);
+        (mCopyTmpTaskListener, mActivity);
 
         FragmentManager fm = mActivity.getSupportFragmentManager();
 
         // Init Fragment without UI to retain AsyncTask across configuration changes
         TaskRetainerFragment taskRetainerFragment =
-                (TaskRetainerFragment) fm.findFragmentByTag(TaskRetainerFragment.FTAG_TASK_RETAINER_FRAGMENT);
+            (TaskRetainerFragment) fm.findFragmentByTag(TaskRetainerFragment.FTAG_TASK_RETAINER_FRAGMENT);
 
         if (taskRetainerFragment != null) {
             taskRetainerFragment.setTask(copyTask);
         }
 
         copyTask.execute(
-                CopyAndUploadContentUrisTask.makeParamsToExecute(
-                        mAccount,
-                        sourceUris,
-                        remotePaths,
-                        mBehaviour,
-                        mActivity.getContentResolver()
-                )
+            CopyAndUploadContentUrisTask.makeParamsToExecute(
+                mAccount,
+                sourceUris,
+                remotePaths,
+                mBehaviour,
+                mActivity.getContentResolver()
+            )
         );
     }
 }

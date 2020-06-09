@@ -55,12 +55,12 @@ public class ConfirmationDialogFragment extends DialogFragment {
      * @return Dialog ready to show.
      */
     public static ConfirmationDialogFragment newInstance(
-            int messageResId,
-            String[] messageArguments,
-            int titleResId,
-            int posBtn,
-            int neuBtn,
-            int negBtn
+        int messageResId,
+        String[] messageArguments,
+        int titleResId,
+        int posBtn,
+        int neuBtn,
+        int negBtn
     ) {
 
         if (messageResId == -1) {
@@ -93,13 +93,13 @@ public class ConfirmationDialogFragment extends DialogFragment {
         int negBtn = getArguments().getInt(ARG_NEGATIVE_BTN_RES, -1);
 
         if (messageArguments == null) {
-            messageArguments = new String[]{};
+            messageArguments = new String[] {};
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                .setIcon(R.drawable.ic_warning)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setMessage(String.format(getString(messageId), messageArguments));
+        .setIcon(R.drawable.ic_warning)
+        .setIconAttribute(android.R.attr.alertDialogIcon)
+        .setMessage(String.format(getString(messageId), messageArguments));
 
         if (titleId == 0) {
             builder.setTitle(android.R.string.dialog_alert_title);
@@ -109,30 +109,30 @@ public class ConfirmationDialogFragment extends DialogFragment {
 
         if (posBtn != -1) {
             builder.setPositiveButton(posBtn,
-                    (dialog, whichButton) -> {
-                        if (mListener != null) {
-                            mListener.onConfirmation(getTag());
-                        }
-                        dialog.dismiss();
-                    });
+            (dialog, whichButton) -> {
+                if (mListener != null) {
+                    mListener.onConfirmation(getTag());
+                }
+                dialog.dismiss();
+            });
         }
         if (neuBtn != -1) {
             builder.setNeutralButton(neuBtn,
-                    (dialog, whichButton) -> {
-                        if (mListener != null) {
-                            mListener.onNeutral(getTag());
-                        }
-                        dialog.dismiss();
-                    });
+            (dialog, whichButton) -> {
+                if (mListener != null) {
+                    mListener.onNeutral(getTag());
+                }
+                dialog.dismiss();
+            });
         }
         if (negBtn != -1) {
             builder.setNegativeButton(negBtn,
-                    (dialog, which) -> {
-                        if (mListener != null) {
-                            mListener.onCancel(getTag());
-                        }
-                        dialog.dismiss();
-                    });
+            (dialog, which) -> {
+                if (mListener != null) {
+                    mListener.onCancel(getTag());
+                }
+                dialog.dismiss();
+            });
         }
         return builder.create();
     }

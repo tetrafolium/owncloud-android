@@ -77,12 +77,12 @@ public class BitmapUtils {
     }
 
     /**
-     * Calculates a proper value for options.inSampleSize in order to decode a Bitmap minimizing 
+     * Calculates a proper value for options.inSampleSize in order to decode a Bitmap minimizing
      * the memory overload and covering a target surface of reqWidth x reqHeight if the original
-     * image is big enough. 
+     * image is big enough.
      *
      * @param options       Bitmap decoding options; options.outHeight and options.inHeight should
-     *                      be set. 
+     *                      be set.
      * @param reqWidth      Width of the surface where the Bitmap will be drawn on, in pixels.
      * @param reqHeight     Height of the surface where the Bitmap will be drawn on, in pixels.
      * @return The largest inSampleSize value that is a power of 2 and keeps both
@@ -110,8 +110,8 @@ public class BitmapUtils {
     }
 
     /**
-     * Rotate bitmap according to EXIF orientation. 
-     * Cf. http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/ 
+     * Rotate bitmap according to EXIF orientation.
+     * Cf. http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
      * @param bitmap Bitmap to be rotated
      * @param storagePath Path to source file of bitmap. Needed for EXIF information.
      * @return correctly EXIF-rotated bitmap
@@ -125,34 +125,34 @@ public class BitmapUtils {
             // 1: nothing to do
 
             switch (orientation) {
-                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-                    matrix.postScale(-1.0f, 1.0f);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    matrix.postRotate(180);
-                    break;
-                case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-                    matrix.postScale(1.0f, -1.0f);
-                    break;
-                case ExifInterface.ORIENTATION_TRANSPOSE:
-                    matrix.postRotate(-90);
-                    matrix.postScale(1.0f, -1.0f);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    matrix.postRotate(90);
-                    break;
-                case ExifInterface.ORIENTATION_TRANSVERSE:
-                    matrix.postRotate(90);
-                    matrix.postScale(1.0f, -1.0f);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    matrix.postRotate(270);
-                    break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.postScale(-1.0f, 1.0f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.postScale(1.0f, -1.0f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.postRotate(-90);
+                matrix.postScale(1.0f, -1.0f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.postRotate(90);
+                matrix.postScale(1.0f, -1.0f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(270);
+                break;
             }
 
             // Rotate the bitmap
             final Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                    bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                                        bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             if (resultBitmap != bitmap) {
                 bitmap.recycle();
             }
@@ -165,8 +165,8 @@ public class BitmapUtils {
 
     private static float fixRawHSLValue(final float value, final float upperBound, final float scale) {
         return (value > upperBound) ? upperBound
-                : (value < 0f) ? 0f
-                : value * scale;
+               : (value < 0f) ? 0f
+               : value * scale;
     }
 
     /**
@@ -199,20 +199,20 @@ public class BitmapUtils {
         final float lr = fixRawHSLValue(s, 100f, 1 / 100f);
 
         final float q = (lr < 0.5)
-                ? lr * (1 + sr)
-                : (lr + sr) - (lr * sr);
+                        ? lr * (1 + sr)
+                        : (lr + sr) - (lr * sr);
         final float p = 2 * lr - q;
         final int r = Math.round(Math.max(0, HueToRGB(p, q, hr + (1.0f / 3.0f)) * 256));
         final int g = Math.round(Math.max(0, HueToRGB(p, q, hr) * 256));
         final int b = Math.round(Math.max(0, HueToRGB(p, q, hr - (1.0f / 3.0f)) * 256));
 
-        return new int[]{r, g, b};
+        return new int[] {r, g, b};
     }
 
     private static float HueToRGB(final float p, final float q, final float h) {
         final float hr = (h < 0) ? h + 1
-                : (h > 1) ? h - 1
-                : h;
+                         : (h > 1) ? h - 1
+                         : h;
 
         if (6 * hr < 1) {
             return p + ((q - p) * 6 * h);
@@ -248,14 +248,14 @@ public class BitmapUtils {
      * @throws NoSuchAlgorithmException if the specified algorithm is not available
      */
     public static int[] calculateAvatarBackgroundRGB(String accountName)
-            throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    throws UnsupportedEncodingException, NoSuchAlgorithmException {
         // using adapted algorithm from /core/js/placeholder.js:50
         final String username = AccountUtils.getUsernameOfAccount(accountName);
         final byte[] seed = username.getBytes("UTF-8");
         final MessageDigest md = MessageDigest.getInstance("MD5");
         // Integer seedMd5Int = Math.abs(new String(Hex.encodeHex(seedMd5)).hashCode());
         final Integer seedMd5Int = String.format(Locale.ROOT, "%032x",
-                new BigInteger(1, md.digest(seed))).hashCode();
+                                   new BigInteger(1, md.digest(seed))).hashCode();
 
         final double maxRange = Integer.MAX_VALUE;
         final float hue = (float) (seedMd5Int / maxRange * 360);

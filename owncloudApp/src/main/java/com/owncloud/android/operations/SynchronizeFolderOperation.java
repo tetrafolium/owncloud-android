@@ -147,13 +147,13 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      *                                  will be synchronized.
      */
     public SynchronizeFolderOperation(
-            Context context,
-            String remotePath,
-            Account account,
-            long currentSyncTime,
-            boolean pushOnly,
-            boolean syncFullAccount,
-            boolean syncContentOfRegularFiles
+        Context context,
+        String remotePath,
+        Account account,
+        long currentSyncTime,
+        boolean pushOnly,
+        boolean syncFullAccount,
+        boolean syncContentOfRegularFiles
     ) {
         mRemotePath = remotePath;
         mCurrentSyncTime = currentSyncTime;
@@ -232,7 +232,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
                     }
                     if (fetchFolderResult.isException()) {
                         Timber.e(fetchFolderResult.getException(),
-                                "Checked " + mAccount.name + mRemotePath + " : " + fetchFolderResult.getLogMessage());
+                                 "Checked " + mAccount.name + mRemotePath + " : " + fetchFolderResult.getLogMessage());
                     } else {
                         Timber.e("Checked " + mAccount.name + mRemotePath + " : " + fetchFolderResult.getLogMessage());
                     }
@@ -280,11 +280,11 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
         if (storageManager.fileExists(mLocalFolder.getFileId())) {
             String currentSavePath = FileStorageUtils.getSavePath(mAccount.name);
             storageManager.removeFolder(
-                    mLocalFolder,
-                    true,
-                    (mLocalFolder.isDown() &&
-                            mLocalFolder.getStoragePath().startsWith(currentSavePath)
-                    )
+                mLocalFolder,
+                true,
+                (mLocalFolder.isDown() &&
+                 mLocalFolder.getStoragePath().startsWith(currentSavePath)
+                )
             );
         }
     }
@@ -298,15 +298,15 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      * @param remoteFolderAndFiles Remote folder and children files in folder
      */
     private void mergeRemoteFolder(ArrayList<RemoteFile> remoteFolderAndFiles)
-            throws OperationCancelledException {
+    throws OperationCancelledException {
         Timber.d("Synchronizing " + mAccount.name + mRemotePath);
 
         FileDataStorageManager storageManager = getStorageManager();
 
         // parse data from remote folder
         OCFile updatedFolder = FileStorageUtils.createOCFileFromRemoteFile(
-                remoteFolderAndFiles.get(0)
-        );  // NOTE: updates ETag with remote value; that's INTENDED
+                                   remoteFolderAndFiles.get(0)
+                               );  // NOTE: updates ETag with remote value; that's INTENDED
         updatedFolder.copyLocalPropertiesFrom(mLocalFolder);
 
         Timber.d("Remote folder " + mLocalFolder.getRemotePath() + " changed - starting update of local data ");
@@ -365,7 +365,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
                 // new files need to check av-off status of parent folder!
                 if (updatedFolder.isAvailableOffline()) {
                     updatedLocalFile.setAvailableOfflineStatus(
-                            OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE_PARENT
+                        OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE_PARENT
                     );
                 }
             }
@@ -395,8 +395,8 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
         mFoldersToVisit = new Vector<>(children.size());
         for (OCFile child : children) {
             addToSyncContents(
-                    child,
-                    null
+                child,
+                null
             );
         }
     }
@@ -435,8 +435,8 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
                 intent.putExtra(OperationsService.EXTRA_REMOTE_PATH, localFile.getRemotePath());
                 intent.putExtra(OperationsService.EXTRA_PUSH_ONLY, serverUnchanged);
                 intent.putExtra(
-                        OperationsService.EXTRA_SYNC_REGULAR_FILES,
-                        mSyncContentOfRegularFiles
+                    OperationsService.EXTRA_SYNC_REGULAR_FILES,
+                    mSyncContentOfRegularFiles
                 );
                 mFoldersToSyncContents.add(intent);
             }
@@ -448,12 +448,12 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
             if (shouldSyncContents && !isBlockedForAutomatedSync(localFile)) {
                 /// synchronization for files
                 SynchronizeFileOperation operation = new SynchronizeFileOperation(
-                        localFile,
-                        remoteFile,
-                        mAccount,
-                        serverUnchanged,
-                        mContext,
-                        false
+                    localFile,
+                    remoteFile,
+                    mAccount,
+                    serverUnchanged,
+                    mContext,
+                    false
                 );
                 mFilesToSyncContents.add(operation);
             }
@@ -485,7 +485,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
                     mFailsInFileSyncsFound++;
                     if (contentsResult.getException() != null) {
                         Timber.e(contentsResult.getException(), "Error while synchronizing file : %s",
-                                contentsResult.getLogMessage());
+                                 contentsResult.getLogMessage());
                     } else {
                         Timber.e("Error while synchronizing file : %s", contentsResult.getLogMessage());
                     }
@@ -556,13 +556,13 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
         OCUpload failedUpload = uploadsStorageManager.getLastUploadFor(file, mAccount.name);
         if (failedUpload != null) {
             switch (failedUpload.getLastResult()) {
-                case CREDENTIAL_ERROR:
-                case FOLDER_ERROR:
-                case FILE_NOT_FOUND:
-                case FILE_ERROR:
-                case PRIVILEDGES_ERROR:
-                case CONFLICT_ERROR:
-                    return true;
+            case CREDENTIAL_ERROR:
+            case FOLDER_ERROR:
+            case FILE_NOT_FOUND:
+            case FILE_ERROR:
+            case PRIVILEDGES_ERROR:
+            case CONFLICT_ERROR:
+                return true;
             }
         }
         return false;

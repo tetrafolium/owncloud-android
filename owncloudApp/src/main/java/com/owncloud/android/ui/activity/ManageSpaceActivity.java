@@ -52,7 +52,7 @@ public class ManageSpaceActivity extends AppCompatActivity {
         // Allow or disallow touches with other visible windows
         LinearLayout manageSpaceLayout = findViewById(R.id.manage_space_layout);
         manageSpaceLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         ActionBar actionBar = getSupportActionBar();
@@ -73,12 +73,12 @@ public class ManageSpaceActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            default:
-                Timber.w("Unknown menu item triggered");
-                retval = super.onOptionsItemSelected(item);
+        case android.R.id.home:
+            finish();
+            break;
+        default:
+            Timber.w("Unknown menu item triggered");
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }
@@ -95,7 +95,7 @@ public class ManageSpaceActivity extends AppCompatActivity {
 
             // Save passcode from Share preferences
             SharedPreferences appPrefs = PreferenceManager
-                    .getDefaultSharedPreferences(getApplicationContext());
+                                         .getDefaultSharedPreferences(getApplicationContext());
 
             boolean passCodeEnable = appPrefs.getBoolean(PassCodeActivity.PREFERENCE_SET_PASSCODE, false);
             boolean patternEnabled = appPrefs.getBoolean(PatternLockActivity.PREFERENCE_SET_PATTERN, false);
@@ -150,10 +150,10 @@ public class ManageSpaceActivity extends AppCompatActivity {
             super.onPostExecute(result);
             if (!result) {
                 Snackbar snackbar = Snackbar.make(
-                        findViewById(android.R.id.content),
-                        R.string.manage_space_clear_data,
-                        Snackbar.LENGTH_LONG
-                );
+                                        findViewById(android.R.id.content),
+                                        R.string.manage_space_clear_data,
+                                        Snackbar.LENGTH_LONG
+                                    );
                 snackbar.show();
 
             } else {

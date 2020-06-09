@@ -64,14 +64,14 @@ public class TransferRequester {
      * Call to upload several new files
      */
     public void uploadNewFiles(
-            Context context,
-            Account account,
-            String[] localPaths,
-            String[] remotePaths,
-            String[] mimeTypes,
-            Integer behaviour,
-            Boolean createRemoteFolder,
-            int createdBy
+        Context context,
+        Account account,
+        String[] localPaths,
+        String[] remotePaths,
+        String[] mimeTypes,
+        Integer behaviour,
+        Boolean createRemoteFolder,
+        int createdBy
     ) {
         Intent intent = new Intent(context, FileUploader.class);
 
@@ -99,17 +99,17 @@ public class TransferRequester {
      * Call to upload a new single file
      */
     public void uploadNewFile(Context context, Account account, String localPath, String remotePath, int
-            behaviour, String mimeType, boolean createRemoteFile, int createdBy) {
+                              behaviour, String mimeType, boolean createRemoteFile, int createdBy) {
 
         uploadNewFiles(
-                context,
-                account,
-                new String[]{localPath},
-                new String[]{remotePath},
-                new String[]{mimeType},
-                behaviour,
-                createRemoteFile,
-                createdBy
+            context,
+            account,
+            new String[] {localPath},
+            new String[] {remotePath},
+            new String[] {mimeType},
+            behaviour,
+            createRemoteFile,
+            createdBy
         );
     }
 
@@ -143,8 +143,8 @@ public class TransferRequester {
     public void uploadUpdate(Context context, Account account, OCFile existingFile, Integer behaviour,
                              Boolean forceOverwrite, boolean requestedFromAvOfflineJobService) {
 
-        uploadsUpdate(context, account, new OCFile[]{existingFile}, behaviour, forceOverwrite,
-                requestedFromAvOfflineJobService);
+        uploadsUpdate(context, account, new OCFile[] {existingFile}, behaviour, forceOverwrite,
+                      requestedFromAvOfflineJobService);
     }
 
     /**
@@ -153,9 +153,9 @@ public class TransferRequester {
     public void retry(Context context, OCUpload upload, boolean requestedFromWifiBackEvent) {
         if (upload != null && context != null) {
             Account account = AccountUtils.getOwnCloudAccountByName(
-                    context,
-                    upload.getAccountName()
-            );
+                                  context,
+                                  upload.getAccountName()
+                              );
             retry(context, account, upload, requestedFromWifiBackEvent);
 
         } else {
@@ -234,11 +234,11 @@ public class TransferRequester {
      */
     boolean shouldScheduleRetry(Context context, Exception exception) {
         return (
-                !ConnectivityUtils.isNetworkActive(context) ||
-                        PowerUtils.isDeviceIdle(context) ||
-                        exception instanceof SocketTimeoutException // TODO check if exception is the same in HTTP
-                // server
-        );
+                   !ConnectivityUtils.isNetworkActive(context) ||
+                   PowerUtils.isDeviceIdle(context) ||
+                   exception instanceof SocketTimeoutException // TODO check if exception is the same in HTTP
+                   // server
+               );
     }
 
     /**
@@ -252,12 +252,12 @@ public class TransferRequester {
      */
     void scheduleUpload(Context context, int jobId, String accountName, String remotePath) {
         boolean scheduled = scheduleTransfer(
-                context,
-                RetryUploadJobService.class,
-                jobId,
-                accountName,
-                remotePath
-        );
+                                context,
+                                RetryUploadJobService.class,
+                                jobId,
+                                accountName,
+                                remotePath
+                            );
 
         if (scheduled) {
             Timber.d("Scheduled upload retry for %1s in %2s", remotePath, accountName);
@@ -275,12 +275,12 @@ public class TransferRequester {
      */
     void scheduleDownload(Context context, int jobId, String accountName, String remotePath) {
         boolean scheduled = scheduleTransfer(
-                context,
-                RetryDownloadJobService.class,
-                jobId,
-                accountName,
-                remotePath
-        );
+                                context,
+                                RetryDownloadJobService.class,
+                                jobId,
+                                accountName,
+                                remotePath
+                            );
 
         if (scheduled) {
             Timber.d("Scheduled download retry for %1s in %2s", remotePath, accountName);
@@ -299,15 +299,15 @@ public class TransferRequester {
      * @param remotePath            Full path of the file to upload, relative to root of the OC account.
      */
     private boolean scheduleTransfer(
-            Context context,
-            Class<?> scheduledRetryService,
-            int jobId,
-            String accountName,
-            String remotePath
+        Context context,
+        Class<?> scheduledRetryService,
+        int jobId,
+        String accountName,
+        String remotePath
     ) {
         ComponentName serviceComponent = new ComponentName(
-                context,
-                scheduledRetryService
+            context,
+            scheduledRetryService
         );
 
         JobInfo.Builder builder = new JobInfo.Builder(jobId, serviceComponent);
@@ -327,7 +327,7 @@ public class TransferRequester {
         builder.setExtras(extras);
 
         JobScheduler jobScheduler =
-                (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());
 
         return true;
@@ -354,8 +354,8 @@ public class TransferRequester {
         int networkType = JobInfo.NETWORK_TYPE_UNMETERED;
 
         if (ocUpload != null && (ocUpload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_PICTURE &&
-                !mConfig.isWifiOnlyForPictures() || ocUpload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_VIDEO &&
-                !mConfig.isWifiOnlyForVideos())) {
+                                 !mConfig.isWifiOnlyForPictures() || ocUpload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_VIDEO &&
+                                 !mConfig.isWifiOnlyForVideos())) {
 
             // Wifi or cellular
             networkType = JobInfo.NETWORK_TYPE_ANY;

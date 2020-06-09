@@ -64,10 +64,10 @@ import java.util.Set;
  * An Activity that allows the user to manage accounts.
  */
 public class ManageAccountsActivity extends FileActivity
-        implements
-        AccountListAdapter.AccountListAdapterListener,
-        AccountManagerCallback<Boolean>,
-        ComponentsGetter {
+    implements
+    AccountListAdapter.AccountListAdapterListener,
+    AccountManagerCallback<Boolean>,
+    ComponentsGetter {
 
     public static final String KEY_ACCOUNT_LIST_CHANGED = "ACCOUNT_LIST_CHANGED";
     public static final String KEY_CURRENT_ACCOUNT_CHANGED = "CURRENT_ACCOUNT_CHANGED";
@@ -96,7 +96,7 @@ public class ManageAccountsActivity extends FileActivity
 
         mListView = findViewById(R.id.account_list);
         mListView.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getApplicationContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getApplicationContext())
         );
 
         setupToolbar();
@@ -180,12 +180,12 @@ public class ManageAccountsActivity extends FileActivity
         mDownloadServiceConnection = newTransferenceServiceConnection();
         if (mDownloadServiceConnection != null) {
             bindService(new Intent(this, FileDownloader.class), mDownloadServiceConnection,
-                    Context.BIND_AUTO_CREATE);
+                        Context.BIND_AUTO_CREATE);
         }
         mUploadServiceConnection = newTransferenceServiceConnection();
         if (mUploadServiceConnection != null) {
             bindService(new Intent(this, FileUploader.class), mUploadServiceConnection,
-                    Context.BIND_AUTO_CREATE);
+                        Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -213,11 +213,11 @@ public class ManageAccountsActivity extends FileActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
-            default:
-                retval = super.onOptionsItemSelected(item);
+        case android.R.id.home:
+            onBackPressed();
+            break;
+        default:
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }
@@ -227,7 +227,7 @@ public class ManageAccountsActivity extends FileActivity
         mAccountBeingRemoved = account.name;
         RemoveAccountDialogFragment dialog = RemoveAccountDialogFragment.newInstance(
                 account
-        );
+                                             );
         dialog.show(getSupportFragmentManager(), RemoveAccountDialogFragment.FTAG_CONFIRMATION);
     }
 
@@ -236,7 +236,7 @@ public class ManageAccountsActivity extends FileActivity
         Intent updateAccountCredentials = new Intent(ManageAccountsActivity.this, LoginActivity.class);
         updateAccountCredentials.putExtra(AuthenticatorConstants.EXTRA_ACCOUNT, account);
         updateAccountCredentials.putExtra(AuthenticatorConstants.EXTRA_ACTION,
-                AuthenticatorConstants.ACTION_UPDATE_TOKEN);
+                                          AuthenticatorConstants.ACTION_UPDATE_TOKEN);
         startActivity(updateAccountCredentials);
     }
 
@@ -244,38 +244,38 @@ public class ManageAccountsActivity extends FileActivity
     public void createAccount() {
         AccountManager am = AccountManager.get(getApplicationContext());
         am.addAccount(MainApp.Companion.getAccountType(),
-                null,
-                null,
-                null,
-                this,
-                new AccountManagerCallback<Bundle>() {
-                    @Override
-                    public void run(AccountManagerFuture<Bundle> future) {
-                        if (future != null) {
-                            try {
-                                Bundle result = future.getResult();
-                                String name = result.getString(AccountManager.KEY_ACCOUNT_NAME);
-                                AccountUtils.setCurrentOwnCloudAccount(getApplicationContext(), name);
-                                mAccountListAdapter = new AccountListAdapter(
-                                        ManageAccountsActivity.this,
-                                        getAccountListItems(),
-                                        mTintedCheck
-                                );
-                                mListView.setAdapter(mAccountListAdapter);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mAccountListAdapter.notifyDataSetChanged();
-                                    }
-                                });
-                            } catch (OperationCanceledException e) {
-                                Timber.e(e, "Account creation canceled");
-                            } catch (Exception e) {
-                                Timber.e(e, "Account creation finished in exception");
+                      null,
+                      null,
+                      null,
+                      this,
+        new AccountManagerCallback<Bundle>() {
+            @Override
+            public void run(AccountManagerFuture<Bundle> future) {
+                if (future != null) {
+                    try {
+                        Bundle result = future.getResult();
+                        String name = result.getString(AccountManager.KEY_ACCOUNT_NAME);
+                        AccountUtils.setCurrentOwnCloudAccount(getApplicationContext(), name);
+                        mAccountListAdapter = new AccountListAdapter(
+                            ManageAccountsActivity.this,
+                            getAccountListItems(),
+                            mTintedCheck
+                        );
+                        mListView.setAdapter(mAccountListAdapter);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAccountListAdapter.notifyDataSetChanged();
                             }
-                        }
+                        });
+                    } catch (OperationCanceledException e) {
+                        Timber.e(e, "Account creation canceled");
+                    } catch (Exception e) {
+                        Timber.e(e, "Account creation finished in exception");
                     }
-                }, mHandler);
+                }
+            }
+        }, mHandler);
     }
 
     /**
@@ -304,10 +304,10 @@ public class ManageAccountsActivity extends FileActivity
             if (am.getAccountsByType(MainApp.Companion.getAccountType()).length == 0) {
                 // Show create account screen if there isn't any account
                 am.addAccount(
-                        MainApp.Companion.getAccountType(),
-                        null, null, null,
-                        this,
-                        null, null
+                    MainApp.Companion.getAccountType(),
+                    null, null, null,
+                    this,
+                    null, null
                 );
             } else {    // at least one account left
                 if (AccountUtils.getCurrentOwnCloudAccount(this) == null) {
@@ -336,14 +336,14 @@ public class ManageAccountsActivity extends FileActivity
         } else {
             // restart list of files with new account
             AccountUtils.setCurrentOwnCloudAccount(
-                    ManageAccountsActivity.this,
-                    clickedAccount.name
+                ManageAccountsActivity.this,
+                clickedAccount.name
             );
             // Refresh dependencies to be used in selected account
             MainApp.Companion.initDependencyInjection();
             Intent i = new Intent(
-                    ManageAccountsActivity.this,
-                    FileDisplayActivity.class
+                ManageAccountsActivity.this,
+                FileDisplayActivity.class
             );
             i.putExtra(FileActivity.EXTRA_ACCOUNT, clickedAccount);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

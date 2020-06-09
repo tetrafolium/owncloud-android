@@ -55,10 +55,10 @@ public class CameraUploadsHandler {
     public void scheduleCameraUploadsSyncJob(Context context) {
         // DB Connection
         CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager = new
-                CameraUploadsSyncStorageManager(context.getContentResolver());
+        CameraUploadsSyncStorageManager(context.getContentResolver());
 
         OCCameraUploadSync ocCameraUploadSync = cameraUploadsSyncStorageManager.
-                getCameraUploadSync(null, null, null);
+                                                getCameraUploadSync(null, null, null);
 
         // Initialize synchronization timestamps for pictures/videos, if needed
         if (ocCameraUploadSync == null ||
@@ -87,18 +87,18 @@ public class CameraUploadsHandler {
 
         if (mCameraUploadsConfig.isEnabledForPictures()) {
             extras.putString(Extras.EXTRA_CAMERA_UPLOADS_PICTURES_PATH, mCameraUploadsConfig.
-                    getUploadPathForPictures());
+                             getUploadPathForPictures());
         }
 
         if (mCameraUploadsConfig.isEnabledForVideos()) {
             extras.putString(Extras.EXTRA_CAMERA_UPLOADS_VIDEOS_PATH, mCameraUploadsConfig.
-                    getUploadPathForVideos());
+                             getUploadPathForVideos());
         }
 
         extras.putString(Extras.EXTRA_CAMERA_UPLOADS_SOURCE_PATH, mCameraUploadsConfig.getSourcePath());
 
         extras.putInt(Extras.EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD, mCameraUploadsConfig.
-                getBehaviourAfterUpload());
+                      getBehaviourAfterUpload());
 
         builder.setExtras(extras);
 
@@ -161,10 +161,10 @@ public class CameraUploadsHandler {
     public void updatePicturesLastSync(Context context, long lastSyncTimestamp) {
         // DB connection
         CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager = new
-                CameraUploadsSyncStorageManager(context.getContentResolver());
+        CameraUploadsSyncStorageManager(context.getContentResolver());
 
         OCCameraUploadSync ocCameraUploadSync = cameraUploadsSyncStorageManager.
-                getCameraUploadSync(null, null, null);
+                                                getCameraUploadSync(null, null, null);
 
         if (ocCameraUploadSync != null) {
             ocCameraUploadSync.setPicturesLastSync(lastSyncTimestamp);
@@ -180,10 +180,10 @@ public class CameraUploadsHandler {
     public void updateVideosLastSync(Context context, long lastSyncTimestamp) {
         // DB connection
         CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager = new
-                CameraUploadsSyncStorageManager(context.getContentResolver());
+        CameraUploadsSyncStorageManager(context.getContentResolver());
 
         OCCameraUploadSync ocCameraUploadSync = cameraUploadsSyncStorageManager.
-                getCameraUploadSync(null, null, null);
+                                                getCameraUploadSync(null, null, null);
 
         if (ocCameraUploadSync == null) {
             return;

@@ -124,15 +124,15 @@ public class FileStorageUtils {
      */
     public static Vector<OCFile> sortFolder(Vector<OCFile> files, int sortOrder, boolean isAscending) {
         switch (sortOrder) {
-            case SORT_NAME:
-                FileStorageUtils.sortByName(files, isAscending);
-                break;
-            case SORT_DATE:
-                FileStorageUtils.sortByDate(files, isAscending);
-                break;
-            case SORT_SIZE:
-                FileStorageUtils.sortBySize(files, isAscending);
-                break;
+        case SORT_NAME:
+            FileStorageUtils.sortByName(files, isAscending);
+            break;
+        case SORT_DATE:
+            FileStorageUtils.sortByDate(files, isAscending);
+            break;
+        case SORT_SIZE:
+            FileStorageUtils.sortBySize(files, isAscending);
+            break;
         }
 
         return files;

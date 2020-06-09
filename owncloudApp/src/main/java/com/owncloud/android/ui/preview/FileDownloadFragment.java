@@ -131,7 +131,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
         (rootView.findViewById(R.id.cancelBtn)).setOnClickListener(this);
 
         rootView.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         if (mError) {
@@ -173,13 +173,13 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.cancelBtn: {
-                mContainerActivity.getFileOperationsHelper().cancelTransference(getFile());
-                getActivity().finish();
-                break;
-            }
-            default:
-                Timber.e("Incorrect view clicked!");
+        case R.id.cancelBtn: {
+            mContainerActivity.getFileOperationsHelper().cancelTransference(getFile());
+            getActivity().finish();
+            break;
+        }
+        default:
+            Timber.e("Incorrect view clicked!");
         }
     }
 

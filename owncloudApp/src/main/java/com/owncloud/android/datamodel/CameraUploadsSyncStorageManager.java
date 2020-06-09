@@ -48,17 +48,17 @@ public class CameraUploadsSyncStorageManager extends Observable {
      */
     public long storeCameraUploadSync(OCCameraUploadSync ocCameraUploadSync) {
         Timber.v("Inserting camera upload sync with timestamp of last pictures synchronization "
-                + ocCameraUploadSync.getPicturesLastSync() + " and timestamp of last videos " +
-                "synchronzization" + ocCameraUploadSync.getVideosLastSync());
+                 + ocCameraUploadSync.getPicturesLastSync() + " and timestamp of last videos " +
+                 "synchronzization" + ocCameraUploadSync.getVideosLastSync());
 
         ContentValues cv = new ContentValues();
         cv.put(ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP, ocCameraUploadSync.
-                getPicturesLastSync());
+               getPicturesLastSync());
         cv.put(ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP, ocCameraUploadSync.
-                getVideosLastSync());
+               getVideosLastSync());
 
         Uri result = getDB().insert(ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC,
-                cv);
+                                    cv);
 
         Timber.d("storeUpload returns with: " + result + " for camera upload sync " + ocCameraUploadSync.getId());
         if (result == null) {
@@ -83,21 +83,21 @@ public class CameraUploadsSyncStorageManager extends Observable {
 
         ContentValues cv = new ContentValues();
         cv.put(ProviderMeta.ProviderTableMeta.PICTURES_LAST_SYNC_TIMESTAMP, ocCameraUploadSync.
-                getPicturesLastSync());
+               getPicturesLastSync());
         cv.put(ProviderMeta.ProviderTableMeta.VIDEOS_LAST_SYNC_TIMESTAMP, ocCameraUploadSync.
-                getVideosLastSync());
+               getVideosLastSync());
 
         int result = getDB().update(ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC,
-                cv,
-                ProviderMeta.ProviderTableMeta._ID + "=?",
-                new String[]{String.valueOf(ocCameraUploadSync.getId())}
-        );
+                                    cv,
+                                    ProviderMeta.ProviderTableMeta._ID + "=?",
+                                    new String[] {String.valueOf(ocCameraUploadSync.getId())}
+                                   );
 
         Timber.d("updateCameraUploadSync returns with: " + result + " for camera upload sync: " +
-                ocCameraUploadSync.getId());
+                 ocCameraUploadSync.getId());
         if (result != 1) {
             Timber.e("Failed to update item " + ocCameraUploadSync.getId() + " into " +
-                    "camera upload sync db.");
+                     "camera upload sync db.");
         } else {
             notifyObserversNow();
         }
@@ -113,14 +113,14 @@ public class CameraUploadsSyncStorageManager extends Observable {
      * @return camera upload sync object
      */
     public OCCameraUploadSync getCameraUploadSync(String selection, String[] selectionArgs,
-                                                  String sortOrder) {
+            String sortOrder) {
         Cursor c = getDB().query(
-                ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC,
-                null,
-                selection,
-                selectionArgs,
-                sortOrder
-        );
+                       ProviderMeta.ProviderTableMeta.CONTENT_URI_CAMERA_UPLOADS_SYNC,
+                       null,
+                       selection,
+                       selectionArgs,
+                       sortOrder
+                   );
 
         OCCameraUploadSync ocCameraUploadSync = null;
 
@@ -140,9 +140,9 @@ public class CameraUploadsSyncStorageManager extends Observable {
         OCCameraUploadSync cameraUploadSync = null;
         if (c != null) {
             long picturesLastSync = c.getLong(c.getColumnIndex(ProviderMeta.ProviderTableMeta.
-                    PICTURES_LAST_SYNC_TIMESTAMP));
+                                              PICTURES_LAST_SYNC_TIMESTAMP));
             long videosLastSync = c.getLong(c.getColumnIndex(ProviderMeta.ProviderTableMeta.
-                    VIDEOS_LAST_SYNC_TIMESTAMP));
+                                            VIDEOS_LAST_SYNC_TIMESTAMP));
 
             cameraUploadSync = new OCCameraUploadSync(picturesLastSync, videosLastSync);
 

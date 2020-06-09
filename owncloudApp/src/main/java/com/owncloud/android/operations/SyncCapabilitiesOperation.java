@@ -74,9 +74,9 @@ public class SyncCapabilitiesOperation extends SyncOperation<RemoteCapability> {
         if (serverVersion != null) {
             AccountManager accountMngr = AccountManager.get(MainApp.Companion.getAppContext());
             accountMngr.setUserData(
-                    getStorageManager().getAccount(),
-                    com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_OC_VERSION,
-                    serverVersion.getVersion()
+                getStorageManager().getAccount(),
+                com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_OC_VERSION,
+                serverVersion.getVersion()
             );
         }
 

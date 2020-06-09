@@ -91,16 +91,16 @@ public class ConnectivityActionReceiver extends BroadcastReceiver {
          */
         if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
             NetworkInfo networkInfo =
-                    intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
             WifiInfo wifiInfo =
-                    intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
             String bssid =
-                    intent.getStringExtra(WifiManager.EXTRA_BSSID);
+                intent.getStringExtra(WifiManager.EXTRA_BSSID);
             if (networkInfo.isConnected() &&      // not enough; see (*) right below
                     wifiInfo != null &&
                     !UNKNOWN_SSID.equals(wifiInfo.getSSID().toLowerCase()) &&
                     bssid != null
-            ) {
+               ) {
                 Timber.d("WiFi connected");
 
                 wifiConnected(context);
@@ -157,26 +157,26 @@ public class ConnectivityActionReceiver extends BroadcastReceiver {
     private void wifiConnected(Context context) {
         // for the moment, only recovery of camera uploads, similar to behaviour in release 1.9.1
         if (
-                (PreferenceManager.cameraPictureUploadEnabled(context) &&
-                        PreferenceManager.cameraPictureUploadViaWiFiOnly(context)) ||
-                        (PreferenceManager.cameraVideoUploadEnabled(context) &&
-                                PreferenceManager.cameraVideoUploadViaWiFiOnly(context))
+            (PreferenceManager.cameraPictureUploadEnabled(context) &&
+             PreferenceManager.cameraPictureUploadViaWiFiOnly(context)) ||
+            (PreferenceManager.cameraVideoUploadEnabled(context) &&
+             PreferenceManager.cameraVideoUploadViaWiFiOnly(context))
         ) {
 
             Handler h = new Handler(Looper.getMainLooper());
             h.postDelayed(() -> {
-                        Timber.d("Requesting retry of camera uploads (& friends)");
-                        TransferRequester requester = new TransferRequester();
+                Timber.d("Requesting retry of camera uploads (& friends)");
+                TransferRequester requester = new TransferRequester();
 
-                        requester.retryFailedUploads(
-                                MainApp.Companion.getAppContext(),
-                                null,
-                                UploadResult.DELAYED_FOR_WIFI,       // for the rest of enqueued when Wifi fell
-                                true
-                        );
-                    },
-                    500
-            );
+                requester.retryFailedUploads(
+                    MainApp.Companion.getAppContext(),
+                    null,
+                    UploadResult.DELAYED_FOR_WIFI,       // for the rest of enqueued when Wifi fell
+                    true
+                );
+            },
+            500
+                         );
         }
     }
 }

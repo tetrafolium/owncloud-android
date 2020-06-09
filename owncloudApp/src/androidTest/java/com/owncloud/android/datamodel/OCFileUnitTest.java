@@ -105,14 +105,14 @@ public class OCFileUnitTest {
         assertThat(fileReadFromParcel.getCreationTimestamp(), is(CREATION_TIMESTAMP));
         assertThat(fileReadFromParcel.getModificationTimestamp(), is(MODIFICATION_TIMESTAMP));
         assertThat(
-                fileReadFromParcel.getModificationTimestampAtLastSyncForData(),
-                is(MODIFICATION_TIMESTAMP_AT_LAST_SYNC_FOR_DATA)
+            fileReadFromParcel.getModificationTimestampAtLastSyncForData(),
+            is(MODIFICATION_TIMESTAMP_AT_LAST_SYNC_FOR_DATA)
         );
         assertThat(fileReadFromParcel.getLastSyncDateForProperties(), is(LAST_SYNC_DATE_FOR_PROPERTIES));
         assertThat(fileReadFromParcel.getLastSyncDateForData(), is(LAST_SYNC_DATE_FOR_DATA));
         assertThat(
-                fileReadFromParcel.getAvailableOfflineStatus(),
-                is(OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE)
+            fileReadFromParcel.getAvailableOfflineStatus(),
+            is(OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE)
         );
         assertThat(fileReadFromParcel.getEtag(), is(ETAG));
         assertThat(fileReadFromParcel.isSharedViaLink(), is(true));

@@ -57,9 +57,9 @@ public abstract class ToolbarActivity extends BaseActivity {
 
         // choose the appropriate title
         inRoot = (
-                chosenFile == null ||
-                        (chosenFile.isFolder() && chosenFile.getParentId() == FileDataStorageManager.ROOT_PARENT_ID)
-        );
+                     chosenFile == null ||
+                     (chosenFile.isFolder() && chosenFile.getParentId() == FileDataStorageManager.ROOT_PARENT_ID)
+                 );
         if (!inRoot) {
             title = chosenFile.getFileName();
         }
@@ -83,8 +83,8 @@ public abstract class ToolbarActivity extends BaseActivity {
 
         // also as content description
         View actionBarTitleView = getWindow().getDecorView().findViewById(
-                getResources().getIdentifier("action_bar_title", "id", "android")
-        );
+                                      getResources().getIdentifier("action_bar_title", "id", "android")
+                                  );
         // TODO remove legacy code
         if (actionBarTitleView != null) {    // it's null in Android 2.x
             actionBarTitleView.setContentDescription(titleToSet);
@@ -103,7 +103,7 @@ public abstract class ToolbarActivity extends BaseActivity {
      */
     public boolean isRoot(OCFile file) {
         return file == null ||
-                (file.isFolder() && file.getParentId() == FileDataStorageManager.ROOT_PARENT_ID);
+               (file.isFolder() && file.getParentId() == FileDataStorageManager.ROOT_PARENT_ID);
     }
 
 }

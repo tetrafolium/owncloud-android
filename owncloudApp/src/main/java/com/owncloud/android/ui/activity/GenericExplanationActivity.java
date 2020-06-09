@@ -48,11 +48,11 @@ import java.util.ArrayList;
 public class GenericExplanationActivity extends AppCompatActivity {
 
     public static final String EXTRA_LIST = GenericExplanationActivity.class.getCanonicalName() +
-            ".EXTRA_LIST";
+                                            ".EXTRA_LIST";
     public static final String EXTRA_LIST_2 = GenericExplanationActivity.class.getCanonicalName() +
             ".EXTRA_LIST_2";
     public static final String MESSAGE = GenericExplanationActivity.class.getCanonicalName() +
-            ".MESSAGE";
+                                         ".MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class GenericExplanationActivity extends AppCompatActivity {
         // Allow or disallow touches with other visible windows
         LinearLayout alertDialogListViewLayout = findViewById(R.id.alertDialogListViewLayout);
         alertDialogListViewLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         ListView listView = findViewById(R.id.list);

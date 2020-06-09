@@ -46,12 +46,12 @@ import com.owncloud.android.ui.activity.ComponentsGetter;
 import com.owncloud.android.utils.PreferenceUtils;
 
 /**
- *  Dialog to input a new name for a file or folder to rename.  
+ *  Dialog to input a new name for a file or folder to rename.
  *
  *  Triggers the rename operation when name is confirmed.
  */
 public class RenameFileDialogFragment
-        extends DialogFragment implements DialogInterface.OnClickListener {
+    extends DialogFragment implements DialogInterface.OnClickListener {
 
     private static final String ARG_TARGET_FILE = "TARGET_FILE";
 
@@ -82,10 +82,10 @@ public class RenameFileDialogFragment
 
         // Allow or disallow touches with other visible windows
         v.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
-        // Setup layout 
+        // Setup layout
         String currentName = mTargetFile.getFileName();
         EditText inputText = v.findViewById(R.id.user_input);
         inputText.setText(currentName);
@@ -94,17 +94,17 @@ public class RenameFileDialogFragment
         int selectionEnd = (extensionStart >= 0) ? extensionStart : currentName.length();
         if (selectionStart >= 0 && selectionEnd >= 0) {
             inputText.setSelection(
-                    Math.min(selectionStart, selectionEnd),
-                    Math.max(selectionStart, selectionEnd));
+                Math.min(selectionStart, selectionEnd),
+                Math.max(selectionStart, selectionEnd));
         }
         inputText.requestFocus();
 
-        // Build the dialog  
+        // Build the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(v)
-                .setPositiveButton(android.R.string.ok, this)
-                .setNegativeButton(android.R.string.cancel, this)
-                .setTitle(R.string.rename_dialog_title);
+        .setPositiveButton(android.R.string.ok, this)
+        .setNegativeButton(android.R.string.cancel, this)
+        .setTitle(R.string.rename_dialog_title);
         Dialog d = builder.create();
         d.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return d;
@@ -114,8 +114,8 @@ public class RenameFileDialogFragment
     public void onClick(DialogInterface dialog, int which) {
         if (which == AlertDialog.BUTTON_POSITIVE) {
             String newFileName =
-                    ((TextView) (getDialog().findViewById(R.id.user_input)))
-                            .getText().toString().trim();
+                ((TextView) (getDialog().findViewById(R.id.user_input)))
+                .getText().toString().trim();
 
             if (newFileName.length() <= 0) {
                 showSnackMessage(R.string.filename_empty);
@@ -128,7 +128,7 @@ public class RenameFileDialogFragment
             }
 
             ((ComponentsGetter) getActivity()).getFileOperationsHelper().
-                    renameFile(mTargetFile, newFileName);
+            renameFile(mTargetFile, newFileName);
         }
     }
 
@@ -139,10 +139,10 @@ public class RenameFileDialogFragment
      */
     private void showSnackMessage(int messageResource) {
         Snackbar snackbar = Snackbar.make(
-                getActivity().findViewById(android.R.id.content),
-                messageResource,
-                Snackbar.LENGTH_LONG
-        );
+                                getActivity().findViewById(android.R.id.content),
+                                messageResource,
+                                Snackbar.LENGTH_LONG
+                            );
         snackbar.show();
     }
 }

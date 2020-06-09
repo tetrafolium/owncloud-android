@@ -44,7 +44,7 @@ import java.io.IOException;
  * Implements the standard {@link AbstractThreadedSyncAdapter}.
  */
 public abstract class AbstractOwnCloudSyncAdapter extends
-        AbstractThreadedSyncAdapter {
+    AbstractThreadedSyncAdapter {
 
     private AccountManager accountManager;
     private Account account;
@@ -97,10 +97,10 @@ public abstract class AbstractOwnCloudSyncAdapter extends
     }
 
     protected void initClientForCurrentAccount() throws OperationCanceledException,
-            AuthenticatorException, IOException, AccountNotFoundException {
+        AuthenticatorException, IOException, AccountNotFoundException {
         OwnCloudAccount ocAccount = new OwnCloudAccount(account, getContext());
         mClient = SingleSessionManager.getDefaultSingleton().
-                getClientFor(ocAccount, getContext());
+                  getClientFor(ocAccount, getContext());
     }
 
     protected OwnCloudClient getClient() {

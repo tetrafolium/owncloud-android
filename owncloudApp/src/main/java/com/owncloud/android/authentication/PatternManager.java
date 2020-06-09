@@ -103,7 +103,7 @@ public class PatternManager {
         int PATTERN_TIMEOUT = 1000;
         if ((SystemClock.elapsedRealtime() - timeStamp) > PATTERN_TIMEOUT &&
                 mVisibleActivitiesCounter <= 0
-        ) {
+           ) {
             return isPatternEnabled();
         }
         return false;

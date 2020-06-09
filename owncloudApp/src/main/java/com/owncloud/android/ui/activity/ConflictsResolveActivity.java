@@ -51,27 +51,27 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
         Boolean forceOverwrite = null;
 
         switch (decision) {
-            case CANCEL:
-                finish();
-                return;
-            case OVERWRITE:
-                // use local version -> overwrite on server
-                forceOverwrite = true;
-                break;
-            case KEEP_BOTH:
-                behaviour = FileUploader.LOCAL_BEHAVIOUR_MOVE;
-                break;
-            case SERVER:
-                // use server version -> delete local, request download
-                Intent intent = new Intent(this, FileDownloader.class);
-                intent.putExtra(FileDownloader.KEY_ACCOUNT, getAccount());
-                intent.putExtra(FileDownloader.KEY_FILE, getFile());
-                startService(intent);
-                finish();
-                return;
-            default:
-                Timber.e("Unhandled conflict decision %s", decision);
-                return;
+        case CANCEL:
+            finish();
+            return;
+        case OVERWRITE:
+            // use local version -> overwrite on server
+            forceOverwrite = true;
+            break;
+        case KEEP_BOTH:
+            behaviour = FileUploader.LOCAL_BEHAVIOUR_MOVE;
+            break;
+        case SERVER:
+            // use server version -> delete local, request download
+            Intent intent = new Intent(this, FileDownloader.class);
+            intent.putExtra(FileDownloader.KEY_ACCOUNT, getAccount());
+            intent.putExtra(FileDownloader.KEY_FILE, getFile());
+            startService(intent);
+            finish();
+            return;
+        default:
+            Timber.e("Unhandled conflict decision %s", decision);
+            return;
         }
 
         TransferRequester requester = new TransferRequester();

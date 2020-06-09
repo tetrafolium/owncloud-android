@@ -101,8 +101,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void setAccount(Account account, boolean savedAccount) {
         Account oldAccount = mCurrentAccount;
         boolean validAccount =
-                (account != null && AccountUtils.setCurrentOwnCloudAccount(getApplicationContext(),
-                        account.name));
+            (account != null && AccountUtils.setCurrentOwnCloudAccount(getApplicationContext(),
+                    account.name));
         if (validAccount) {
             mCurrentAccount = account;
             mAccountWasSet = true;
@@ -147,12 +147,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void createAccount(boolean mandatoryCreation) {
         AccountManager am = AccountManager.get(getApplicationContext());
         am.addAccount(MainApp.Companion.getAccountType(),
-                null,
-                null,
-                null,
-                this,
-                new AccountCreationCallback(mandatoryCreation),
-                new Handler());
+                      null,
+                      null,
+                      null,
+                      this,
+                      new AccountCreationCallback(mandatoryCreation),
+                      new Handler());
     }
 
     /**
@@ -277,8 +277,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (focusedView != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(
-                    focusedView.getWindowToken(),
-                    0
+                focusedView.getWindowToken(),
+                0
             );
         }
     }

@@ -83,12 +83,12 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
     private enum ViewType {LIST_ITEM, GRID_IMAGE, GRID_ITEM}
 
     public FileListListAdapter(
-            boolean justFolders,
-            boolean onlyAvailableOffline,
-            boolean sharedByLinkFiles,
-            boolean folderPicker,
-            Context context,
-            ComponentsGetter transferServiceGetter
+        boolean justFolders,
+        boolean onlyAvailableOffline,
+        boolean sharedByLinkFiles,
+        boolean folderPicker,
+        Context context,
+        ComponentsGetter transferServiceGetter
     ) {
         mJustFolders = justFolders;
         mOnlyAvailableOffline = onlyAvailableOffline;
@@ -101,7 +101,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
 
         // Read sorting order, default to sort by name ascending
         FileStorageUtils.mSortOrderFileDisp = PreferenceManager.getSortOrder(mContext,
-                FileStorageUtils.FILE_DISPLAY_SORT);
+                                              FileStorageUtils.FILE_DISPLAY_SORT);
         FileStorageUtils.mSortAscendingFileDisp = PreferenceManager.getSortAscending(mContext,
                 FileStorageUtils.FILE_DISPLAY_SORT);
 
@@ -152,7 +152,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         View view = convertView;
         OCFile file = null;
         LayoutInflater inflator = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                  .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if (mFiles != null && mFiles.size() > position) {
             file = mFiles.get(position);
@@ -173,22 +173,22 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         // create view only if differs, otherwise reuse
         if (convertView == null || convertView.getTag() != viewType) {
             switch (viewType) {
-                case GRID_IMAGE:
-                    view = inflator.inflate(R.layout.grid_image, parent, false);
-                    view.setTag(ViewType.GRID_IMAGE);
-                    break;
-                case GRID_ITEM:
-                    view = inflator.inflate(R.layout.grid_item, parent, false);
-                    view.setTag(ViewType.GRID_ITEM);
-                    break;
-                case LIST_ITEM:
-                    view = inflator.inflate(R.layout.item_file_list, parent, false);
-                    view.setTag(ViewType.LIST_ITEM);
-                    // Allow or disallow touches with other visible windows
-                    view.setFilterTouchesWhenObscured(
-                            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
-                    );
-                    break;
+            case GRID_IMAGE:
+                view = inflator.inflate(R.layout.grid_image, parent, false);
+                view.setTag(ViewType.GRID_IMAGE);
+                break;
+            case GRID_ITEM:
+                view = inflator.inflate(R.layout.grid_item, parent, false);
+                view.setTag(ViewType.GRID_ITEM);
+                break;
+            case LIST_ITEM:
+                view = inflator.inflate(R.layout.item_file_list, parent, false);
+                view.setTag(ViewType.LIST_ITEM);
+                // Allow or disallow touches with other visible windows
+                view.setFilterTouchesWhenObscured(
+                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
+                );
+                break;
             }
         }
 
@@ -206,50 +206,50 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
 
                 // Allow or disallow touches with other visible windows
                 linearLayout.setFilterTouchesWhenObscured(
-                        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
+                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
                 );
             }
 
             switch (viewType) {
-                case LIST_ITEM:
-                    ConstraintLayout constraintLayout = view.findViewById(R.id.file_list_constraint_layout);
+            case LIST_ITEM:
+                ConstraintLayout constraintLayout = view.findViewById(R.id.file_list_constraint_layout);
 
-                    // Allow or disallow touches with other visible windows
-                    constraintLayout.setFilterTouchesWhenObscured(
-                            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext));
+                // Allow or disallow touches with other visible windows
+                constraintLayout.setFilterTouchesWhenObscured(
+                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext));
 
-                    TextView fileSizeTV = view.findViewById(R.id.file_list_size);
-                    TextView lastModTV = view.findViewById(R.id.file_list_last_mod);
-                    fileSizeTV.setText(DisplayUtils.bytesToHumanReadable(file.getFileLength(), mContext));
-                    lastModTV.setText(DisplayUtils.getRelativeTimestamp(mContext, file.getModificationTimestamp()));
+                TextView fileSizeTV = view.findViewById(R.id.file_list_size);
+                TextView lastModTV = view.findViewById(R.id.file_list_last_mod);
+                fileSizeTV.setText(DisplayUtils.bytesToHumanReadable(file.getFileLength(), mContext));
+                lastModTV.setText(DisplayUtils.getRelativeTimestamp(mContext, file.getModificationTimestamp()));
 
-                    if (mOnlyAvailableOffline || mSharedByLinkFiles) {
-                        TextView filePath = view.findViewById(R.id.file_list_path);
-                        filePath.setVisibility(View.VISIBLE);
-                        filePath.setText(file.getRemotePath());
-                    }
+                if (mOnlyAvailableOffline || mSharedByLinkFiles) {
+                    TextView filePath = view.findViewById(R.id.file_list_path);
+                    filePath.setVisibility(View.VISIBLE);
+                    filePath.setText(file.getRemotePath());
+                }
 
-                case GRID_ITEM:
-                    // filename
-                    fileName = view.findViewById(R.id.Filename);
-                    name = file.getFileName();
-                    fileName.setText(name);
+            case GRID_ITEM:
+                // filename
+                fileName = view.findViewById(R.id.Filename);
+                name = file.getFileName();
+                fileName.setText(name);
 
-                case GRID_IMAGE:
-                    // sharedIcon
-                    ImageView sharedIconV = view.findViewById(R.id.sharedIcon);
-                    if (file.isSharedViaLink()) {
-                        sharedIconV.setImageResource(R.drawable.ic_shared_by_link);
-                        sharedIconV.setVisibility(View.VISIBLE);
-                        sharedIconV.bringToFront();
-                    } else if (file.isSharedWithSharee() || file.isSharedWithMe()) {
-                        sharedIconV.setImageResource(R.drawable.shared_via_users);
-                        sharedIconV.setVisibility(View.VISIBLE);
-                        sharedIconV.bringToFront();
-                    } else {
-                        sharedIconV.setVisibility(View.GONE);
-                    }
-                    break;
+            case GRID_IMAGE:
+                // sharedIcon
+                ImageView sharedIconV = view.findViewById(R.id.sharedIcon);
+                if (file.isSharedViaLink()) {
+                    sharedIconV.setImageResource(R.drawable.ic_shared_by_link);
+                    sharedIconV.setVisibility(View.VISIBLE);
+                    sharedIconV.bringToFront();
+                } else if (file.isSharedWithSharee() || file.isSharedWithMe()) {
+                    sharedIconV.setImageResource(R.drawable.shared_via_users);
+                    sharedIconV.setVisibility(View.VISIBLE);
+                    sharedIconV.bringToFront();
+                } else {
+                    sharedIconV.setVisibility(View.GONE);
+                }
+                break;
             }
 
             // For all Views
@@ -262,16 +262,16 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
             AbsListView parentList = (AbsListView) parent;
             if (parentList.getChoiceMode() != AbsListView.CHOICE_MODE_NONE &&
                     parentList.getCheckedItemCount() > 0
-            ) {
+               ) {
                 if (parentList.isItemChecked(position)) {
                     view.setBackgroundColor(mContext.getResources().getColor(
-                            R.color.selected_item_background));
+                                                R.color.selected_item_background));
                     checkBoxV.setImageResource(
-                            R.drawable.ic_checkbox_marked);
+                        R.drawable.ic_checkbox_marked);
                 } else {
                     view.setBackgroundColor(Color.WHITE);
                     checkBoxV.setImageResource(
-                            R.drawable.ic_checkbox_blank_outline);
+                        R.drawable.ic_checkbox_blank_outline);
                 }
                 checkBoxV.setVisibility(View.VISIBLE);
             }
@@ -279,9 +279,9 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
             if (file.isFolder()) {
                 // Folder
                 fileIcon.setImageResource(
-                        MimetypeIconUtil.getFolderTypeIconId(
-                                file.isSharedWithMe() || file.isSharedWithSharee(),
-                                file.isSharedViaLink()));
+                    MimetypeIconUtil.getFolderTypeIconId(
+                        file.isSharedWithMe() || file.isSharedWithSharee(),
+                        file.isSharedViaLink()));
             } else {
                 if (file.isImage() && file.getRemoteId() != null) {
                     // Thumbnail in Cache?
@@ -292,18 +292,18 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
                         // generate new Thumbnail
                         if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(file, fileIcon)) {
                             final ThumbnailsCacheManager.ThumbnailGenerationTask task =
-                                    new ThumbnailsCacheManager.ThumbnailGenerationTask(
-                                            fileIcon, mStorageManager, mAccount
-                                    );
+                                new ThumbnailsCacheManager.ThumbnailGenerationTask(
+                                fileIcon, mStorageManager, mAccount
+                            );
                             if (thumbnail == null) {
                                 thumbnail = ThumbnailsCacheManager.mDefaultImg;
                             }
                             final ThumbnailsCacheManager.AsyncThumbnailDrawable asyncDrawable =
-                                    new ThumbnailsCacheManager.AsyncThumbnailDrawable(
-                                            mContext.getResources(),
-                                            thumbnail,
-                                            task
-                                    );
+                                new ThumbnailsCacheManager.AsyncThumbnailDrawable(
+                                mContext.getResources(),
+                                thumbnail,
+                                task
+                            );
                             fileIcon.setImageDrawable(asyncDrawable);
                             task.execute(file);
                         }
@@ -311,12 +311,12 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
 
                     if (file.getMimetype().equalsIgnoreCase("image/png")) {
                         fileIcon.setBackgroundColor(mContext.getResources()
-                                .getColor(R.color.background_color));
+                                                    .getColor(R.color.background_color));
                     }
 
                 } else {
                     fileIcon.setImageResource(MimetypeIconUtil.getFileTypeIconId(file.getMimetype(),
-                            file.getFileName()));
+                                              file.getFileName()));
                 }
 
             }
@@ -328,11 +328,11 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         // local state
         localStateView.bringToFront();
         final FileDownloaderBinder downloaderBinder =
-                mTransferServiceGetter.getFileDownloaderBinder();
+            mTransferServiceGetter.getFileDownloaderBinder();
         final FileUploaderBinder uploaderBinder =
-                mTransferServiceGetter.getFileUploaderBinder();
+            mTransferServiceGetter.getFileUploaderBinder();
         final OperationsServiceBinder opsBinder =
-                mTransferServiceGetter.getOperationsServiceBinder();
+            mTransferServiceGetter.getOperationsServiceBinder();
 
         localStateView.setVisibility(View.INVISIBLE);   // default first
 
@@ -415,7 +415,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         }
 
         mFiles = FileStorageUtils.sortFolder(mFiles, FileStorageUtils.mSortOrderFileDisp,
-                FileStorageUtils.mSortAscendingFileDisp);
+                                             FileStorageUtils.mSortAscendingFileDisp);
         notifyDataSetChanged();
     }
 
@@ -446,7 +446,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         FileStorageUtils.mSortAscendingFileDisp = ascending;
 
         mFiles = FileStorageUtils.sortFolder(mFiles, FileStorageUtils.mSortOrderFileDisp,
-                FileStorageUtils.mSortAscendingFileDisp);
+                                             FileStorageUtils.mSortAscendingFileDisp);
         notifyDataSetChanged();
     }
 

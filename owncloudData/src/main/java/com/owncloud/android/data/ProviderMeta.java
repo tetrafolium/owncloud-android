@@ -72,17 +72,17 @@ public class ProviderMeta {
         public static final String CAPABILITIES_SHARING_PUBLIC_ENABLED = "sharing_public_enabled";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED = "sharing_public_password_enforced";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED_READ_ONLY =
-                "sharing_public_password_enforced_read_only";
+            "sharing_public_password_enforced_read_only";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED_READ_WRITE =
-                "sharing_public_password_enforced_read_write";
+            "sharing_public_password_enforced_read_write";
         public static final String CAPABILITIES_SHARING_PUBLIC_PASSWORD_ENFORCED_UPLOAD_ONLY =
-                "sharing_public_password_enforced_public_only";
+            "sharing_public_password_enforced_public_only";
         public static final String CAPABILITIES_SHARING_PUBLIC_EXPIRE_DATE_ENABLED =
-                "sharing_public_expire_date_enabled";
+            "sharing_public_expire_date_enabled";
         public static final String CAPABILITIES_SHARING_PUBLIC_EXPIRE_DATE_DAYS =
-                "sharing_public_expire_date_days";
+            "sharing_public_expire_date_days";
         public static final String CAPABILITIES_SHARING_PUBLIC_EXPIRE_DATE_ENFORCED =
-                "sharing_public_expire_date_enforced";
+            "sharing_public_expire_date_enforced";
         public static final String CAPABILITIES_SHARING_PUBLIC_UPLOAD = "sharing_public_upload";
         public static final String CAPABILITIES_SHARING_PUBLIC_MULTIPLE = "sharing_public_multiple";
         public static final String CAPABILITIES_SHARING_PUBLIC_SUPPORTS_UPLOAD_ONLY = "supports_upload_only";

@@ -42,7 +42,7 @@ import com.owncloud.android.R;
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
 
 public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
-        implements ConfirmationDialogFragmentListener {
+    implements ConfirmationDialogFragmentListener {
 
     private Account mTargetAccount;
 
@@ -62,7 +62,7 @@ public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
         RemoveAccountDialogFragment frag = new RemoveAccountDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_MESSAGE_RESOURCE_ID, R.string.confirmation_remove_account_alert);
-        args.putStringArray(ARG_MESSAGE_ARGUMENTS, new String[]{account.name});
+        args.putStringArray(ARG_MESSAGE_ARGUMENTS, new String[] {account.name});
         args.putInt(ARG_POSITIVE_BTN_RES, R.string.common_yes);
         args.putInt(ARG_NEUTRAL_BTN_RES, R.string.common_no);
         args.putInt(ARG_NEGATIVE_BTN_RES, -1);
@@ -80,7 +80,7 @@ public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
             AccountManagerCallback<Boolean> a = (AccountManagerCallback<Boolean>) getActivity();
         } catch (ClassCastException c) {
             throw new IllegalStateException(
-                    "Container Activity needs to implement (AccountManagerCallback<Boolean>)", c
+                "Container Activity needs to implement (AccountManagerCallback<Boolean>)", c
             );
         }
     }

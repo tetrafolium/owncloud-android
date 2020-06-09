@@ -82,7 +82,7 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
         mImageFiles = mStorageManager.getFolderImages(parentFolder);
 
         mImageFiles = FileStorageUtils.sortFolder(mImageFiles, FileStorageUtils.mSortOrderFileDisp,
-                FileStorageUtils.mSortAscendingFileDisp);
+                      FileStorageUtils.mSortAscendingFileDisp);
 
         mObsoleteFragments = new HashSet<>();
         mObsoletePositions = new HashSet<>();
@@ -105,10 +105,10 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
         Fragment fragment;
         if (file.isDown()) {
             fragment = PreviewImageFragment.newInstance(
-                    file,
-                    mAccount,
-                    mObsoletePositions.contains(i)
-            );
+                           file,
+                           mAccount,
+                           mObsoletePositions.contains(i)
+                       );
 
         } else if (mDownloadErrors.contains(i)) {
             fragment = FileDownloadFragment.newInstance(file, mAccount, true);
@@ -117,8 +117,8 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
 
         } else {
             fragment = FileDownloadFragment.newInstance(
-                    file, mAccount, mObsoletePositions.contains(i)
-            );
+                           file, mAccount, mObsoletePositions.contains(i)
+                       );
         }
         mObsoletePositions.remove(i);
         return fragment;

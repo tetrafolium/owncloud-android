@@ -92,9 +92,9 @@ public class X509CertificateViewAdapter implements SslUntrustedCertDialog.Certif
             } else {
 
                 certFingerprintView.setText(
-                        getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-256", cert)
-                                + getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-1", cert)
-                                + getDigestHexBytesWithColonsAndNewLines(dialogView, "MD5", cert));
+                    getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-256", cert)
+                    + getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-1", cert)
+                    + getDigestHexBytesWithColonsAndNewLines(dialogView, "MD5", cert));
                 algorithmView.setText(mCertificate.getSigAlgName());
 
             }
@@ -106,7 +106,7 @@ public class X509CertificateViewAdapter implements SslUntrustedCertDialog.Certif
     }
 
     private final String getDigestHexBytesWithColonsAndNewLines(View dialogView, final String digestType,
-                                                                final byte[] cert) {
+            final byte[] cert) {
         final byte[] rawDigest;
         final String newLine = System.getProperty("line.separator");
 

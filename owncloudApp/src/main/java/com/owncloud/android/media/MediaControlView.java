@@ -48,12 +48,12 @@ import java.util.Formatter;
 import java.util.Locale;
 
 /**
- * View containing controls for a {@link MediaPlayer}. 
+ * View containing controls for a {@link MediaPlayer}.
  *
- * Holds buttons "play / pause", "rewind", "fast forward" 
- * and a progress slider. 
+ * Holds buttons "play / pause", "rewind", "fast forward"
+ * and a progress slider.
  *
- * It synchronizes itself with the state of the 
+ * It synchronizes itself with the state of the
  * {@link MediaPlayer}.
  */
 
@@ -77,15 +77,15 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         mContext = context;
 
         FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
         );
         LayoutInflater inflate = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mRoot = inflate.inflate(R.layout.media_control, null);
 
         // Allow or disallow touches with other visible windows
         mRoot.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(context)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(context)
         );
 
         initControllerView(mRoot);
@@ -164,13 +164,13 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         public void handleMessage(Message msg) {
             int pos;
             switch (msg.what) {
-                case SHOW_PROGRESS:
-                    pos = setProgress();
-                    if (!mDragging) {
-                        msg = obtainMessage(SHOW_PROGRESS);
-                        sendMessageDelayed(msg, 1000 - (pos % 1000));
-                    }
-                    break;
+            case SHOW_PROGRESS:
+                pos = setProgress();
+                if (!mDragging) {
+                    msg = obtainMessage(SHOW_PROGRESS);
+                    sendMessageDelayed(msg, 1000 - (pos % 1000));
+                }
+                break;
             }
         }
     };
@@ -220,7 +220,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         final boolean uniqueDown = event.getRepeatCount() == 0
-                && event.getAction() == KeyEvent.ACTION_DOWN;
+                                   && event.getAction() == KeyEvent.ACTION_DOWN;
         if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
                 || keyCode == KeyEvent.KEYCODE_SPACE) {
@@ -239,7 +239,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
             }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP
-                || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+                   || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
             if (uniqueDown && mPlayer.isPlaying()) {
                 mPlayer.pause();
                 updatePausePlay();
@@ -295,29 +295,29 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         boolean playing = mPlayer.isPlaying();
         switch (v.getId()) {
 
-            case R.id.playBtn:
-                doPauseResume();
-                break;
+        case R.id.playBtn:
+            doPauseResume();
+            break;
 
-            case R.id.rewindBtn:
-                pos = mPlayer.getCurrentPosition();
-                pos -= 5000;
-                mPlayer.seekTo(pos);
-                if (!playing) {
-                    mPlayer.pause();  // necessary in some 2.3.x devices
-                }
-                setProgress();
-                break;
+        case R.id.rewindBtn:
+            pos = mPlayer.getCurrentPosition();
+            pos -= 5000;
+            mPlayer.seekTo(pos);
+            if (!playing) {
+                mPlayer.pause();  // necessary in some 2.3.x devices
+            }
+            setProgress();
+            break;
 
-            case R.id.forwardBtn:
-                pos = mPlayer.getCurrentPosition();
-                pos += 15000;
-                mPlayer.seekTo(pos);
-                if (!playing) {
-                    mPlayer.pause(); // necessary in some 2.3.x devices
-                }
-                setProgress();
-                break;
+        case R.id.forwardBtn:
+            pos = mPlayer.getCurrentPosition();
+            pos += 15000;
+            mPlayer.seekTo(pos);
+            if (!playing) {
+                mPlayer.pause(); // necessary in some 2.3.x devices
+            }
+            setProgress();
+            break;
 
         }
     }
@@ -339,15 +339,15 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     }
 
     /**
-     * Called in devices with touchpad when the user starts to adjust the 
+     * Called in devices with touchpad when the user starts to adjust the
      * position of the seekbar's thumb.
      *
      * Will be followed by several onProgressChanged notifications.
      */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        mDragging = true;                           // monitors the duration of dragging 
-        mHandler.removeMessages(SHOW_PROGRESS);     // grants no more updates with media player progress while dragging 
+        mDragging = true;                           // monitors the duration of dragging
+        mHandler.removeMessages(SHOW_PROGRESS);     // grants no more updates with media player progress while dragging
     }
 
     /**
@@ -359,7 +359,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         mDragging = false;
         setProgress();
         updatePausePlay();
-        mHandler.sendEmptyMessage(SHOW_PROGRESS);    // grants future updates with media player progress 
+        mHandler.sendEmptyMessage(SHOW_PROGRESS);    // grants future updates with media player progress
     }
 
     @Override

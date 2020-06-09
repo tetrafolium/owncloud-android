@@ -294,16 +294,16 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 // TODO - use FileProvider with any Android version, with deeper testing -> 2.2.0
                 mExposedFileUri = Uri.parse(
-                        ContentResolver.SCHEME_FILE + "://" + WebdavUtils.encodePath(mLocalPath)
-                );
+                                      ContentResolver.SCHEME_FILE + "://" + WebdavUtils.encodePath(mLocalPath)
+                                  );
             } else {
                 // Use the FileProvider to get a content URI
                 try {
                     mExposedFileUri = FileProvider.getUriForFile(
-                            context,
-                            context.getString(R.string.file_provider_authority),
-                            new File(mLocalPath)
-                    );
+                                          context,
+                                          context.getString(R.string.file_provider_authority),
+                                          new File(mLocalPath)
+                                      );
                 } catch (IllegalArgumentException e) {
                     Timber.e(e, "File can't be exported");
                 }
@@ -583,11 +583,11 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
     @Override
     public String toString() {
         String asString = "[id=%s, name=%s,  etag=%s, tree_etag=%s, mime=%s, downloaded=%s, local=%s, remote=%s, " +
-                "parentId=%s, favorite=%s]";
+                          "parentId=%s, favorite=%s]";
         asString = String.format(asString, mId, getFileName(), mEtag, mTreeEtag,
-                mMimeType, isDown(), mLocalPath, mRemotePath, mParentId,
-                mAvailableOfflineStatus
-        );
+                                 mMimeType, isDown(), mLocalPath, mRemotePath, mParentId,
+                                 mAvailableOfflineStatus
+                                );
         return asString;
     }
 
@@ -657,9 +657,9 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      */
     private boolean isOfType(String type) {
         return (
-                (mMimeType != null && mMimeType.startsWith(type)) ||
-                        getMimeTypeFromName().startsWith(type)
-        );
+                   (mMimeType != null && mMimeType.startsWith(type)) ||
+                   getMimeTypeFromName().startsWith(type)
+               );
     }
 
     public String getMimeTypeFromName() {
@@ -669,7 +669,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
             extension = mRemotePath.substring(pos + 1);
         }
         String result = MimeTypeMap.getSingleton().
-                getMimeTypeFromExtension(extension.toLowerCase());
+                        getMimeTypeFromExtension(extension.toLowerCase());
         return (result != null) ? result : "";
     }
 
@@ -743,7 +743,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         setAvailableOfflineStatus(sourceFile.getAvailableOfflineStatus());
         setLastSyncDateForData(sourceFile.getLastSyncDateForData());
         setModificationTimestampAtLastSyncForData(
-                sourceFile.getModificationTimestampAtLastSyncForData()
+            sourceFile.getModificationTimestampAtLastSyncForData()
         );
         setStoragePath(sourceFile.getStoragePath());
         setSharedViaLink(sourceFile.isSharedViaLink());

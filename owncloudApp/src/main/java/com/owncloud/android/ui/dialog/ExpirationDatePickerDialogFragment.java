@@ -41,8 +41,8 @@ import java.util.Date;
  * Dialog requesting a date after today.
  */
 public class ExpirationDatePickerDialogFragment
-        extends DialogFragment
-        implements DatePickerDialog.OnDateSetListener {
+    extends DialogFragment
+    implements DatePickerDialog.OnDateSetListener {
 
     /**
      * Tag for FragmentsManager
@@ -77,8 +77,8 @@ public class ExpirationDatePickerDialogFragment
      * @return New dialog instance
      */
     public static ExpirationDatePickerDialogFragment newInstance(long chosenDateInMillis,
-                                                                 long maxDateInMillis
-    ) {
+            long maxDateInMillis
+                                                                ) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_CHOSEN_DATE_IN_MILLIS, chosenDateInMillis);
         arguments.putLong(ARG_MAX_DATE_IN_MILLIS, maxDateInMillis);
@@ -114,23 +114,23 @@ public class ExpirationDatePickerDialogFragment
 
         // Create a new instance of DatePickerDialog
         DatePickerDialog dialog = new DatePickerDialog(
-                getActivity(),
-                this,
-                chosenDate.get(Calendar.YEAR),
-                chosenDate.get(Calendar.MONTH),
-                chosenDate.get(Calendar.DAY_OF_MONTH)
+            getActivity(),
+            this,
+            chosenDate.get(Calendar.YEAR),
+            chosenDate.get(Calendar.MONTH),
+            chosenDate.get(Calendar.DAY_OF_MONTH)
         );
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                getString(R.string.share_cancel_public_link_button),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == DialogInterface.BUTTON_NEGATIVE) {
-                            // Do Stuff
-                            notifyDatePickerListener(null);
-                        }
-                    }
-                });
+                         getString(R.string.share_cancel_public_link_button),
+        new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                    // Do Stuff
+                    notifyDatePickerListener(null);
+                }
+            }
+        });
 
         // Prevent days in the past may be chosen
         DatePicker picker = dialog.getDatePicker();

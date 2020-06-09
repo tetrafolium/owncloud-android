@@ -98,8 +98,8 @@ import java.util.Vector;
  * This can be used to upload things to an ownCloud instance.
  */
 public class ReceiveExternalFilesActivity extends FileActivity
-        implements OnItemClickListener, android.view.View.OnClickListener,
-        CopyAndUploadContentUrisTask.OnCopyTmpFilesTaskListener {
+    implements OnItemClickListener, android.view.View.OnClickListener,
+    CopyAndUploadContentUrisTask.OnCopyTmpFilesTaskListener {
 
     private static final String FTAG_ERROR_FRAGMENT = "ERROR_FRAGMENT";
 
@@ -170,11 +170,11 @@ public class ReceiveExternalFilesActivity extends FileActivity
         // Init Fragment without UI to retain AsyncTask across configuration changes
         FragmentManager fm = getSupportFragmentManager();
         TaskRetainerFragment taskRetainerFragment =
-                (TaskRetainerFragment) fm.findFragmentByTag(TaskRetainerFragment.FTAG_TASK_RETAINER_FRAGMENT);
+            (TaskRetainerFragment) fm.findFragmentByTag(TaskRetainerFragment.FTAG_TASK_RETAINER_FRAGMENT);
         if (taskRetainerFragment == null) {
             taskRetainerFragment = new TaskRetainerFragment();
             fm.beginTransaction()
-                    .add(taskRetainerFragment, TaskRetainerFragment.FTAG_TASK_RETAINER_FRAGMENT).commit();
+            .add(taskRetainerFragment, TaskRetainerFragment.FTAG_TASK_RETAINER_FRAGMENT).commit();
         }   // else, Fragment already created and retained across configuration change
     }
 
@@ -197,8 +197,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
             }
         } else {
             showErrorDialog(
-                    R.string.uploader_error_message_no_file_to_upload,
-                    R.string.uploader_error_title_no_file_to_upload
+                R.string.uploader_error_message_no_file_to_upload,
+                R.string.uploader_error_title_no_file_to_upload
             );
         }
 
@@ -238,64 +238,64 @@ public class ReceiveExternalFilesActivity extends FileActivity
     protected Dialog onCreateDialog(final int id) {
         final AlertDialog.Builder builder = new Builder(this);
         switch (id) {
-            case DIALOG_NO_ACCOUNT:
-                builder.setIcon(R.drawable.ic_warning);
-                builder.setTitle(R.string.uploader_wrn_no_account_title);
-                builder.setMessage(String.format(
-                        getString(R.string.uploader_wrn_no_account_text),
-                        getString(R.string.app_name)));
-                builder.setCancelable(false);
-                builder.setPositiveButton(R.string.uploader_wrn_no_account_setup_btn_text, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(android.provider.Settings.ACTION_ADD_ACCOUNT);
-                        intent.putExtra("authorities", new String[]{MainApp.Companion.getAuthTokenType()});
-                        startActivityForResult(intent, REQUEST_CODE__SETUP_ACCOUNT);
-                    }
-                });
-                builder.setNegativeButton(R.string.uploader_wrn_no_account_quit_btn_text, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
-                return builder.create();
-            case DIALOG_MULTIPLE_ACCOUNT:
-                Account[] accounts = mAccountManager.getAccountsByType(MainApp.Companion.getAccountType());
-                CharSequence[] dialogItems = new CharSequence[accounts.length];
-                OwnCloudAccount oca;
-                for (int i = 0; i < dialogItems.length; ++i) {
-                    try {
-                        oca = new OwnCloudAccount(accounts[i], this);
-                        dialogItems[i] =
-                                oca.getDisplayName() + " @ " +
-                                        DisplayUtils.convertIdn(
-                                                accounts[i].name.substring(accounts[i].name.lastIndexOf("@") + 1),
-                                                false
-                                        );
-
-                    } catch (Exception e) {
-                        Timber.w("Couldn't read display name of account; using account name instead");
-                        dialogItems[i] = DisplayUtils.convertIdn(accounts[i].name, false);
-                    }
+        case DIALOG_NO_ACCOUNT:
+            builder.setIcon(R.drawable.ic_warning);
+            builder.setTitle(R.string.uploader_wrn_no_account_title);
+            builder.setMessage(String.format(
+                                   getString(R.string.uploader_wrn_no_account_text),
+                                   getString(R.string.app_name)));
+            builder.setCancelable(false);
+            builder.setPositiveButton(R.string.uploader_wrn_no_account_setup_btn_text, new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_ADD_ACCOUNT);
+                    intent.putExtra("authorities", new String[] {MainApp.Companion.getAuthTokenType()});
+                    startActivityForResult(intent, REQUEST_CODE__SETUP_ACCOUNT);
                 }
-                builder.setTitle(R.string.common_choose_account);
-                builder.setItems(dialogItems, (dialog, which) -> {
-                    setAccount(mAccountManager.getAccountsByType(MainApp.Companion.getAccountType())[which]);
-                    onAccountSet(mAccountWasRestored);
-                    dialog.dismiss();
-                    mAccountSelected = true;
-                    mAccountSelectionShowing = false;
-                });
-                builder.setCancelable(true);
-                builder.setOnCancelListener(dialog -> {
-                    mAccountSelectionShowing = false;
-                    dialog.cancel();
+            });
+            builder.setNegativeButton(R.string.uploader_wrn_no_account_quit_btn_text, new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
                     finish();
-                });
-                return builder.create();
-            default:
-                throw new IllegalArgumentException("Unknown dialog id: " + id);
+                }
+            });
+            return builder.create();
+        case DIALOG_MULTIPLE_ACCOUNT:
+            Account[] accounts = mAccountManager.getAccountsByType(MainApp.Companion.getAccountType());
+            CharSequence[] dialogItems = new CharSequence[accounts.length];
+            OwnCloudAccount oca;
+            for (int i = 0; i < dialogItems.length; ++i) {
+                try {
+                    oca = new OwnCloudAccount(accounts[i], this);
+                    dialogItems[i] =
+                        oca.getDisplayName() + " @ " +
+                        DisplayUtils.convertIdn(
+                            accounts[i].name.substring(accounts[i].name.lastIndexOf("@") + 1),
+                            false
+                        );
+
+                } catch (Exception e) {
+                    Timber.w("Couldn't read display name of account; using account name instead");
+                    dialogItems[i] = DisplayUtils.convertIdn(accounts[i].name, false);
+                }
+            }
+            builder.setTitle(R.string.common_choose_account);
+            builder.setItems(dialogItems, (dialog, which) -> {
+                setAccount(mAccountManager.getAccountsByType(MainApp.Companion.getAccountType())[which]);
+                onAccountSet(mAccountWasRestored);
+                dialog.dismiss();
+                mAccountSelected = true;
+                mAccountSelectionShowing = false;
+            });
+            builder.setCancelable(true);
+            builder.setOnCancelListener(dialog -> {
+                mAccountSelectionShowing = false;
+                dialog.cancel();
+                finish();
+            });
+            return builder.create();
+        default:
+            throw new IllegalArgumentException("Unknown dialog id: " + id);
         }
     }
 
@@ -338,26 +338,26 @@ public class ReceiveExternalFilesActivity extends FileActivity
     public void onClick(View v) {
         // click on button
         switch (v.getId()) {
-            case R.id.uploader_choose_folder:
-                mUploadPath = "";   // first element in mParents is root dir, represented by "";
-                // init mUploadPath with "/" results in a "//" prefix
-                for (String p : mParents) {
-                    mUploadPath += p + OCFile.PATH_SEPARATOR;
-                }
-                if (!isPlainTextUpload()) {
-                    Timber.d("Uploading file to dir %s", mUploadPath);
-                    uploadFiles();
-                } else {
-                    showUploadTextDialog();
-                }
-                break;
+        case R.id.uploader_choose_folder:
+            mUploadPath = "";   // first element in mParents is root dir, represented by "";
+            // init mUploadPath with "/" results in a "//" prefix
+            for (String p : mParents) {
+                mUploadPath += p + OCFile.PATH_SEPARATOR;
+            }
+            if (!isPlainTextUpload()) {
+                Timber.d("Uploading file to dir %s", mUploadPath);
+                uploadFiles();
+            } else {
+                showUploadTextDialog();
+            }
+            break;
 
-            case R.id.uploader_cancel:
-                finish();
-                break;
+        case R.id.uploader_cancel:
+            finish();
+            break;
 
-            default:
-                throw new IllegalArgumentException("Wrong element clicked");
+        default:
+            throw new IllegalArgumentException("Wrong element clicked");
         }
     }
 
@@ -412,7 +412,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
             files = sortFileList(files);
 
             mAdapter = new ReceiveExternalFilesAdapter(
-                    this, files, getStorageManager(), getAccount());
+                this, files, getStorageManager(), getAccount());
             mListView.setAdapter(mAdapter);
 
             Button btnChooseFolder = findViewById(R.id.uploader_choose_folder);
@@ -436,10 +436,10 @@ public class ReceiveExternalFilesActivity extends FileActivity
 
         // perform folder synchronization
         SyncOperation synchFolderOp = new RefreshFolderOperation(
-                folder,
-                false,
-                getAccount(),
-                getApplicationContext()
+            folder,
+            false,
+            getAccount(),
+            getApplicationContext()
         );
         synchFolderOp.execute(getStorageManager(), this, null, null);
     }
@@ -451,7 +451,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
                 FileStorageUtils.FILE_DISPLAY_SORT);
 
         files = FileStorageUtils.sortFolder(files, FileStorageUtils.mSortOrderFileDisp,
-                FileStorageUtils.mSortAscendingFileDisp);
+                                            FileStorageUtils.mSortAscendingFileDisp);
         return files;
     }
 
@@ -493,19 +493,19 @@ public class ReceiveExternalFilesActivity extends FileActivity
      */
     private boolean isPlainTextUpload() {
         return mStreamsToUpload.get(0) == null &&
-                getIntent().getStringExtra(Intent.EXTRA_TEXT) != null;
+               getIntent().getStringExtra(Intent.EXTRA_TEXT) != null;
     }
 
     public void uploadFiles() {
 
         UriUploader uploader = new UriUploader(
-                this,
-                mStreamsToUpload,
-                mUploadPath,
-                getAccount(),
-                FileUploader.LOCAL_BEHAVIOUR_FORGET,
-                true, // Show waiting dialog while file is being copied from private storage
-                this  // Copy temp task listener
+            this,
+            mStreamsToUpload,
+            mUploadPath,
+            getAccount(),
+            FileUploader.LOCAL_BEHAVIOUR_FORGET,
+            true, // Show waiting dialog while file is being copied from private storage
+            this  // Copy temp task listener
         );
 
         UriUploader.UriUploaderResultCode resultCode = uploader.uploadUris();
@@ -528,8 +528,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
             }
 
             showErrorDialog(
-                    messageResId,
-                    messageResTitle
+                messageResId,
+                messageResTitle
             );
         }
     }
@@ -552,13 +552,13 @@ public class ReceiveExternalFilesActivity extends FileActivity
      * @param result    Result of the creation.
      */
     private void onCreateFolderOperationFinish(CreateFolderOperation operation,
-                                               RemoteOperationResult result) {
+            RemoteOperationResult result) {
         if (result.isSuccess()) {
             populateDirectoryList();
         } else {
             try {
                 showSnackMessage(
-                        ErrorMessageAdapter.Companion.getResultMessage(result, operation, getResources())
+                    ErrorMessageAdapter.Companion.getResultMessage(result, operation, getResources())
                 );
 
             } catch (NotFoundException e) {
@@ -575,7 +575,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     private void initTargetFolder() {
         if (getStorageManager() == null) {
             throw new IllegalStateException("Do not call this method before " +
-                    "initializing mStorageManager");
+                                            "initializing mStorageManager");
         }
 
         String lastPath = PreferenceManager.getLastUploadPath(this);
@@ -609,47 +609,47 @@ public class ReceiveExternalFilesActivity extends FileActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
-            case R.id.action_create_dir:
-                CreateFolderDialogFragment dialog = CreateFolderDialogFragment.newInstance(mFile);
-                dialog.show(
-                        getSupportFragmentManager(),
-                        CreateFolderDialogFragment.CREATE_FOLDER_FRAGMENT);
+        case R.id.action_create_dir:
+            CreateFolderDialogFragment dialog = CreateFolderDialogFragment.newInstance(mFile);
+            dialog.show(
+                getSupportFragmentManager(),
+                CreateFolderDialogFragment.CREATE_FOLDER_FRAGMENT);
+            break;
+        case android.R.id.home:
+            if ((mParents.size() > 1)) {
+                onBackPressed();
+            }
+            break;
+        case R.id.action_sort_descending:
+            item.setChecked(!item.isChecked());
+            boolean isAscending = !item.isChecked();
+            PreferenceManager.setSortAscending(isAscending, this, FileStorageUtils.FILE_DISPLAY_SORT);
+            switch (PreferenceManager.getSortOrder(this, FileStorageUtils.FILE_DISPLAY_SORT)) {
+            case FileStorageUtils.SORT_NAME:
+                sortByName(isAscending);
                 break;
-            case android.R.id.home:
-                if ((mParents.size() > 1)) {
-                    onBackPressed();
-                }
+            case FileStorageUtils.SORT_SIZE:
+                sortBySize(isAscending);
                 break;
-            case R.id.action_sort_descending:
-                item.setChecked(!item.isChecked());
-                boolean isAscending = !item.isChecked();
-                PreferenceManager.setSortAscending(isAscending, this, FileStorageUtils.FILE_DISPLAY_SORT);
-                switch (PreferenceManager.getSortOrder(this, FileStorageUtils.FILE_DISPLAY_SORT)) {
-                    case FileStorageUtils.SORT_NAME:
-                        sortByName(isAscending);
-                        break;
-                    case FileStorageUtils.SORT_SIZE:
-                        sortBySize(isAscending);
-                        break;
-                    case FileStorageUtils.SORT_DATE:
-                        sortByDate(isAscending);
-                        break;
-                }
+            case FileStorageUtils.SORT_DATE:
+                sortByDate(isAscending);
                 break;
-            case R.id.action_sort_by_name:
-                item.setChecked(true);
-                sortByName(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
-                break;
-            case R.id.action_sort_by_size:
-                item.setChecked(true);
-                sortBySize(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
-                break;
-            case R.id.action_sort_by_date:
-                item.setChecked(true);
-                sortByDate(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
-                break;
-            default:
-                retval = super.onOptionsItemSelected(item);
+            }
+            break;
+        case R.id.action_sort_by_name:
+            item.setChecked(true);
+            sortByName(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
+            break;
+        case R.id.action_sort_by_size:
+            item.setChecked(true);
+            sortBySize(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
+            break;
+        case R.id.action_sort_by_date:
+            item.setChecked(true);
+            sortByDate(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
+            break;
+        default:
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }
@@ -675,20 +675,20 @@ public class ReceiveExternalFilesActivity extends FileActivity
     private void recoverSortMenuState(Menu menu) {
         if (menu != null) {
             menu.findItem(R.id.action_sort_descending).setChecked(
-                    !PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
+                !PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
             switch (PreferenceManager.getSortOrder(this, FileStorageUtils.FILE_DISPLAY_SORT)) {
-                case FileStorageUtils.SORT_NAME:
-                    menu.findItem(R.id.action_sort_by_name).setChecked(true);
-                    sortByName(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
-                    break;
-                case FileStorageUtils.SORT_SIZE:
-                    menu.findItem(R.id.action_sort_by_size).setChecked(true);
-                    sortBySize(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
-                    break;
-                case FileStorageUtils.SORT_DATE:
-                    menu.findItem(R.id.action_sort_by_date).setChecked(true);
-                    sortByDate(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
-                    break;
+            case FileStorageUtils.SORT_NAME:
+                menu.findItem(R.id.action_sort_by_name).setChecked(true);
+                sortByName(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
+                break;
+            case FileStorageUtils.SORT_SIZE:
+                menu.findItem(R.id.action_sort_by_size).setChecked(true);
+                sortBySize(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
+                break;
+            case FileStorageUtils.SORT_DATE:
+                menu.findItem(R.id.action_sort_by_date).setChecked(true);
+                sortByDate(PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
+                break;
             }
         }
     }
@@ -722,12 +722,12 @@ public class ReceiveExternalFilesActivity extends FileActivity
             Timber.d("Received broadcast %s", event);
             String accountName = intent.getStringExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME);
             String synchFolderRemotePath =
-                    intent.getStringExtra(FileSyncAdapter.EXTRA_FOLDER_PATH);
+                intent.getStringExtra(FileSyncAdapter.EXTRA_FOLDER_PATH);
             RemoteOperationResult synchResult =
-                    (RemoteOperationResult) intent.getSerializableExtra(
-                            FileSyncAdapter.EXTRA_RESULT);
+                (RemoteOperationResult) intent.getSerializableExtra(
+                    FileSyncAdapter.EXTRA_RESULT);
             boolean sameAccount = (getAccount() != null &&
-                    accountName.equals(getAccount().name) && getStorageManager() != null);
+                                   accountName.equals(getAccount().name) && getStorageManager() != null);
 
             if (sameAccount) {
 
@@ -736,17 +736,17 @@ public class ReceiveExternalFilesActivity extends FileActivity
 
                 } else {
                     OCFile currentFile = (mFile == null) ? null :
-                            getStorageManager().getFileByPath(mFile.getRemotePath());
+                                         getStorageManager().getFileByPath(mFile.getRemotePath());
                     OCFile currentDir = (getCurrentFolder() == null) ? null :
-                            getStorageManager().getFileByPath(getCurrentFolder().getRemotePath());
+                                        getStorageManager().getFileByPath(getCurrentFolder().getRemotePath());
 
                     if (currentDir == null) {
                         // current folder was removed from the server
                         showSnackMessage(
-                                String.format(
-                                        getString(R.string.sync_current_folder_was_removed),
-                                        getCurrentFolder().getFileName()
-                                )
+                            String.format(
+                                getString(R.string.sync_current_folder_was_removed),
+                                getCurrentFolder().getFileName()
+                            )
                         );
                         browseToRoot();
 
@@ -763,7 +763,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
                     }
 
                     mSyncInProgress = (!FileSyncAdapter.EVENT_FULL_SYNC_END.equals(event) &&
-                            !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event));
+                                       !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event));
 
                     if (RefreshFolderOperation.EVENT_SINGLE_FOLDER_CONTENTS_SYNCED.
                             equals(event) &&
@@ -772,7 +772,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
 
                         if (synchResult.getCode() == ResultCode.UNAUTHORIZED ||
                                 (synchResult.isException() && synchResult.getException()
-                                        instanceof AuthenticatorException)) {
+                                 instanceof AuthenticatorException)) {
 
                             requestCredentialsUpdate();
 
@@ -807,29 +807,29 @@ public class ReceiveExternalFilesActivity extends FileActivity
     private void showErrorDialog(int messageResId, int messageResTitle) {
 
         ConfirmationDialogFragment errorDialog = ConfirmationDialogFragment.newInstance(
-                messageResId,
-                new String[]{getString(R.string.app_name)}, // see uploader_error_message_* in strings.xml
-                messageResTitle,
-                R.string.common_back,
-                -1,
-                -1
-        );
+                    messageResId,
+                    new String[] {getString(R.string.app_name)}, // see uploader_error_message_* in strings.xml
+                    messageResTitle,
+                    R.string.common_back,
+                    -1,
+                    -1
+                );
         errorDialog.setCancelable(false);
         errorDialog.setOnConfirmationListener(
-                new ConfirmationDialogFragment.ConfirmationDialogFragmentListener() {
-                    @Override
-                    public void onConfirmation(String callerTag) {
-                        finish();
-                    }
+        new ConfirmationDialogFragment.ConfirmationDialogFragmentListener() {
+            @Override
+            public void onConfirmation(String callerTag) {
+                finish();
+            }
 
-                    @Override
-                    public void onNeutral(String callerTag) {
-                    }
+            @Override
+            public void onNeutral(String callerTag) {
+            }
 
-                    @Override
-                    public void onCancel(String callerTag) {
-                    }
-                }
+            @Override
+            public void onCancel(String callerTag) {
+            }
+        }
         );
         errorDialog.show(getSupportFragmentManager(), FTAG_ERROR_FRAGMENT);
     }
@@ -877,7 +877,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
                 String error = null;
                 if (fileName.length() > MAX_FILENAME_LENGTH) {
                     error = String.format(getString(R.string.uploader_upload_text_dialog_filename_error_length_max),
-                            MAX_FILENAME_LENGTH);
+                                          MAX_FILENAME_LENGTH);
                 } else if (fileName.length() == 0) {
                     error = getString(R.string.uploader_upload_text_dialog_filename_error_empty);
                 } else {

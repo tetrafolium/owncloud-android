@@ -49,7 +49,7 @@ public class AccountUtils {
      *
      * @param   context     The current application {@link Context}
      * @return The ownCloud {@link Account} currently saved in preferences, or the first
-     *                      {@link Account} available, if valid (still registered in the system as ownCloud 
+     *                      {@link Account} available, if valid (still registered in the system as ownCloud
      *                      account). If none is available and valid, returns null.
      */
     public static Account getCurrentOwnCloudAccount(Context context) {
@@ -97,7 +97,7 @@ public class AccountUtils {
                 otherUsername = otherAccount.name.substring(0, lastAtPos);
                 if (otherHostAndPort.equals(hostAndPort) &&
                         otherUsername.toLowerCase(currentLocale).
-                                equals(username.toLowerCase(currentLocale))) {
+                        equals(username.toLowerCase(currentLocale))) {
                     return true;
                 }
             }
@@ -127,7 +127,7 @@ public class AccountUtils {
      */
     public static Account getOwnCloudAccountByName(Context context, String accountName) {
         Account[] ocAccounts = AccountManager.get(context).getAccountsByType(
-                MainApp.Companion.getAccountType());
+                                   MainApp.Companion.getAccountType());
         for (Account account : ocAccounts) {
             if (account.name.equals(accountName)) {
                 return account;
@@ -144,7 +144,7 @@ public class AccountUtils {
                 found = (account.name.equals(accountName));
                 if (found) {
                     SharedPreferences.Editor appPrefs = PreferenceManager
-                            .getDefaultSharedPreferences(context).edit();
+                                                        .getDefaultSharedPreferences(context).edit();
                     appPrefs.putString(SELECTED_ACCOUNT, accountName);
 
                     appPrefs.apply();
@@ -180,9 +180,9 @@ public class AccountUtils {
                     // build new account name
                     serverUrl = accountMgr.getUserData(account, Constants.KEY_OC_BASE_URL);
                     username = com.owncloud.android.lib.common.accounts.AccountUtils.
-                            getUsernameForAccount(account);
+                               getUsernameForAccount(account);
                     newAccountName = com.owncloud.android.lib.common.accounts.AccountUtils.
-                            buildAccountName(Uri.parse(serverUrl), username);
+                                     buildAccountName(Uri.parse(serverUrl), username);
 
                     // migrate to a new account, if needed
                     if (!newAccountName.equals(account.name)) {
@@ -198,16 +198,16 @@ public class AccountUtils {
 
                         // copy server version
                         accountMgr.setUserData(
-                                newAccount,
-                                Constants.KEY_OC_VERSION,
-                                accountMgr.getUserData(account, Constants.KEY_OC_VERSION)
+                            newAccount,
+                            Constants.KEY_OC_VERSION,
+                            accountMgr.getUserData(account, Constants.KEY_OC_VERSION)
                         );
 
                         // copy cookies
                         accountMgr.setUserData(
-                                newAccount,
-                                Constants.KEY_COOKIES,
-                                accountMgr.getUserData(account, Constants.KEY_COOKIES)
+                            newAccount,
+                            Constants.KEY_COOKIES,
+                            accountMgr.getUserData(account, Constants.KEY_COOKIES)
                         );
 
                         String isOauthStr = accountMgr.getUserData(account, Constants.KEY_SUPPORTS_OAUTH2);
@@ -234,7 +234,7 @@ public class AccountUtils {
                     // at least, upgrade account version
                     Timber.d("Setting version " + ACCOUNT_VERSION + " to " + newAccountName);
                     accountMgr.setUserData(
-                            newAccount, Constants.KEY_OC_ACCOUNT_VERSION, Integer.toString(ACCOUNT_VERSION)
+                        newAccount, Constants.KEY_OC_ACCOUNT_VERSION, Integer.toString(ACCOUNT_VERSION)
                     );
 
                 }
@@ -255,9 +255,9 @@ public class AccountUtils {
         if (account != null) {
             // capabilities are now the preferred source for version info
             FileDataStorageManager fileDataStorageManager = new FileDataStorageManager(
-                    MainApp.Companion.getAppContext(),
-                    account,
-                    MainApp.Companion.getAppContext().getContentResolver()
+                MainApp.Companion.getAppContext(),
+                account,
+                MainApp.Companion.getAppContext().getContentResolver()
             );
             OCCapability capability = fileDataStorageManager.getCapability(account.name);
             if (capability != null) {

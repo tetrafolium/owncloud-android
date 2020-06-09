@@ -94,10 +94,10 @@ public class PreviewAudioFragment extends FileFragment {
      * @return Fragment ready to be used.
      */
     public static PreviewAudioFragment newInstance(
-            OCFile file,
-            Account account,
-            int startPlaybackPosition,
-            boolean autoplay
+        OCFile file,
+        Account account,
+        int startPlaybackPosition,
+        boolean autoplay
     ) {
         PreviewAudioFragment frag = new PreviewAudioFragment();
         Bundle args = new Bundle();
@@ -144,7 +144,7 @@ public class PreviewAudioFragment extends FileFragment {
 
         View view = inflater.inflate(R.layout.preview_audio_fragment, container, false);
         view.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         mImagePreview = view.findViewById(R.id.image_preview);
@@ -176,13 +176,13 @@ public class PreviewAudioFragment extends FileFragment {
             setFile(file);
             mAccount = savedInstanceState.getParcelable(PreviewAudioFragment.EXTRA_ACCOUNT);
             mSavedPlaybackPosition = savedInstanceState.getInt(
-                    PreviewAudioFragment.EXTRA_PLAY_POSITION,
-                    args.getInt(PreviewAudioFragment.EXTRA_PLAY_POSITION)
-            );
+                                         PreviewAudioFragment.EXTRA_PLAY_POSITION,
+                                         args.getInt(PreviewAudioFragment.EXTRA_PLAY_POSITION)
+                                     );
             mAutoplay = savedInstanceState.getBoolean(
-                    PreviewAudioFragment.EXTRA_PLAYING,
-                    args.getBoolean(PreviewAudioFragment.EXTRA_PLAYING)
-            );
+                            PreviewAudioFragment.EXTRA_PLAYING,
+                            args.getBoolean(PreviewAudioFragment.EXTRA_PLAYING)
+                        );
         }
 
         if (file == null) {
@@ -310,14 +310,14 @@ public class PreviewAudioFragment extends FileFragment {
         super.onPrepareOptionsMenu(menu);
 
         FileMenuFilter mf = new FileMenuFilter(
-                getFile(),
-                mAccount,
-                mContainerActivity,
-                getActivity()
+            getFile(),
+            mAccount,
+            mContainerActivity,
+            getActivity()
         );
         mf.filter(menu, false, false, false, false);
 
-        // additional restriction for this fragment 
+        // additional restriction for this fragment
         // TODO allow renaming in PreviewAudioFragment
         MenuItem item = menu.findItem(R.id.action_rename_file);
         if (item != null) {
@@ -346,41 +346,41 @@ public class PreviewAudioFragment extends FileFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_share_file: {
-                mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-                return true;
-            }
-            case R.id.action_open_file_with: {
-                openFile();
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_see_details: {
-                seeDetails();
-                return true;
-            }
-            case R.id.action_send_file: {
-                mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
-                return true;
-            }
-            case R.id.action_sync_file: {
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_set_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
-                return true;
-            }
-            case R.id.action_unset_available_offline: {
-                mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+        case R.id.action_share_file: {
+            mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+            return true;
+        }
+        case R.id.action_open_file_with: {
+            openFile();
+            return true;
+        }
+        case R.id.action_remove_file: {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
+            return true;
+        }
+        case R.id.action_see_details: {
+            seeDetails();
+            return true;
+        }
+        case R.id.action_send_file: {
+            mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
+            return true;
+        }
+        case R.id.action_sync_file: {
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        }
+        case R.id.action_set_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), true);
+            return true;
+        }
+        case R.id.action_unset_available_offline: {
+            mContainerActivity.getFileOperationsHelper().toggleAvailableOffline(getFile(), false);
+            return true;
+        }
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -432,9 +432,9 @@ public class PreviewAudioFragment extends FileFragment {
         if (mMediaServiceConnection == null) {
             mMediaServiceConnection = new MediaServiceConnection();
             getActivity().bindService(new Intent(getActivity(),
-                            MediaService.class),
-                    mMediaServiceConnection,
-                    Context.BIND_AUTO_CREATE);
+                                                 MediaService.class),
+                                      mMediaServiceConnection,
+                                      Context.BIND_AUTO_CREATE);
             // follow the flow in MediaServiceConnection#onServiceConnected(...)
         }
     }
@@ -448,7 +448,7 @@ public class PreviewAudioFragment extends FileFragment {
         public void onServiceConnected(ComponentName component, IBinder service) {
             if (getActivity() != null) {
                 if (component.equals(
-                        new ComponentName(getActivity(), MediaService.class))) {
+                            new ComponentName(getActivity(), MediaService.class))) {
                     Timber.d("Media service connected");
                     mMediaServiceBinder = (MediaServiceBinder) service;
                     if (mMediaServiceBinder != null) {

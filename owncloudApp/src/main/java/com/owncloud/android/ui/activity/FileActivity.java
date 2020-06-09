@@ -67,12 +67,12 @@ import timber.log.Timber;
  * Activity with common behaviour for activities handling {@link OCFile}s in ownCloud {@link Account}s .
  */
 public class FileActivity extends DrawerActivity
-        implements OnRemoteOperationListener, ComponentsGetter, SslUntrustedCertDialog.OnSslUntrustedCertListener {
+    implements OnRemoteOperationListener, ComponentsGetter, SslUntrustedCertDialog.OnSslUntrustedCertListener {
 
     public static final String EXTRA_FILE = "com.owncloud.android.ui.activity.FILE";
     public static final String EXTRA_ACCOUNT = "com.owncloud.android.ui.activity.ACCOUNT";
     public static final String EXTRA_FROM_NOTIFICATION =
-            "com.owncloud.android.ui.activity.FROM_NOTIFICATION";
+        "com.owncloud.android.ui.activity.FROM_NOTIFICATION";
     public static final String EXTRA_FILE_LIST_OPTION = "EXTRA_FILE_LIST_OPTION";
 
     private static final String KEY_WAITING_FOR_OP_ID = "WAITING_FOR_OP_ID";
@@ -132,7 +132,7 @@ public class FileActivity extends DrawerActivity
             mFile = savedInstanceState.getParcelable(FileActivity.EXTRA_FILE);
             mFromNotification = savedInstanceState.getBoolean(FileActivity.EXTRA_FROM_NOTIFICATION);
             mFileOperationsHelper.setOpIdWaitingFor(
-                    savedInstanceState.getLong(KEY_WAITING_FOR_OP_ID, Long.MAX_VALUE)
+                savedInstanceState.getLong(KEY_WAITING_FOR_OP_ID, Long.MAX_VALUE)
             );
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(savedInstanceState.getString(KEY_ACTION_BAR_TITLE));
@@ -141,7 +141,7 @@ public class FileActivity extends DrawerActivity
             account = getIntent().getParcelableExtra(FileActivity.EXTRA_ACCOUNT);
             mFile = getIntent().getParcelableExtra(FileActivity.EXTRA_FILE);
             mFromNotification = getIntent().getBooleanExtra(FileActivity.EXTRA_FROM_NOTIFICATION,
-                    false);
+                                false);
         }
 
         AccountUtils.updateAccountVersion(this); // best place, before any access to AccountManager
@@ -151,17 +151,17 @@ public class FileActivity extends DrawerActivity
 
         mOperationsServiceConnection = new OperationsServiceConnection();
         bindService(new Intent(this, OperationsService.class), mOperationsServiceConnection,
-                Context.BIND_AUTO_CREATE);
+                    Context.BIND_AUTO_CREATE);
 
         mDownloadServiceConnection = newTransferenceServiceConnection();
         if (mDownloadServiceConnection != null) {
             bindService(new Intent(this, FileDownloader.class), mDownloadServiceConnection,
-                    Context.BIND_AUTO_CREATE);
+                        Context.BIND_AUTO_CREATE);
         }
         mUploadServiceConnection = newTransferenceServiceConnection();
         if (mUploadServiceConnection != null) {
             bindService(new Intent(this, FileUploader.class), mUploadServiceConnection,
-                    Context.BIND_AUTO_CREATE);
+                        Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -280,15 +280,15 @@ public class FileActivity extends DrawerActivity
         dismissLoadingDialog();
 
         if (!result.isSuccess() && (
-                result.getCode() == ResultCode.UNAUTHORIZED ||
-                        (result.isException() && result.getException() instanceof AuthenticatorException)
-        )) {
+                    result.getCode() == ResultCode.UNAUTHORIZED ||
+                    (result.isException() && result.getException() instanceof AuthenticatorException)
+                )) {
 
             requestCredentialsUpdate();
 
             if (result.getCode() == ResultCode.UNAUTHORIZED) {
                 showSnackMessage(
-                        ErrorMessageAdapter.Companion.getResultMessage(result, operation, getResources())
+                    ErrorMessageAdapter.Companion.getResultMessage(result, operation, getResources())
                 );
             }
 
@@ -297,14 +297,14 @@ public class FileActivity extends DrawerActivity
             showUntrustedCertDialog(result);
 
         } else if (operation == null ||
-                operation instanceof SynchronizeFolderOperation
-        ) {
+                   operation instanceof SynchronizeFolderOperation
+                  ) {
             if (result.isSuccess()) {
                 updateFileFromDB();
 
             } else if (result.getCode() != ResultCode.CANCELLED) {
                 showSnackMessage(
-                        ErrorMessageAdapter.Companion.getResultMessage(result, operation, getResources())
+                    ErrorMessageAdapter.Companion.getResultMessage(result, operation, getResources())
                 );
             }
 
@@ -319,26 +319,26 @@ public class FileActivity extends DrawerActivity
     protected void showRequestAccountChangeNotice(String errorMessage, boolean mustChange) {
         if (mustChange) {
             new AlertDialog.Builder(this)
-                    .setTitle(R.string.auth_failure_snackbar_action)
-                    .setMessage(errorMessage)
-                    .setPositiveButton(android.R.string.yes, (dialog, which) -> startActivity(
-                            new Intent(FileActivity.this, ManageAccountsActivity.class)))
-                    .setIcon(R.drawable.common_error_grey)
-                    .setCancelable(false)
-                    .show();
+            .setTitle(R.string.auth_failure_snackbar_action)
+            .setMessage(errorMessage)
+            .setPositiveButton(android.R.string.yes, (dialog, which) -> startActivity(
+                                   new Intent(FileActivity.this, ManageAccountsActivity.class)))
+            .setIcon(R.drawable.common_error_grey)
+            .setCancelable(false)
+            .show();
         } else {
             Snackbar.make(findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.auth_failure_snackbar_action, v ->
-                            startActivity(new Intent(FileActivity.this, ManageAccountsActivity.class)))
-                    .show();
+            .setAction(R.string.auth_failure_snackbar_action, v ->
+                       startActivity(new Intent(FileActivity.this, ManageAccountsActivity.class)))
+            .show();
         }
     }
 
     protected void showRequestRegainAccess() {
         Snackbar.make(findViewById(android.R.id.content), R.string.auth_oauth_failure, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.auth_oauth_failure_snackbar_action, v ->
-                        requestCredentialsUpdate())
-                .show();
+        .setAction(R.string.auth_oauth_failure_snackbar_action, v ->
+                   requestCredentialsUpdate())
+        .show();
     }
 
     /**
@@ -368,8 +368,8 @@ public class FileActivity extends DrawerActivity
         Intent updateAccountCredentials = new Intent(this, LoginActivity.class);
         updateAccountCredentials.putExtra(AuthenticatorConstants.EXTRA_ACCOUNT, account);
         updateAccountCredentials.putExtra(
-                AuthenticatorConstants.EXTRA_ACTION,
-                AuthenticatorConstants.ACTION_UPDATE_EXPIRED_TOKEN);
+            AuthenticatorConstants.EXTRA_ACTION,
+            AuthenticatorConstants.ACTION_UPDATE_EXPIRED_TOKEN);
         updateAccountCredentials.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         startActivityForResult(updateAccountCredentials, REQUEST_CODE__UPDATE_CREDENTIALS);
     }
@@ -383,14 +383,14 @@ public class FileActivity extends DrawerActivity
         SslUntrustedCertDialog dialog = (SslUntrustedCertDialog) fm.findFragmentByTag(DIALOG_UNTRUSTED_CERT);
         if (dialog == null) {
             dialog = SslUntrustedCertDialog.newInstanceForFullSslError(
-                    (CertificateCombinedException) result.getException());
+                         (CertificateCombinedException) result.getException());
             FragmentTransaction ft = fm.beginTransaction();
             dialog.show(ft, DIALOG_UNTRUSTED_CERT);
         }
     }
 
     private void onSynchronizeFileOperationFinish(SynchronizeFileOperation operation,
-                                                  RemoteOperationResult result) {
+            RemoteOperationResult result) {
         invalidateOptionsMenu();
         OCFile syncedFile = operation.getLocalFile();
         if (!result.isSuccess()) {
@@ -416,7 +416,7 @@ public class FileActivity extends DrawerActivity
         long waitingForOpId = mFileOperationsHelper.getOpIdWaitingFor();
         if (waitingForOpId <= Integer.MAX_VALUE) {
             boolean wait = mOperationsServiceBinder.dispatchResultIfFinished((int) waitingForOpId,
-                    this);
+                           this);
             if (!wait) {
                 dismissLoadingDialog();
             }
@@ -470,21 +470,21 @@ public class FileActivity extends DrawerActivity
     public void navigateToOption(FileListOption fileListOption) {
         Intent intent;
         switch (fileListOption) {
-            case ALL_FILES:
-                restart();
-                break;
-            case SHARED_BY_LINK:
-                intent = new Intent(this, FileDisplayActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(EXTRA_FILE_LIST_OPTION, (Parcelable) FileListOption.SHARED_BY_LINK);
-                startActivity(intent);
-                break;
-            case AV_OFFLINE:
-                intent = new Intent(this, FileDisplayActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(EXTRA_FILE_LIST_OPTION, (Parcelable) FileListOption.AV_OFFLINE);
-                startActivity(intent);
-                break;
+        case ALL_FILES:
+            restart();
+            break;
+        case SHARED_BY_LINK:
+            intent = new Intent(this, FileDisplayActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra(EXTRA_FILE_LIST_OPTION, (Parcelable) FileListOption.SHARED_BY_LINK);
+            startActivity(intent);
+            break;
+        case AV_OFFLINE:
+            intent = new Intent(this, FileDisplayActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra(EXTRA_FILE_LIST_OPTION, (Parcelable) FileListOption.AV_OFFLINE);
+            startActivity(intent);
+            break;
         }
     }
 
@@ -511,8 +511,8 @@ public class FileActivity extends DrawerActivity
     @Override
     public void onFailedSavingCertificate() {
         ConfirmationDialogFragment dialog = ConfirmationDialogFragment.newInstance(
-                R.string.ssl_validator_not_saved, new String[]{}, 0, android.R.string.ok, -1, -1
-        );
+                                                R.string.ssl_validator_not_saved, new String[] {}, 0, android.R.string.ok, -1, -1
+                                            );
         dialog.show(getSupportFragmentManager(), DIALOG_CERT_NOT_SAVED);
     }
 

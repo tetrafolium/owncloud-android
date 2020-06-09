@@ -45,21 +45,21 @@ public class FeatureList {
     static final private String INDIFFERENT = "0";
 
     static final private FeatureItem[] featuresList = {
-            // Basic features showed on first install
-            new FeatureItem(R.drawable.whats_new_files, R.string.welcome_feature_1_title,
-                    R.string.welcome_feature_1_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
-            new FeatureItem(R.drawable.whats_new_share, R.string.welcome_feature_2_title,
-                    R.string.welcome_feature_2_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
-            new FeatureItem(R.drawable.whats_new_accounts, R.string.welcome_feature_3_title,
-                    R.string.welcome_feature_3_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
-            new FeatureItem(R.drawable.whats_new_camera_uploads, R.string.welcome_feature_4_title,
-                    R.string.welcome_feature_4_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
-            new FeatureItem(R.drawable.whats_new_video_streaming, R.string.welcome_feature_5_title,
-                    R.string.welcome_feature_5_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
-            new FeatureItem(R.drawable.whats_new_nav_bar, R.string.welcome_feature_6_title,
-                    R.string.welcome_feature_6_text, RELEASE_2_15_0, INDIFFERENT, SHOW_ON_UPGRADE),
-            new FeatureItem(R.drawable.whats_new_oidc, R.string.welcome_feature_7_title,
-                    R.string.welcome_feature_7_text, RELEASE_2_15_0, INDIFFERENT, SHOW_ON_UPGRADE)
+        // Basic features showed on first install
+        new FeatureItem(R.drawable.whats_new_files, R.string.welcome_feature_1_title,
+                        R.string.welcome_feature_1_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
+        new FeatureItem(R.drawable.whats_new_share, R.string.welcome_feature_2_title,
+                        R.string.welcome_feature_2_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
+        new FeatureItem(R.drawable.whats_new_accounts, R.string.welcome_feature_3_title,
+                        R.string.welcome_feature_3_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
+        new FeatureItem(R.drawable.whats_new_camera_uploads, R.string.welcome_feature_4_title,
+                        R.string.welcome_feature_4_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
+        new FeatureItem(R.drawable.whats_new_video_streaming, R.string.welcome_feature_5_title,
+                        R.string.welcome_feature_5_text, DEFAULT_WIZARD_VERSION_NAME, INDIFFERENT, SHOW_ON_FIRST_RUN),
+        new FeatureItem(R.drawable.whats_new_nav_bar, R.string.welcome_feature_6_title,
+                        R.string.welcome_feature_6_text, RELEASE_2_15_0, INDIFFERENT, SHOW_ON_UPGRADE),
+        new FeatureItem(R.drawable.whats_new_oidc, R.string.welcome_feature_7_title,
+                        R.string.welcome_feature_7_text, RELEASE_2_15_0, INDIFFERENT, SHOW_ON_UPGRADE)
     };
 
     static public FeatureItem[] get() {
@@ -76,8 +76,8 @@ public class FeatureList {
             if (isFirstRun && item.shouldShowOnFirstRun()) {
                 features.add(item);
             } else if (!isFirstRun && !item.shouldShowOnFirstRun() &&
-                    MainApp.Companion.getVersionCode() >= itemVersionCode &&
-                    lastSeenVersionCode < itemVersionCode) {
+                       MainApp.Companion.getVersionCode() >= itemVersionCode &&
+                       lastSeenVersionCode < itemVersionCode) {
                 features.add(item);
             }
         }
@@ -164,18 +164,18 @@ public class FeatureList {
         }
 
         public static final Parcelable.Creator CREATOR =
-                new Parcelable.Creator() {
+        new Parcelable.Creator() {
 
-                    @Override
-                    public Object createFromParcel(Parcel source) {
-                        return new FeatureItem(source);
-                    }
+            @Override
+            public Object createFromParcel(Parcel source) {
+                return new FeatureItem(source);
+            }
 
-                    @Override
-                    public Object[] newArray(int size) {
-                        return new FeatureItem[size];
-                    }
-                };
+            @Override
+            public Object[] newArray(int size) {
+                return new FeatureItem[size];
+            }
+        };
     }
 
     private static int versionCodeFromString(String version) {
@@ -186,7 +186,7 @@ public class FeatureList {
         }
 
         return Integer.parseInt(v[0]) * (int) (10e6) +
-                Integer.parseInt(v[1]) * (int) (10e4) +
-                Integer.parseInt(v[2]) * 100;
+               Integer.parseInt(v[1]) * (int) (10e4) +
+               Integer.parseInt(v[2]) * 100;
     }
 }

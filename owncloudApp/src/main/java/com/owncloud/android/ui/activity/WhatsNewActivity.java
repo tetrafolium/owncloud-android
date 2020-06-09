@@ -140,14 +140,14 @@ public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPa
         boolean isBeta = MainApp.Companion.isBeta();
         boolean showWizard = context.getResources().getBoolean(R.bool.wizard_enabled) && !BuildConfig.DEBUG;
         return showWizard &&
-                ((isFirstRun() && context instanceof LoginActivity) ||
-                        (
-                                !(isFirstRun() && (context instanceof FileDisplayActivity)) &&
-                                        !(context instanceof PassCodeActivity) &&
-                                        (FeatureList.getFiltered(getLastSeenVersionCode(), isFirstRun(),
-                                                isBeta).length > 0)
+               ((isFirstRun() && context instanceof LoginActivity) ||
+                (
+                    !(isFirstRun() && (context instanceof FileDisplayActivity)) &&
+                    !(context instanceof PassCodeActivity) &&
+                    (FeatureList.getFiltered(getLastSeenVersionCode(), isFirstRun(),
+                                             isBeta).length > 0)
 
-                        ));
+                ));
     }
 
     @Override

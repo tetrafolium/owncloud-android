@@ -58,28 +58,28 @@ public class ConflictsResolveDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
-                .setIcon(R.drawable.ic_warning)
-                .setTitle(R.string.conflict_title)
-                .setMessage(getString(R.string.conflict_message))
-                .setPositiveButton(R.string.conflict_use_local_version,
-                        (dialog, which) -> {
-                            if (mListener != null) {
-                                mListener.conflictDecisionMade(Decision.OVERWRITE);
-                            }
-                        })
-                .setNeutralButton(R.string.conflict_keep_both,
-                        (dialog, which) -> {
-                            if (mListener != null) {
-                                mListener.conflictDecisionMade(Decision.KEEP_BOTH);
-                            }
-                        })
-                .setNegativeButton(R.string.conflict_use_server_version,
-                        (dialog, which) -> {
-                            if (mListener != null) {
-                                mListener.conflictDecisionMade(Decision.SERVER);
-                            }
-                        })
-                .create();
+               .setIcon(R.drawable.ic_warning)
+               .setTitle(R.string.conflict_title)
+               .setMessage(getString(R.string.conflict_message))
+               .setPositiveButton(R.string.conflict_use_local_version,
+        (dialog, which) -> {
+            if (mListener != null) {
+                mListener.conflictDecisionMade(Decision.OVERWRITE);
+            }
+        })
+        .setNeutralButton(R.string.conflict_keep_both,
+        (dialog, which) -> {
+            if (mListener != null) {
+                mListener.conflictDecisionMade(Decision.KEEP_BOTH);
+            }
+        })
+        .setNegativeButton(R.string.conflict_use_server_version,
+        (dialog, which) -> {
+            if (mListener != null) {
+                mListener.conflictDecisionMade(Decision.SERVER);
+            }
+        })
+        .create();
     }
 
     public void showDialog(AppCompatActivity activity) {

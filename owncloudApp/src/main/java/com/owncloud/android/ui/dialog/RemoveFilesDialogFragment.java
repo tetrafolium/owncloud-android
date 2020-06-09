@@ -36,7 +36,7 @@ import com.owncloud.android.ui.dialog.ConfirmationDialogFragment.ConfirmationDia
 import java.util.ArrayList;
 
 public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
-        implements ConfirmationDialogFragmentListener {
+    implements ConfirmationDialogFragmentListener {
 
     private ArrayList<OCFile> mTargetFiles;
 
@@ -73,24 +73,24 @@ public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
             OCFile file = files.get(0);
 
             messageStringId = (file.isFolder()) ?
-                    R.string.confirmation_remove_folder_alert :
-                    R.string.confirmation_remove_file_alert;
+                              R.string.confirmation_remove_folder_alert :
+                              R.string.confirmation_remove_file_alert;
 
         } else {
             // choose message for more than one file
             messageStringId = (containsFolder) ?
-                    R.string.confirmation_remove_folders_alert :
-                    R.string.confirmation_remove_files_alert;
+                              R.string.confirmation_remove_folders_alert :
+                              R.string.confirmation_remove_files_alert;
 
         }
 
         int localRemoveButton = (!containsAvailableOffline && (containsFolder || containsDown)) ?
-                R.string.confirmation_remove_local :
-                -1;
+                                R.string.confirmation_remove_local :
+                                -1;
 
         args.putInt(ARG_MESSAGE_RESOURCE_ID, messageStringId);
         if (files.size() == 1) {
-            args.putStringArray(ARG_MESSAGE_ARGUMENTS, new String[]{files.get(0).getFileName()});
+            args.putStringArray(ARG_MESSAGE_ARGUMENTS, new String[] {files.get(0).getFileName()});
         }
         args.putInt(ARG_POSITIVE_BTN_RES, R.string.common_yes);
         args.putInt(ARG_NEUTRAL_BTN_RES, R.string.common_no);

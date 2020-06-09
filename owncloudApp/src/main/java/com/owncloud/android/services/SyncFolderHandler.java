@@ -108,16 +108,16 @@ class SyncFolderHandler extends Handler {
                 if (mCurrentAccount == null || !mCurrentAccount.equals(account)) {
                     mCurrentAccount = account;
                     mStorageManager = new FileDataStorageManager(
-                            mService,
-                            account,
-                            mService.getContentResolver()
+                        mService,
+                        account,
+                        mService.getContentResolver()
                     );
                 }   // else, reuse storage manager from previous operation
 
                 // always get client from client manager, to get fresh credentials in case of update
                 OwnCloudAccount ocAccount = new OwnCloudAccount(account, mService);
                 mOwnCloudClient = SingleSessionManager.getDefaultSingleton().
-                        getClientFor(ocAccount, mService);
+                                  getClientFor(ocAccount, mService);
 
                 result = mCurrentSyncOperation.execute(mOwnCloudClient, mStorageManager);
 
@@ -135,7 +135,7 @@ class SyncFolderHandler extends Handler {
 
     public void add(Account account, String remotePath, SynchronizeFolderOperation syncFolderOperation) {
         Pair<String, String> putResult =
-                mPendingOperations.putIfAbsent(account.name, remotePath, syncFolderOperation);
+            mPendingOperations.putIfAbsent(account.name, remotePath, syncFolderOperation);
         if (putResult != null) {
             sendBroadcastNewSyncFolder(account, remotePath);    // TODO upgrade!
         }
@@ -153,7 +153,7 @@ class SyncFolderHandler extends Handler {
             return;
         }
         Pair<SynchronizeFolderOperation, String> removeResult =
-                mPendingOperations.remove(account.name, file.getRemotePath());
+            mPendingOperations.remove(account.name, file.getRemotePath());
         SynchronizeFolderOperation synchronization = removeResult.first;
         if (synchronization != null) {
             synchronization.cancel();

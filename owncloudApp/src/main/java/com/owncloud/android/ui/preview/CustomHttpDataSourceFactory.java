@@ -52,10 +52,10 @@ public final class CustomHttpDataSourceFactory extends BaseFactory {
      * Map<String, String>)
      */
     public CustomHttpDataSourceFactory(
-            String userAgent, TransferListener<? super DataSource> listener, Map<String,
-            String> params) {
+        String userAgent, TransferListener<? super DataSource> listener, Map<String,
+        String> params) {
         this(userAgent, listener, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, false, params);
+             DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, false, params);
     }
 
     /**

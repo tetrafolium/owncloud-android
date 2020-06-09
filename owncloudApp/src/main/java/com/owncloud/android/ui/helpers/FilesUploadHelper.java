@@ -174,7 +174,7 @@ public class FilesUploadHelper implements Parcelable {
         File photoFile = createImageFile();
         if (photoFile != null) {
             Uri photoUri = FileProvider.getUriForFile(activity.getApplicationContext(),
-                    activity.getResources().getString(R.string.file_provider_authority), photoFile);
+                           activity.getResources().getString(R.string.file_provider_authority), photoFile);
             pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
         }
         if (pictureIntent.resolveActivity(activity.getPackageManager()) != null) {
@@ -183,7 +183,7 @@ public class FilesUploadHelper implements Parcelable {
     }
 
     public void onActivityResult(final OnCheckAvailableSpaceListener callback) {
-        checkIfAvailableSpace(new String[]{getCapturedImageFile().getAbsolutePath()}, callback);
+        checkIfAvailableSpace(new String[] {getCapturedImageFile().getAbsolutePath()}, callback);
     }
 
     public void deleteImageFile() {

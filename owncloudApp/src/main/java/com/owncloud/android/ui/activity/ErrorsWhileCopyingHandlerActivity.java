@@ -63,14 +63,14 @@ import java.util.ArrayList;
  * Shown when the error notification summarizing the list of errors is clicked by the user.
  */
 public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
-        implements OnClickListener {
+    implements OnClickListener {
 
     public static final String EXTRA_ACCOUNT =
-            ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".KEY_ACCOUNT";
+        ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".KEY_ACCOUNT";
     public static final String EXTRA_LOCAL_PATHS =
-            ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".EXTRA_LOCAL_PATHS";
+        ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".EXTRA_LOCAL_PATHS";
     public static final String EXTRA_REMOTE_PATHS =
-            ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".EXTRA_REMOTE_PATHS";
+        ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".EXTRA_REMOTE_PATHS";
 
     private static final String WAIT_DIALOG_TAG = "WAIT_DIALOG";
 
@@ -108,14 +108,14 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
         TextView textView = findViewById(R.id.message);
         String appName = getString(R.string.app_name);
         String message = String.format(getString(R.string.sync_foreign_files_forgotten_explanation),
-                appName, appName, appName, appName, mAccount.name);
+                                       appName, appName, appName, appName, mAccount.name);
         textView.setText(message);
         textView.setMovementMethod(new ScrollingMovementMethod());
 
         // Allow or disallow touches with other visible windows
         LinearLayout alertDialogListViewLayout = findViewById(R.id.alertDialogListViewLayout);
         alertDialogListViewLayout.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         /// load the list of local and remote files that failed
@@ -145,7 +145,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
 
         ErrorsWhileCopyingListAdapter() {
             super(ErrorsWhileCopyingHandlerActivity.this, android.R.layout.two_line_list_item,
-                    android.R.id.text1, mLocalPaths);
+                  android.R.id.text1, mLocalPaths);
         }
 
         @Override
@@ -161,7 +161,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
             View view = convertView;
             if (view == null) {
                 LayoutInflater vi = (LayoutInflater) getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
+                                        Context.LAYOUT_INFLATER_SERVICE);
                 view = vi.inflate(android.R.layout.two_line_list_item, null);
             }
             if (view != null) {
@@ -271,16 +271,16 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
             if (result) {
                 // nothing else to do in this activity
                 Toast t = Toast.makeText(ErrorsWhileCopyingHandlerActivity.this,
-                        getString(R.string.foreign_files_success), Toast.LENGTH_LONG);
+                                         getString(R.string.foreign_files_success), Toast.LENGTH_LONG);
                 t.show();
                 finish();
 
             } else {
                 Snackbar snackbar = Snackbar.make(
-                        findViewById(android.R.id.content),
-                        R.string.foreign_files_fail,
-                        Snackbar.LENGTH_LONG
-                );
+                                        findViewById(android.R.id.content),
+                                        R.string.foreign_files_fail,
+                                        Snackbar.LENGTH_LONG
+                                    );
                 snackbar.show();
 
             }

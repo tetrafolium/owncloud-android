@@ -75,7 +75,7 @@ public class AvailableOfflineSyncJobService extends JobService {
             Account account = AccountUtils.getOwnCloudAccountByName(mAvailableOfflineJobService, accountName);
 
             FileDataStorageManager fileDataStorageManager = new FileDataStorageManager(
-                    mAvailableOfflineJobService, account, mAvailableOfflineJobService.getContentResolver()
+                mAvailableOfflineJobService, account, mAvailableOfflineJobService.getContentResolver()
             );
 
             List<Pair<OCFile, String>> availableOfflineFilesFromEveryAccount = fileDataStorageManager.
@@ -99,9 +99,9 @@ public class AvailableOfflineSyncJobService extends JobService {
 
                 if (localPath == null) {
                     localPath = FileStorageUtils.getDefaultSavePathFor(
-                            fileForAccount.second, // Account name
-                            fileForAccount.first   // OCFile
-                    );
+                                    fileForAccount.second, // Account name
+                                    fileForAccount.first   // OCFile
+                                );
                 }
 
                 File localFile = new File(localPath);
@@ -109,7 +109,7 @@ public class AvailableOfflineSyncJobService extends JobService {
                 if (localFile.lastModified() <= fileForAccount.first.getLastSyncDateForData() &&
                         MainApp.Companion.isDeveloper()) {
                     Timber.i("File " + fileForAccount.first.getRemotePath() + " already synchronized " +
-                            "in account " + fileForAccount.second + ", ignoring");
+                             "in account " + fileForAccount.second + ", ignoring");
                     continue;
                 }
 
@@ -127,22 +127,22 @@ public class AvailableOfflineSyncJobService extends JobService {
         private void startSyncOperation(OCFile availableOfflineFile, String accountName) {
             if (MainApp.Companion.isDeveloper()) {
                 Timber.i("Requested synchronization for file %1s in account %2s",
-                        availableOfflineFile.getRemotePath(), accountName);
+                         availableOfflineFile.getRemotePath(), accountName);
             }
 
             Account account = AccountUtils.getOwnCloudAccountByName(mAvailableOfflineJobService, accountName);
 
             FileDataStorageManager storageManager =
-                    new FileDataStorageManager(
-                            mAvailableOfflineJobService, account, mAvailableOfflineJobService.getContentResolver()
-                    );
+                new FileDataStorageManager(
+                mAvailableOfflineJobService, account, mAvailableOfflineJobService.getContentResolver()
+            );
 
             SynchronizeFileOperation synchronizeFileOperation =
-                    new SynchronizeFileOperation(availableOfflineFile, null, account, false,
-                            mAvailableOfflineJobService, true);
+                new SynchronizeFileOperation(availableOfflineFile, null, account, false,
+                                             mAvailableOfflineJobService, true);
 
             RemoteOperationResult result = synchronizeFileOperation.
-                    execute(storageManager, mAvailableOfflineJobService);
+                                           execute(storageManager, mAvailableOfflineJobService);
 
             if (result.getCode() == RemoteOperationResult.ResultCode.SYNC_CONFLICT) {
                 notifyConflict(availableOfflineFile, account, mAvailableOfflineJobService);
@@ -156,7 +156,7 @@ public class AvailableOfflineSyncJobService extends JobService {
          */
         private void cancelPeriodicJob(int jobId) {
             JobScheduler jobScheduler = (JobScheduler) mAvailableOfflineJobService.getSystemService(
-                    Context.JOB_SCHEDULER_SERVICE);
+                                            Context.JOB_SCHEDULER_SERVICE);
 
             jobScheduler.cancel(jobId);
 

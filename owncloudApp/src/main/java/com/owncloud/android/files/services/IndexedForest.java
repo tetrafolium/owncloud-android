@@ -101,9 +101,9 @@ public class IndexedForest<V> {
 
         Node<V> valuedNode = new Node(targetKey, value);
         Node<V> previousValue = mMap.putIfAbsent(
-                targetKey,
-                valuedNode
-        );
+                                    targetKey,
+                                    valuedNode
+                                );
         if (previousValue != null) {
             // remotePath already known; not replaced
             return null;

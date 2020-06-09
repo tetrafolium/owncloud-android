@@ -77,7 +77,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
     public static final String EVENT_FULL_SYNC_END = FileSyncAdapter.class.getName() +
             ".EVENT_FULL_SYNC_END";
     public static final String EVENT_FULL_SYNC_FOLDER_CONTENTS_SYNCED =
-            FileSyncAdapter.class.getName() + ".EVENT_FULL_SYNC_FOLDER_CONTENTS_SYNCED";
+        FileSyncAdapter.class.getName() + ".EVENT_FULL_SYNC_FOLDER_CONTENTS_SYNCED";
 
     public static final String EXTRA_ACCOUNT_NAME = FileSyncAdapter.class.getName() + ".EXTRA_ACCOUNT_NAME";
     public static final String EXTRA_FOLDER_PATH = FileSyncAdapter.class.getName() + ".EXTRA_FOLDER_PATH";
@@ -282,13 +282,13 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
 
         // folder synchronization
         SynchronizeFolderOperation synchFolderOp = new SynchronizeFolderOperation(
-                getContext(),
-                folder.getRemotePath(),
-                getAccount(),
-                mCurrentSyncTime,
-                pushOnly,
-                true,       // sync full account
-                false       // only sync contents of available offline files
+            getContext(),
+            folder.getRemotePath(),
+            getAccount(),
+            mCurrentSyncTime,
+            pushOnly,
+            true,       // sync full account
+            false       // only sync contents of available offline files
         );
 
         RemoteOperationResult result;
@@ -314,7 +314,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
                 mForgottenLocalFiles.putAll(synchFolderOp.getForgottenLocalFiles());
             }
             if (result.isSuccess()) {
-                // synchronize children folders 
+                // synchronize children folders
                 List<Pair<OCFile, Boolean>> children = synchFolderOp.getFoldersToVisit();
                 // beware of the 'hidden' recursion here!
                 syncSubfolders(children);
@@ -357,7 +357,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
                     code.equals(RemoteOperationResult.ResultCode.INSTANCE_NOT_CONFIGURED) ||
                     code.equals(ResultCode.ACCOUNT_NOT_FOUND) ||
                     code.equals(ResultCode.ACCOUNT_EXCEPTION)
-            );
+                   );
         }
         return false;
     }
@@ -385,7 +385,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
 
         if (mCancellation && i < folders.size()) {
             Timber.d("Leaving synchronization before synchronizing " + folders.get(i).first.getRemotePath() + " due " +
-                    "to cancelation request");
+                     "to cancelation request");
         }
     }
 
@@ -418,31 +418,31 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
     private void notifyFailedSynchronization() {
         NotificationCompat.Builder notificationBuilder = createNotificationBuilder();
         boolean needsToUpdateCredentials = (
-                mLastFailedResult != null &&
-                        ResultCode.UNAUTHORIZED.equals(mLastFailedResult.getCode())
-        );
+                                               mLastFailedResult != null &&
+                                               ResultCode.UNAUTHORIZED.equals(mLastFailedResult.getCode())
+                                           );
         if (needsToUpdateCredentials) {
             // let the user update credentials with one click
             Intent updateAccountCredentials = new Intent(getContext(), LoginActivity.class);
             updateAccountCredentials.putExtra(AuthenticatorConstants.EXTRA_ACCOUNT, getAccount());
             updateAccountCredentials.putExtra(AuthenticatorConstants.EXTRA_ACTION,
-                    AuthenticatorConstants.ACTION_UPDATE_EXPIRED_TOKEN);
+                                              AuthenticatorConstants.ACTION_UPDATE_EXPIRED_TOKEN);
             updateAccountCredentials.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             updateAccountCredentials.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             updateAccountCredentials.addFlags(Intent.FLAG_FROM_BACKGROUND);
             notificationBuilder
-                    .setTicker(i18n(R.string.sync_fail_ticker_unauthorized))
-                    .setContentTitle(i18n(R.string.sync_fail_ticker_unauthorized))
-                    .setContentIntent(PendingIntent.getActivity(
-                            getContext(), (int) System.currentTimeMillis(), updateAccountCredentials,
-                            PendingIntent.FLAG_ONE_SHOT
-                    ))
-                    .setContentText(i18n(R.string.sync_fail_content_unauthorized, getAccount().name));
+            .setTicker(i18n(R.string.sync_fail_ticker_unauthorized))
+            .setContentTitle(i18n(R.string.sync_fail_ticker_unauthorized))
+            .setContentIntent(PendingIntent.getActivity(
+                                  getContext(), (int) System.currentTimeMillis(), updateAccountCredentials,
+                                  PendingIntent.FLAG_ONE_SHOT
+                              ))
+            .setContentText(i18n(R.string.sync_fail_content_unauthorized, getAccount().name));
         } else {
             notificationBuilder
-                    .setTicker(i18n(R.string.sync_fail_ticker))
-                    .setContentTitle(i18n(R.string.sync_fail_ticker))
-                    .setContentText(i18n(R.string.sync_fail_content, getAccount().name));
+            .setTicker(i18n(R.string.sync_fail_ticker))
+            .setContentTitle(i18n(R.string.sync_fail_ticker))
+            .setContentText(i18n(R.string.sync_fail_content, getAccount().name));
         }
 
         showNotification(R.string.sync_fail_ticker, notificationBuilder);
@@ -461,12 +461,12 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
 
             // TODO put something smart in the contentIntent below
             notificationBuilder
-                    .setContentIntent(PendingIntent.getActivity(
-                            getContext(), (int) System.currentTimeMillis(), new Intent(), 0
-                    ))
-                    .setContentTitle(i18n(R.string.sync_fail_in_favourites_ticker))
-                    .setContentText(i18n(R.string.sync_fail_in_favourites_content,
-                            mFailedResultsCounter + mConflictsFound, mConflictsFound));
+            .setContentIntent(PendingIntent.getActivity(
+                                  getContext(), (int) System.currentTimeMillis(), new Intent(), 0
+                              ))
+            .setContentTitle(i18n(R.string.sync_fail_in_favourites_ticker))
+            .setContentText(i18n(R.string.sync_fail_in_favourites_content,
+                                 mFailedResultsCounter + mConflictsFound, mConflictsFound));
 
             showNotification(R.string.sync_fail_in_favourites_ticker, notificationBuilder);
         } else {
@@ -475,11 +475,11 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
 
             // TODO put something smart in the contentIntent below
             notificationBuilder
-                    .setContentIntent(PendingIntent.getActivity(
-                            getContext(), (int) System.currentTimeMillis(), new Intent(), 0
-                    ))
-                    .setContentTitle(i18n(R.string.sync_conflicts_in_favourites_ticker))
-                    .setContentText(i18n(R.string.sync_conflicts_in_favourites_ticker, mConflictsFound));
+            .setContentIntent(PendingIntent.getActivity(
+                                  getContext(), (int) System.currentTimeMillis(), new Intent(), 0
+                              ))
+            .setContentTitle(i18n(R.string.sync_conflicts_in_favourites_ticker))
+            .setContentText(i18n(R.string.sync_conflicts_in_favourites_ticker, mConflictsFound));
 
             showNotification(R.string.sync_conflicts_in_favourites_ticker, notificationBuilder);
         }
@@ -512,12 +512,12 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
         explanationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         notificationBuilder
-                .setContentIntent(PendingIntent.getActivity(
-                        getContext(), (int) System.currentTimeMillis(), explanationIntent, 0
-                ))
-                .setContentTitle(i18n(R.string.sync_foreign_files_forgotten_ticker))
-                .setContentText(i18n(R.string.sync_foreign_files_forgotten_content,
-                        mForgottenLocalFiles.size(), i18n(R.string.app_name)));
+        .setContentIntent(PendingIntent.getActivity(
+                              getContext(), (int) System.currentTimeMillis(), explanationIntent, 0
+                          ))
+        .setContentTitle(i18n(R.string.sync_foreign_files_forgotten_ticker))
+        .setContentText(i18n(R.string.sync_foreign_files_forgotten_content,
+                             mForgottenLocalFiles.size(), i18n(R.string.app_name)));
 
         showNotification(R.string.sync_foreign_files_forgotten_ticker, notificationBuilder);
     }
@@ -552,7 +552,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
             CharSequence name = getContext().getString(R.string.file_sync_notification_channel_name);
             // The user-visible description of the channel.
             String description = getContext().getString(R.string.
-                    file_sync_notification_channel_description);
+                                 file_sync_notification_channel_description);
             // Set importance low: show the notification everywhere but with no sound
             int importance = NotificationManager.IMPORTANCE_LOW;
             mNotificationChannel = new NotificationChannel(FILE_SYNC_NOTIFICATION_CHANNEL_ID,

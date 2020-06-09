@@ -87,13 +87,13 @@ public class CameraUploadsSyncJobService extends JobService {
             String accountName = jobParams[0].getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
             mAccount = AccountUtils.getOwnCloudAccountByName(mCameraUploadsSyncJobService, accountName);
             mCameraUploadsSyncStorageManager = new CameraUploadsSyncStorageManager(
-                    mCameraUploadsSyncJobService.getContentResolver());
+                mCameraUploadsSyncJobService.getContentResolver());
 
             mCameraUploadsPicturesPath = jobParams[0].getExtras().getString(Extras.EXTRA_CAMERA_UPLOADS_PICTURES_PATH);
             mCameraUploadsVideosPath = jobParams[0].getExtras().getString(Extras.EXTRA_CAMERA_UPLOADS_VIDEOS_PATH);
             mCameraUploadsSourcePath = jobParams[0].getExtras().getString(Extras.EXTRA_CAMERA_UPLOADS_SOURCE_PATH);
             mCameraUploadsBehaviorAfterUpload = jobParams[0].getExtras().
-                    getInt(Extras.EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD);
+                                                getInt(Extras.EXTRA_CAMERA_UPLOADS_BEHAVIOR_AFTER_UPLOAD);
 
             syncFiles();
 
@@ -169,12 +169,12 @@ public class CameraUploadsSyncJobService extends JobService {
             String remotePath = (isImage ? mCameraUploadsPicturesPath : mCameraUploadsVideosPath) + fileName;
 
             int createdBy = isImage ? UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_PICTURE :
-                    UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_VIDEO;
+                            UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_VIDEO;
 
             String localPath = mCameraUploadsSourcePath + File.separator + fileName;
 
             mOCCameraUploadSync = mCameraUploadsSyncStorageManager.getCameraUploadSync(null, null,
-                    null);
+                                  null);
 
             if (mOCCameraUploadSync == null) {
                 Timber.d("There's no timestamp to compare with in database yet, not continue");
@@ -184,30 +184,30 @@ public class CameraUploadsSyncJobService extends JobService {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
             if (isImage && localFile.lastModified() <= mOCCameraUploadSync.getPicturesLastSync()) {
                 Timber.i("Image " + localPath + " created before period to check, ignoring " +
-                        simpleDateFormat.format(new Date(localFile.lastModified())) + " <= " +
-                        simpleDateFormat.format(new Date(mOCCameraUploadSync.getPicturesLastSync()))
-                );
+                         simpleDateFormat.format(new Date(localFile.lastModified())) + " <= " +
+                         simpleDateFormat.format(new Date(mOCCameraUploadSync.getPicturesLastSync()))
+                        );
                 return;
             }
 
             if (isVideo && localFile.lastModified() <= mOCCameraUploadSync.getVideosLastSync()) {
                 Timber.i("Video " + localPath + " created before period to check, ignoring " +
-                        simpleDateFormat.format(new Date(localFile.lastModified())) + " <= " +
-                        simpleDateFormat.format(new Date(mOCCameraUploadSync.getVideosLastSync()))
-                );
+                         simpleDateFormat.format(new Date(localFile.lastModified())) + " <= " +
+                         simpleDateFormat.format(new Date(mOCCameraUploadSync.getVideosLastSync()))
+                        );
                 return;
             }
 
             TransferRequester requester = new TransferRequester();
             requester.uploadNewFile(
-                    mCameraUploadsSyncJobService,
-                    mAccount,
-                    localPath,
-                    remotePath,
-                    mCameraUploadsBehaviorAfterUpload,
-                    mimeType,
-                    true,           // create parent folder if not existent
-                    createdBy
+                mCameraUploadsSyncJobService,
+                mAccount,
+                localPath,
+                remotePath,
+                mCameraUploadsBehaviorAfterUpload,
+                mimeType,
+                true,           // create parent folder if not existent
+                createdBy
             );
 
             // Update timestamps once the first picture/video has been enqueued
@@ -258,7 +258,7 @@ public class CameraUploadsSyncJobService extends JobService {
         private void cancelPeriodicJob(int jobId) {
 
             JobScheduler jobScheduler = (JobScheduler) mCameraUploadsSyncJobService.getSystemService(
-                    Context.JOB_SCHEDULER_SERVICE);
+                                            Context.JOB_SCHEDULER_SERVICE);
 
             jobScheduler.cancel(jobId);
 

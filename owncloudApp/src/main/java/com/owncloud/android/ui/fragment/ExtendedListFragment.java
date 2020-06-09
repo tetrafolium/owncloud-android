@@ -49,7 +49,7 @@ import timber.log.Timber;
 import java.util.ArrayList;
 
 public class ExtendedListFragment extends Fragment
-        implements OnItemClickListener, OnEnforceableRefreshListener {
+    implements OnItemClickListener, OnEnforceableRefreshListener {
 
     private static final String KEY_SAVED_LIST_POSITION = "SAVED_LIST_POSITION";
 
@@ -153,7 +153,7 @@ public class ExtendedListFragment extends Fragment
         mListFooterView = inflater.inflate(R.layout.list_footer, null, false);
 
         mListFooterView.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         mGridView = v.findViewById(R.id.grid_root);
@@ -163,7 +163,7 @@ public class ExtendedListFragment extends Fragment
         mGridFooterView = inflater.inflate(R.layout.list_footer, null, false);
 
         mGridFooterView.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         // Pull-down to refresh layout
@@ -260,7 +260,7 @@ public class ExtendedListFragment extends Fragment
      */
     protected void restoreIndexAndTopPosition() {
         if (mIndexes.size() > 0) {
-            // needs to be checked; not every browse-up had a browse-down before 
+            // needs to be checked; not every browse-up had a browse-down before
 
             int index = mIndexes.remove(mIndexes.size() - 1);
             final int firstPosition = mFirstPositions.remove(mFirstPositions.size() - 1);
@@ -378,7 +378,7 @@ public class ExtendedListFragment extends Fragment
     protected void onCreateSwipeToRefresh(SwipeRefreshLayout refreshLayout) {
         // Colors in animations
         refreshLayout.setColorSchemeResources(R.color.color_accent, R.color.primary,
-                R.color.primary_dark);
+                                              R.color.primary_dark);
 
         refreshLayout.setOnRefreshListener(this);
     }

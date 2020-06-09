@@ -64,8 +64,8 @@ import timber.log.Timber;
  * Holds a swiping galley where image files contained in an ownCloud directory are shown
  */
 public class PreviewImageActivity extends FileActivity implements
-        FileFragment.ContainerActivity,
-        ViewPager.OnPageChangeListener, OnRemoteOperationListener {
+    FileFragment.ContainerActivity,
+    ViewPager.OnPageChangeListener, OnRemoteOperationListener {
 
     private static final int INITIAL_HIDE_DELAY = 0; // immediate hide
 
@@ -97,21 +97,21 @@ public class PreviewImageActivity extends FileActivity implements
         // to keep our UI controls visibility in line with system bars
         // visibility
         mFullScreenAnchorView.setOnSystemUiVisibilityChangeListener
-                (new View.OnSystemUiVisibilityChangeListener() {
-                    @SuppressLint("InlinedApi")
-                    @Override
-                    public void onSystemUiVisibilityChange(int flags) {
-                        boolean visible = (flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-                        ActionBar actionBar = getSupportActionBar();
-                        if (visible) {
-                            actionBar.show();
-                            setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                        } else {
-                            actionBar.hide();
-                            setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                        }
-                    }
-                });
+        (new View.OnSystemUiVisibilityChangeListener() {
+            @SuppressLint("InlinedApi")
+            @Override
+            public void onSystemUiVisibilityChange(int flags) {
+                boolean visible = (flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+                ActionBar actionBar = getSupportActionBar();
+                if (visible) {
+                    actionBar.show();
+                    setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                } else {
+                    actionBar.hide();
+                    setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                }
+            }
+        });
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.owncloud_blue_dark_transparent));
 
@@ -122,7 +122,7 @@ public class PreviewImageActivity extends FileActivity implements
     private void initViewPager() {
         // get parent from path
         String parentPath = getFile().getRemotePath().substring(0,
-                getFile().getRemotePath().lastIndexOf(getFile().getFileName()));
+                            getFile().getRemotePath().lastIndexOf(getFile().getFileName()));
         OCFile parentFolder = getStorageManager().getFileByPath(parentPath);
         if (parentFolder == null) {
             // should not be necessary
@@ -130,19 +130,19 @@ public class PreviewImageActivity extends FileActivity implements
         }
 
         mPreviewImagePagerAdapter = new PreviewImagePagerAdapter(
-                getSupportFragmentManager(),
-                parentFolder,
-                getAccount(),
-                getStorageManager()
+            getSupportFragmentManager(),
+            parentFolder,
+            getAccount(),
+            getStorageManager()
         );
 
         mViewPager = findViewById(R.id.fragmentPager);
         mViewPager.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
         int position = mHasSavedPosition ? mSavedPosition :
-                mPreviewImagePagerAdapter.getFilePosition(getFile());
+                       mPreviewImagePagerAdapter.getFilePosition(getFile());
         position = (position >= 0) ? position : 0;
         mViewPager.setAdapter(mPreviewImagePagerAdapter);
         mViewPager.addOnPageChangeListener(this);
@@ -168,8 +168,8 @@ public class PreviewImageActivity extends FileActivity implements
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        // Trigger the initial hide() shortly after the activity has been 
-        // created, to briefly hint to the user that UI controls 
+        // Trigger the initial hide() shortly after the activity has been
+        // created, to briefly hint to the user that UI controls
         // are available
         delayedHide(INITIAL_HIDE_DELAY);
 
@@ -213,7 +213,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     private void onSynchronizeFileOperationFinish(SynchronizeFileOperation operation,
-                                                  RemoteOperationResult result) {
+            RemoteOperationResult result) {
         if (result.isSuccess()) {
             invalidateOptionsMenu();
         }
@@ -233,12 +233,12 @@ public class PreviewImageActivity extends FileActivity implements
         public void onServiceConnected(ComponentName component, IBinder service) {
 
             if (component.equals(new ComponentName(PreviewImageActivity.this,
-                    FileDownloader.class))) {
+                                                   FileDownloader.class))) {
                 Timber.d("onServiceConnected, FileDownloader");
                 mDownloaderBinder = (FileDownloaderBinder) service;
 
             } else if (component.equals(new ComponentName(PreviewImageActivity.this,
-                    FileUploader.class))) {
+                                        FileUploader.class))) {
                 Timber.d("onServiceConnected, FileUploader");
                 mUploaderBinder = (FileUploaderBinder) service;
             }
@@ -250,11 +250,11 @@ public class PreviewImageActivity extends FileActivity implements
         @Override
         public void onServiceDisconnected(ComponentName component) {
             if (component.equals(new ComponentName(PreviewImageActivity.this,
-                    FileDownloader.class))) {
+                                                   FileDownloader.class))) {
                 Timber.d("Download service suddenly disconnected");
                 mDownloaderBinder = null;
             } else if (component.equals(new ComponentName(PreviewImageActivity.this,
-                    FileUploader.class))) {
+                                        FileUploader.class))) {
                 Timber.d("Upload service suddenly disconnected");
                 mUploaderBinder = null;
             }
@@ -266,16 +266,16 @@ public class PreviewImageActivity extends FileActivity implements
         boolean returnValue;
 
         switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isDrawerOpen()) {
-                    closeDrawer();
-                } else {
-                    backToDisplayActivity();
-                }
-                returnValue = true;
-                break;
-            default:
-                returnValue = super.onOptionsItemSelected(item);
+        case android.R.id.home:
+            if (isDrawerOpen()) {
+                closeDrawer();
+            } else {
+                backToDisplayActivity();
+            }
+            returnValue = true;
+            break;
+        default:
+            returnValue = super.onOptionsItemSelected(item);
         }
 
         return returnValue;
@@ -312,7 +312,7 @@ public class PreviewImageActivity extends FileActivity implements
         showDetailsIntent.setAction(FileDisplayActivity.ACTION_DETAILS);
         showDetailsIntent.putExtra(FileActivity.EXTRA_FILE, file);
         showDetailsIntent.putExtra(FileActivity.EXTRA_ACCOUNT,
-                AccountUtils.getCurrentOwnCloudAccount(this));
+                                   AccountUtils.getCurrentOwnCloudAccount(this));
         startActivity(showDetailsIntent);
     }
 
@@ -394,9 +394,9 @@ public class PreviewImageActivity extends FileActivity implements
 
                 OCFile file = getStorageManager().getFileByPath(downloadedRemotePath);
                 mPreviewImagePagerAdapter.onDownloadEvent(
-                        file,
-                        intent.getAction(),
-                        intent.getBooleanExtra(Extras.EXTRA_DOWNLOAD_RESULT, false)
+                    file,
+                    intent.getAction(),
+                    intent.getBooleanExtra(Extras.EXTRA_DOWNLOAD_RESULT, false)
                 );
             }
         }
@@ -406,7 +406,7 @@ public class PreviewImageActivity extends FileActivity implements
     @SuppressLint("InlinedApi")
     public void toggleFullScreen() {
         boolean visible = (mFullScreenAnchorView.getSystemUiVisibility()
-                & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+                           & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
 
         if (visible) {
             hideSystemUI(mFullScreenAnchorView);
@@ -457,21 +457,21 @@ public class PreviewImageActivity extends FileActivity implements
     @SuppressLint("InlinedApi")
     private void hideSystemUI(View anchorView) {
         anchorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION         // hides NAVIGATION BAR; Android >= 4.0
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN              // hides STATUS BAR;     Android >= 4.1
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE               // stays interactive;    Android >= 4.4
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE           // draw full window;     Android >= 4.1
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.1
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION         // hides NAVIGATION BAR; Android >= 4.0
+            | View.SYSTEM_UI_FLAG_FULLSCREEN              // hides STATUS BAR;     Android >= 4.1
+            | View.SYSTEM_UI_FLAG_IMMERSIVE               // stays interactive;    Android >= 4.4
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE           // draw full window;     Android >= 4.1
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.1
         );
     }
 
     @SuppressLint("InlinedApi")
     private void showSystemUI(View anchorView) {
         anchorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE           // draw full window;     Android >= 4.1
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.1
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE           // draw full window;     Android >= 4.1
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.1
         );
     }
 

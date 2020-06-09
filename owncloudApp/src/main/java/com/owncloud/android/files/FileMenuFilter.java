@@ -222,14 +222,14 @@ public class FileMenuFilter {
 
         // SHARE FILE
         boolean shareViaLinkAllowed = (mContext != null &&
-                mContext.getResources().getBoolean(R.bool.share_via_link_feature));
+                                       mContext.getResources().getBoolean(R.bool.share_via_link_feature));
         boolean shareWithUsersAllowed = (mContext != null &&
-                mContext.getResources().getBoolean(R.bool.share_with_users_feature));
+                                         mContext.getResources().getBoolean(R.bool.share_with_users_feature));
 
         OCCapability capability = mComponentsGetter.getStorageManager().getCapability(mAccount.name);
 
         boolean notAllowResharing = anyFileSharedWithMe() &&
-                capability != null && capability.getFilesSharingResharing().isFalse();
+                                    capability != null && capability.getFilesSharingResharing().isFalse();
 
         if ((!shareViaLinkAllowed && !shareWithUsersAllowed) || !isSingleSelection() ||
                 notAllowResharing || onlyAvailableOffline) {
@@ -247,7 +247,7 @@ public class FileMenuFilter {
 
         // SEND
         boolean sendAllowed = (mContext != null &&
-                mContext.getString(R.string.send_files_to_other_apps).equalsIgnoreCase("on"));
+                               mContext.getString(R.string.send_files_to_other_apps).equalsIgnoreCase("on"));
         if (!isSingleFile() || !sendAllowed || synchronizing || videoStreaming || onlyAvailableOffline) {
             toHide.add(R.id.action_send_file);
         } else {
@@ -277,10 +277,10 @@ public class FileMenuFilter {
             FileUploaderBinder uploaderBinder = mComponentsGetter.getFileUploaderBinder();
             FileDownloaderBinder downloaderBinder = mComponentsGetter.getFileDownloaderBinder();
             synchronizing = (
-                    anyFileSynchronizing(opsBinder) ||      // comparing local and remote
-                            anyFileDownloading(downloaderBinder) ||
-                            anyFileUploading(uploaderBinder)
-            );
+                                anyFileSynchronizing(opsBinder) ||      // comparing local and remote
+                                anyFileDownloading(downloaderBinder) ||
+                                anyFileUploading(uploaderBinder)
+                            );
         }
         return synchronizing;
     }
@@ -318,12 +318,12 @@ public class FileMenuFilter {
     private boolean anyFileVideoPreviewing() {
         final FragmentActivity activity = (FragmentActivity) mContext;
         Fragment secondFragment = activity.getSupportFragmentManager().findFragmentByTag(
-                TAG_SECOND_FRAGMENT);
+                                      TAG_SECOND_FRAGMENT);
         boolean videoPreviewing = false;
         if (secondFragment instanceof PreviewVideoFragment) {
             for (int i = 0; !videoPreviewing && i < mFiles.size(); i++) {
                 videoPreviewing = ((PreviewVideoFragment) secondFragment).
-                        getFile().equals(mFiles.get(i));
+                                  getFile().equals(mFiles.get(i));
             }
         }
         return videoPreviewing;

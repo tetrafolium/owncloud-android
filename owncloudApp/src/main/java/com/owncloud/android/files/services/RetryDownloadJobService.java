@@ -45,13 +45,13 @@ public class RetryDownloadJobService extends JobService {
         // retrying the download
         if (account != null) {
             FileDataStorageManager fileDataStorageManager = new FileDataStorageManager(
-                    this, account,
-                    getContentResolver()
+                this, account,
+                getContentResolver()
             );
 
             String fileRemotePath = jobParameters.getExtras().getString(
-                    Extras.EXTRA_REMOTE_PATH
-            );
+                                        Extras.EXTRA_REMOTE_PATH
+                                    );
 
             Timber.d("Retrying download of %1s in %2s", fileRemotePath, accountName);
 

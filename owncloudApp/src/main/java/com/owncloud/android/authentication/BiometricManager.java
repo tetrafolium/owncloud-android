@@ -41,7 +41,7 @@ import java.util.Set;
  * Handle biometric requests. Besides, is a facade to access some
  * {@link androidx.biometric.BiometricMananager} methods
  */
-    public class BiometricManager {
+public class BiometricManager {
 
     private static final Set<Class> sExemptOfBiometricActivites;
 
@@ -130,7 +130,7 @@ import java.util.Set;
 
     public boolean isHardwareDetected() {
         return mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE &&
-                mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+               mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
     }
 
     public boolean hasEnrolledBiometric() {

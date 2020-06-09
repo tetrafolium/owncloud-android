@@ -71,7 +71,7 @@ public class LoadingDialog extends DialogFragment {
 
         // Allow or disallow touches with other visible windows
         v.setFilterTouchesWhenObscured(
-                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
+            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
         );
 
         // set message
@@ -82,8 +82,8 @@ public class LoadingDialog extends DialogFragment {
         // set progress wheel color
         ProgressBar progressBar = v.findViewById(R.id.loadingBar);
         progressBar.getIndeterminateDrawable().setColorFilter(
-                ContextCompat.getColor(getActivity(), R.color.color_accent),
-                PorterDuff.Mode.SRC_IN
+            ContextCompat.getColor(getActivity(), R.color.color_accent),
+            PorterDuff.Mode.SRC_IN
         );
 
         return v;

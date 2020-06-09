@@ -67,12 +67,12 @@ public class AppRater {
         /// Wait at least n days before opening
         if (launchCount >= LAUNCHES_UNTIL_PROMPT) {
             Timber.d("The number of launchs already exceed " + LAUNCHES_UNTIL_PROMPT +
-                    ", the default number of launches, so let's check some dates");
+                     ", the default number of launches, so let's check some dates");
             Timber.d("Current moment is %s", System.currentTimeMillis());
             Timber.d("The date of the first launch + days until prompt is " + dateFirstLaunch +
-                    daysToMilliseconds(DAYS_UNTIL_PROMPT));
+                     daysToMilliseconds(DAYS_UNTIL_PROMPT));
             Timber.d("The date of the neutral click + days until neutral click is " + dateNeutralClick +
-                    daysToMilliseconds(DAYS_UNTIL_NEUTRAL_CLICK));
+                     daysToMilliseconds(DAYS_UNTIL_NEUTRAL_CLICK));
             if (System.currentTimeMillis() >= Math.max(dateFirstLaunch
                     + daysToMilliseconds(DAYS_UNTIL_PROMPT), dateNeutralClick
                     + daysToMilliseconds(DAYS_UNTIL_NEUTRAL_CLICK))) {

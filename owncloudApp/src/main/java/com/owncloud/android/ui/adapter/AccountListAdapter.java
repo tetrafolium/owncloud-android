@@ -91,21 +91,21 @@ public class AccountListAdapter extends ArrayAdapter<AccountListItem> {
                 } catch (Exception e) {
                     Timber.w("Account not found right after being read :\\ ; using account name instead of display name");
                     viewHolder.nameViewItem.setText(
-                            AccountUtils.getUsernameOfAccount(account.name)
+                        AccountUtils.getUsernameOfAccount(account.name)
                     );
                 }
                 viewHolder.nameViewItem.setTag(account.name);
 
                 viewHolder.accountViewItem.setText(
-                        DisplayUtils.convertIdn(account.name, false)
+                    DisplayUtils.convertIdn(account.name, false)
                 );
 
                 try {
                     DisplayUtils.showAccountAvatar(
-                            account,
-                            viewHolder.imageViewItem,
-                            mAccountAvatarRadiusDimension,
-                            true
+                        account,
+                        viewHolder.imageViewItem,
+                        mAccountAvatarRadiusDimension,
+                        true
                     );
                 } catch (Exception e) {
                     Timber.e(e, "Error calculating RGB value for account list item.");

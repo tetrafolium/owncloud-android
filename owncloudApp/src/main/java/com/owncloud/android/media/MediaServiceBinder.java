@@ -45,7 +45,7 @@ public class MediaServiceBinder extends Binder implements MediaController.MediaP
     /**
      * Public constructor
      *
-     * @param service       A {@link MediaService} instance to access with the binder 
+     * @param service       A {@link MediaService} instance to access with the binder
      */
     public MediaServiceBinder(MediaService service) {
         if (service == null) {

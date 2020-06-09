@@ -59,13 +59,13 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
                                        List<OCFile> files,
                                        FileDataStorageManager storageManager,
                                        Account account
-    ) {
+                                      ) {
         mFiles = files;
         mAccount = account;
         mStorageManager = storageManager;
         mContext = context;
         mInflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
 
             // Allow or disallow touches with other visible windows
             vi.setFilterTouchesWhenObscured(
-                    PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
+                PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(mContext)
             );
         }
 
@@ -125,23 +125,23 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
         if (file.isImage() && file.getRemoteId() != null) {
             // Thumbnail in Cache?
             Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
-                    String.valueOf(file.getRemoteId())
-            );
+                                   String.valueOf(file.getRemoteId())
+                               );
             if (thumbnail != null && !file.needsUpdateThumbnail()) {
                 fileIcon.setImageBitmap(thumbnail);
             } else {
                 // generate new Thumbnail
                 if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(file, fileIcon)) {
                     final ThumbnailsCacheManager.ThumbnailGenerationTask task =
-                            new ThumbnailsCacheManager.ThumbnailGenerationTask(fileIcon, mStorageManager,
-                                    mAccount);
+                        new ThumbnailsCacheManager.ThumbnailGenerationTask(fileIcon, mStorageManager,
+                                mAccount);
                     if (thumbnail == null) {
                         thumbnail = ThumbnailsCacheManager.mDefaultImg;
                     }
                     final AsyncThumbnailDrawable asyncDrawable = new AsyncThumbnailDrawable(
-                            mContext.getResources(),
-                            thumbnail,
-                            task
+                        mContext.getResources(),
+                        thumbnail,
+                        task
                     );
                     fileIcon.setImageDrawable(asyncDrawable);
                     task.execute(file);
@@ -149,7 +149,7 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
             }
         } else {
             fileIcon.setImageResource(
-                    MimetypeIconUtil.getFileTypeIconId(file.getMimetype(), file.getFileName())
+                MimetypeIconUtil.getFileTypeIconId(file.getMimetype(), file.getFileName())
             );
         }
         return vi;
@@ -162,7 +162,7 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
         FileStorageUtils.mSortAscendingFileDisp = isAscending;
         if (mFiles != null && mFiles.size() > 0) {
             FileStorageUtils.sortFolder((Vector<OCFile>) mFiles,
-                    FileStorageUtils.mSortOrderFileDisp, FileStorageUtils.mSortAscendingFileDisp);
+                                        FileStorageUtils.mSortOrderFileDisp, FileStorageUtils.mSortAscendingFileDisp);
         }
         notifyDataSetChanged();
     }

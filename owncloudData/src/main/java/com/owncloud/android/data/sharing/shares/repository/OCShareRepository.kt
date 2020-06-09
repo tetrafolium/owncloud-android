@@ -39,8 +39,8 @@ class OCShareRepository(
     override fun insertPrivateShare(
         filePath: String,
         shareType: ShareType,
-        shareeName: String,     // User or group name of the target sharee.
-        permissions: Int,        // See https://doc.owncloud.com/server/developer_manual/core/apis/ocs-share-api.html
+        shareeName: String, // User or group name of the target sharee.
+        permissions: Int, // See https://doc.owncloud.com/server/developer_manual/core/apis/ocs-share-api.html
         accountName: String
     ) {
         insertShare(

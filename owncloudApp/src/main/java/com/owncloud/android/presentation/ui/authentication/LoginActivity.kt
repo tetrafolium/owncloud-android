@@ -227,7 +227,7 @@ class LoginActivity : AppCompatActivity(), SslUntrustedCertDialog.OnSslUntrusted
             hostUrlInput.run {
                 setText(baseUrl)
                 doAfterTextChanged {
-                    //If user modifies url, reset fields and force him to check url again
+                    // If user modifies url, reset fields and force him to check url again
                     if (authenticationViewModel.serverInfo.value == null || baseUrl != hostUrlInput.text.toString()) {
                         showOrHideBasicAuthFields(shouldBeVisible = false)
                         loginButton.isVisible = false

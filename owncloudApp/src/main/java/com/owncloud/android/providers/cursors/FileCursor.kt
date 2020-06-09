@@ -75,6 +75,5 @@ class FileCursor(projection: Array<String>?) : MatrixCursor(projection ?: DEFAUL
             Document.COLUMN_FLAGS,
             Document.COLUMN_LAST_MODIFIED
         )
-
     }
 }

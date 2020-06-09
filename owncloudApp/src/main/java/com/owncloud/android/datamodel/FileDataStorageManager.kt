@@ -53,7 +53,6 @@ import com.owncloud.android.domain.capabilities.model.CapabilityBooleanType
 import com.owncloud.android.domain.capabilities.model.OCCapability
 import com.owncloud.android.lib.resources.status.RemoteCapability
 import com.owncloud.android.utils.FileStorageUtils
-import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -63,6 +62,7 @@ import java.io.OutputStream
 import java.util.ArrayList
 import java.util.HashSet
 import java.util.Vector
+import timber.log.Timber
 
 class FileDataStorageManager {
 
@@ -121,10 +121,8 @@ class FileDataStorageManager {
             } else {
                 Timber.d("No available offline files found")
             }
-
         } catch (e: Exception) {
             Timber.e(e, "Exception retrieving all the available offline files")
-
         } finally {
             cursorOnKeptInSync?.close()
         }
@@ -166,10 +164,8 @@ class FileDataStorageManager {
                 } else {
                     Timber.d("No available offline files found")
                 }
-
             } catch (e: Exception) {
                 Timber.e(e, "Exception retrieving all the available offline files")
-
             } finally {
                 cursorOnKeptInSync?.close()
             }
@@ -322,7 +318,7 @@ class FileDataStorageManager {
         }
 
         val sameRemotePath = fileExists(file.remotePath)
-        if (sameRemotePath || fileExists(file.fileId)) {  // for renamed files; no more delete and create
+        if (sameRemotePath || fileExists(file.fileId)) { // for renamed files; no more delete and create
 
             val oldFile: OCFile?
             if (sameRemotePath) {
@@ -343,7 +339,6 @@ class FileDataStorageManager {
             } catch (e: Exception) {
                 Timber.e(e, "Fail to insert insert file to database ${e.message}")
             }
-
         } else {
             // new file
             setInitialAvailableOfflineStatus(file, cv)
@@ -375,7 +370,9 @@ class FileDataStorageManager {
      * @param filesToRemove
      */
     fun saveFolder(
-        folder: OCFile, updatedFiles: Collection<OCFile>, filesToRemove: Collection<OCFile>
+        folder: OCFile,
+        updatedFiles: Collection<OCFile>,
+        filesToRemove: Collection<OCFile>
     ) {
         Timber.d("Saving folder ${folder.remotePath} with ${updatedFiles.size} children and ${filesToRemove.size} files to remove")
 
@@ -497,10 +494,8 @@ class FileDataStorageManager {
                 } else {
                     contentProviderClient!!.applyBatch(operations)
                 }
-
         } catch (e: OperationApplicationException) {
             Timber.e(e, "Exception in batch of operations ${e.message}")
-
         } catch (e: RemoteException) {
             Timber.e(e, "Exception in batch of operations ${e.message}")
         }
@@ -527,7 +522,7 @@ class FileDataStorageManager {
      * passed [ContentValues] instance.
      *
      * @param file [OCFile] which av-offline property will be set.
-     * @param cv   [ContentValues] instance where the property is added.
+     * @param cv [ContentValues] instance where the property is added.
      */
     private fun setInitialAvailableOfflineStatus(file: OCFile, cv: ContentValues) {
         // set appropriate av-off folder depending on ancestor
@@ -591,7 +586,6 @@ class FileDataStorageManager {
                     selectionArgs = selectDescendants.second
                 )
             }
-
         } catch (e: RemoteException) {
             Timber.e(e, "Fail updating available offline status")
             return false
@@ -605,7 +599,6 @@ class FileDataStorageManager {
         if (file != null) {
             if (file.isFolder) {
                 success = removeFolder(file, removeDBData, removeLocalCopy)
-
             } else {
                 if (removeDBData) {
                     val fileUri = ContentUris.withAppendedId(CONTENT_URI_FILE, file.fileId)
@@ -728,7 +721,7 @@ class FileDataStorageManager {
                     "Parent folder of the target path does not exist!!"
                 )
 
-            /// 1. get all the descendants of the moved element in a single QUERY
+            // / 1. get all the descendants of the moved element in a single QUERY
             val c: Cursor? =
                 try {
                     performQuery(
@@ -747,7 +740,7 @@ class FileDataStorageManager {
             val newPathsToTriggerMediaScan = ArrayList<String>()
             val defaultSavePath = FileStorageUtils.getSavePath(account.name)
 
-            /// 2. prepare a batch of update operations to change all the descendants
+            // / 2. prepare a batch of update operations to change all the descendants
             if (c != null) {
                 val operations = ArrayList<ContentProviderOperation>(c.count)
                 if (c.moveToFirst()) {
@@ -766,7 +759,6 @@ class FileDataStorageManager {
 
                             originalPathsToTriggerMediaScan.add(child.storagePath)
                             newPathsToTriggerMediaScan.add(targetLocalPath)
-
                         }
                         if (targetParent.availableOfflineStatus != NOT_AVAILABLE_OFFLINE) {
                             // moving to an available offline subfolder
@@ -788,27 +780,23 @@ class FileDataStorageManager {
                             )
                                 .build()
                         )
-
                     } while (c.moveToNext())
                 }
                 c.close()
 
-                /// 3. apply updates in batch
+                // / 3. apply updates in batch
                 try {
                     if (contentResolver != null) {
                         contentResolver!!.applyBatch(MainApp.authority, operations)
-
                     } else {
                         contentProviderClient!!.applyBatch(operations)
                     }
-
                 } catch (e: Exception) {
                     Timber.e(e, "Fail to update ${file.fileId} and descendants in database")
                 }
-
             }
 
-            /// 4. move in local file system
+            // / 4. move in local file system
             val originalLocalPath = FileStorageUtils.getDefaultSavePathFor(account.name, file)
             val targetLocalPath = defaultSavePath + targetPath
             val localFile = File(originalLocalPath)
@@ -891,7 +879,6 @@ class FileDataStorageManager {
                 } catch (e: IOException) {
                     Timber.e(e)
                 }
-
             }
             if (out != null) {
                 try {
@@ -899,7 +886,6 @@ class FileDataStorageManager {
                 } catch (e: IOException) {
                     Timber.e(e)
                 }
-
             }
         }
 
@@ -958,7 +944,7 @@ class FileDataStorageManager {
     private fun getAvailableOfflineAncestorOf(file: OCFile): OCFile? {
         var avOffAncestor: OCFile? = null
         val parent = getFileById(file.parentId)
-        if (parent != null && parent.isFolder) {  // file is null for the parent of the root folder
+        if (parent != null && parent.isFolder) { // file is null for the parent of the root folder
             if (parent.availableOfflineStatus == AVAILABLE_OFFLINE) {
                 avOffAncestor = parent
             } else if (parent.fileName != ROOT_PATH) {
@@ -1066,7 +1052,6 @@ class FileDataStorageManager {
                     )
                     MainApp.appContext.sendBroadcast(newIntent)
                 }
-
             } else {
                 MainApp.appContext.sendBroadcast(intent)
             }
@@ -1129,7 +1114,7 @@ class FileDataStorageManager {
 
         if (updated > 0) {
             if (eTagInConflict != null) {
-                /// set conflict in all ancestor folders
+                // / set conflict in all ancestor folders
 
                 var parentId = file.parentId
                 val ancestorIds = HashSet<String>()
@@ -1158,9 +1143,8 @@ class FileDataStorageManager {
                         Timber.e(e, "Failed saving conflict in database ${e.message}")
                     }
                 } // else file is ROOT folder, no parent to set in conflict
-
             } else {
-                /// update conflict in ancestor folders
+                // / update conflict in ancestor folders
                 // (not directly unset; maybe there are more conflicts below them)
                 var parentPath = file.remotePath
                 if (parentPath.endsWith(PATH_SEPARATOR)) {
@@ -1202,14 +1186,13 @@ class FileDataStorageManager {
                         } catch (e: RemoteException) {
                             Timber.e(e, "Failed saving conflict in database ${e.message}")
                         }
-
                     } else {
                         Timber.d("STILL ${descendantsInConflict.count} in $parentPath")
                     }
 
                     descendantsInConflict?.close()
 
-                    parentPath = parentPath.substring(0, parentPath.length - 1)  // trim last /
+                    parentPath = parentPath.substring(0, parentPath.length - 1) // trim last /
                     parentPath = parentPath.substring(0, parentPath.lastIndexOf(PATH_SEPARATOR) + 1)
                     Timber.d("checking parents to remove conflict; NEXT $parentPath")
                 }

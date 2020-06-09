@@ -21,9 +21,9 @@
 package com.owncloud.android.dependecyinjection
 
 import com.owncloud.android.data.capabilities.datasources.mapper.OCCapabilityMapper
+import com.owncloud.android.data.capabilities.datasources.mapper.RemoteCapabilityMapper
 import com.owncloud.android.data.sharing.shares.datasources.mapper.OCShareMapper
 import com.owncloud.android.data.sharing.shares.datasources.mapper.RemoteShareMapper
-import com.owncloud.android.data.capabilities.datasources.mapper.RemoteCapabilityMapper
 import com.owncloud.android.data.user.datasources.mapper.RemoteUserInfoMapper
 import com.owncloud.android.providers.ContextProvider
 import com.owncloud.android.providers.CoroutinesDispatcherProvider

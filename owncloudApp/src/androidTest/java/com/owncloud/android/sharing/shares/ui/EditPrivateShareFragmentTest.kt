@@ -204,29 +204,29 @@ class EditPrivateShareFragmentTest {
 
         onView(withId(R.id.canEditSwitch)).perform(click())
 
-        onView(withId(R.id.canEditSwitch)).check(matches(isNotChecked()))  // "Can edit" changes
-        onView(withId(R.id.canEditCreateCheckBox)).check(matches(not(isDisplayed())))  // No suboptions
+        onView(withId(R.id.canEditSwitch)).check(matches(isNotChecked())) // "Can edit" changes
+        onView(withId(R.id.canEditCreateCheckBox)).check(matches(not(isDisplayed()))) // No suboptions
         onView(withId(R.id.canEditChangeCheckBox)).check(matches(not(isDisplayed())))
         onView(withId(R.id.canEditDeleteCheckBox)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.canShareSwitch)).check(matches(isNotChecked()))  // "Can share" does not change
+        onView(withId(R.id.canShareSwitch)).check(matches(isNotChecked())) // "Can share" does not change
     }
 
     @Test
     fun disableEditPermissionWithFolder() {
         loadEditPrivateShareFragment(true, permissions = Permissions.EDIT_PERMISSIONS.value)
         onView(withId(R.id.canEditSwitch)).check(matches(isChecked()))
-        onView(withId(R.id.canEditCreateCheckBox)).check(matches(isDisplayed()))  // Suboptions appear
+        onView(withId(R.id.canEditCreateCheckBox)).check(matches(isDisplayed())) // Suboptions appear
         onView(withId(R.id.canEditChangeCheckBox)).check(matches(isDisplayed()))
         onView(withId(R.id.canEditDeleteCheckBox)).check(matches(isDisplayed()))
         onView(withId(R.id.canShareSwitch)).check(matches(isNotChecked()))
 
         onView(withId(R.id.canEditSwitch)).perform(click())
 
-        onView(withId(R.id.canEditSwitch)).check(matches(isNotChecked()))  // "Can edit" changes
-        onView(withId(R.id.canEditCreateCheckBox)).check(matches(not(isDisplayed())))  // Suboptions hidden
+        onView(withId(R.id.canEditSwitch)).check(matches(isNotChecked())) // "Can edit" changes
+        onView(withId(R.id.canEditCreateCheckBox)).check(matches(not(isDisplayed()))) // Suboptions hidden
         onView(withId(R.id.canEditChangeCheckBox)).check(matches(not(isDisplayed())))
         onView(withId(R.id.canEditDeleteCheckBox)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.canShareSwitch)).check(matches(isNotChecked()))  // "Can share" does not change
+        onView(withId(R.id.canShareSwitch)).check(matches(isNotChecked())) // "Can share" does not change
     }
 
     private fun loadEditPrivateShareFragment(

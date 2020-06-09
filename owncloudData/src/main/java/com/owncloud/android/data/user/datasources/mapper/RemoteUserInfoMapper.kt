@@ -35,5 +35,4 @@ class RemoteUserInfoMapper : RemoteMapper<UserInfo, RemoteUserInfo> {
 
     // Not needed
     override fun toRemote(model: UserInfo?): RemoteUserInfo? = null
-
 }

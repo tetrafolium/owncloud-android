@@ -17,12 +17,12 @@ package com.owncloud.android.authentication.oauth
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.AnyThread
-import net.openid.appauth.AuthState
-import org.json.JSONException
-import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
+import net.openid.appauth.AuthState
+import org.json.JSONException
+import timber.log.Timber
 
 /**
  * An example persistence mechanism for an [AuthState] instance.

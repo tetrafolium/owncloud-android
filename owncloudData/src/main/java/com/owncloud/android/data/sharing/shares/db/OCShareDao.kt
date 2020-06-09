@@ -44,7 +44,9 @@ abstract class OCShareDao {
                 ProviderTableMeta.OCSHARES_SHARE_TYPE + " IN (:shareTypes)"
     )
     abstract fun getSharesAsLiveData(
-        filePath: String, accountOwner: String, shareTypes: List<Int>
+        filePath: String,
+        accountOwner: String,
+        shareTypes: List<Int>
     ): LiveData<List<OCShareEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

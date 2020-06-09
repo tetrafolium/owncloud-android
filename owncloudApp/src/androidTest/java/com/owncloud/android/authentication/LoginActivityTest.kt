@@ -50,7 +50,6 @@ import com.owncloud.android.presentation.ui.authentication.OAUTH_TOKEN_TYPE
 import com.owncloud.android.presentation.viewmodels.authentication.OCAuthenticationViewModel
 import com.owncloud.android.providers.ContextProvider
 import com.owncloud.android.testutil.OC_ACCOUNT
-import com.owncloud.android.testutil.OC_ACCOUNT_NAME
 import com.owncloud.android.testutil.OC_AUTH_TOKEN_TYPE
 import com.owncloud.android.testutil.OC_BASIC_PASSWORD
 import com.owncloud.android.testutil.OC_BASIC_USERNAME
@@ -119,7 +118,6 @@ class LoginActivityTest {
                     factory {
                         ocContextProvider
                     }
-
                 }
             )
         }
@@ -432,7 +430,6 @@ class LoginActivityTest {
         R.id.account_username.replaceText("")
 
         R.id.loginButton.isDisplayed(false)
-
     }
 
     @Test

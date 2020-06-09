@@ -49,7 +49,7 @@ val localDataSourceModule = module {
         )
     }
 
-    single { AccountManager.get(androidContext())}
+    single { AccountManager.get(androidContext()) }
 
     factory<LocalAuthenticationDataSource> {
         OCLocalAuthenticationDataSource(

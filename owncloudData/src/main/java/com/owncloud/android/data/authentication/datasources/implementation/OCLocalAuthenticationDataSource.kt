@@ -42,8 +42,8 @@ import com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_OC_BA
 import com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_OC_VERSION
 import com.owncloud.android.lib.common.accounts.AccountUtils.Constants.KEY_SUPPORTS_OAUTH2
 import com.owncloud.android.lib.common.accounts.AccountUtils.Constants.OAUTH_SUPPORTED_TRUE
-import timber.log.Timber
 import java.util.Locale
+import timber.log.Timber
 
 class OCLocalAuthenticationDataSource(
     private val context: Context,
@@ -135,7 +135,7 @@ class OCLocalAuthenticationDataSource(
             // with external authorizations, the password is never input in the app
             accountManager.addAccountExplicitly(newAccount, password, null)
 
-            /// add the new account as default in preferences, if there is none already
+            // / add the new account as default in preferences, if there is none already
             val defaultAccount: Account? = getCurrentAccount()
             if (defaultAccount == null) {
                 val editor = PreferenceManager

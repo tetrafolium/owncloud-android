@@ -106,7 +106,7 @@ class ShareActivity : FileActivity(), ShareFragmentListener {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         when (intent.action) {
-            Intent.ACTION_SEARCH -> {  // Verify the action and get the query
+            Intent.ACTION_SEARCH -> { // Verify the action and get the query
                 val query = intent.getStringExtra(SearchManager.QUERY)
                 Timber.w("Ignored Intent requesting to query for $query")
             }
@@ -157,7 +157,7 @@ class ShareActivity : FileActivity(), ShareFragmentListener {
         val isFederated = ShareType.FEDERATED == shareType
 
         return when {
-            file.isSharedWithMe -> RemoteShare.READ_PERMISSION_FLAG    // minimum permissions
+            file.isSharedWithMe -> RemoteShare.READ_PERMISSION_FLAG // minimum permissions
             isFederated ->
                 if (file.isFolder) {
                     RemoteShare.FEDERATED_PERMISSIONS_FOR_FOLDER
@@ -194,7 +194,7 @@ class ShareActivity : FileActivity(), ShareFragmentListener {
         val ft = supportFragmentManager.beginTransaction()
         val prev = supportFragmentManager.findFragmentByTag(TAG_EDIT_SHARE_FRAGMENT)
         if (prev != null) {
-            ft.remove(prev)    // BACK button will recover the previous fragment
+            ft.remove(prev) // BACK button will recover the previous fragment
         }
         ft.addToBackStack(null)
 

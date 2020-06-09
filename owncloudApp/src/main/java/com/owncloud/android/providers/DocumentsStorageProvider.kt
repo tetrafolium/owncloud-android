@@ -25,7 +25,6 @@
 package com.owncloud.android.providers
 
 import android.accounts.Account
-import android.annotation.TargetApi
 import android.content.Intent
 import android.content.res.AssetFileDescriptor
 import android.database.Cursor
@@ -60,12 +59,12 @@ import com.owncloud.android.ui.activity.PassCodeActivity
 import com.owncloud.android.ui.activity.PatternLockActivity
 import com.owncloud.android.ui.notifications.NotificationUtils
 import com.owncloud.android.utils.FileStorageUtils
-import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.HashMap
 import java.util.Vector
+import timber.log.Timber
 
 class DocumentsStorageProvider : DocumentsProvider() {
     /**
@@ -111,7 +110,6 @@ class DocumentsStorageProvider : DocumentsProvider() {
                         return null
                     }
                     ocFile = getFileByIdOrException(docId)
-
                 } while (!ocFile.isDown)
             }
         } else {
@@ -185,7 +183,7 @@ class DocumentsStorageProvider : DocumentsProvider() {
         currentStorageManager?.getFolderContent(currentStorageManager?.getFileById(folderId))
             ?.forEach { file -> resultCursor.addFile(file) }
 
-        //Create notification listener
+        // Create notification listener
         val notifyUri: Uri = toNotifyUri(toUri(parentDocumentId))
         resultCursor.setNotificationUri(context?.contentResolver, notifyUri)
 
@@ -204,7 +202,6 @@ class DocumentsStorageProvider : DocumentsProvider() {
 
         syncRequired = true
         return resultCursor
-
     }
 
     override fun queryDocument(documentId: String, projection: Array<String>?): Cursor {
@@ -354,7 +351,7 @@ class DocumentsStorageProvider : DocumentsProvider() {
             execute(currentStorageManager, context).also { result ->
                 syncRequired = false
                 checkOperationResult(result, targetParentFile.fileId.toString())
-                //Returns the document id of the document copied at the target destination
+                // Returns the document id of the document copied at the target destination
                 var newPath = targetParentFile.remotePath + sourceFile.fileName
                 if (sourceFile.isFolder) {
                     newPath += OCFile.PATH_SEPARATOR
@@ -366,7 +363,9 @@ class DocumentsStorageProvider : DocumentsProvider() {
     }
 
     override fun moveDocument(
-        sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String
+        sourceDocumentId: String,
+        sourceParentDocumentId: String,
+        targetParentDocumentId: String
     ): String {
         Timber.d("Trying to move $sourceDocumentId to $targetParentDocumentId")
 
@@ -385,7 +384,7 @@ class DocumentsStorageProvider : DocumentsProvider() {
             execute(currentStorageManager, context).also { result ->
                 syncRequired = false
                 checkOperationResult(result, targetParentFile.fileId.toString())
-                //Returns the document id of the document moved to the target destination
+                // Returns the document id of the document moved to the target destination
                 var newPath = targetParentFile.remotePath + sourceFile.fileName
                 if (sourceFile.isFolder) newPath += OCFile.PATH_SEPARATOR
                 val newFile = getFileByPathOrException(newPath)

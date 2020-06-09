@@ -22,8 +22,8 @@ package com.owncloud.android.data.sharing.sharees.datasources.implementation
 import com.owncloud.android.data.executeRemoteOperation
 import com.owncloud.android.data.sharing.sharees.datasources.RemoteShareeDataSource
 import com.owncloud.android.lib.resources.shares.services.ShareeService
-import org.json.JSONObject
 import java.util.ArrayList
+import org.json.JSONObject
 
 class OCRemoteShareeDataSource(
     private val shareeService: ShareeService

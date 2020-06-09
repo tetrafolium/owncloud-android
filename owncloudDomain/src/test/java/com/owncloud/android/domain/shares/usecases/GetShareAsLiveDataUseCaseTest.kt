@@ -58,7 +58,7 @@ class GetShareAsLiveDataUseCaseTest {
             shareEmitted.add(it)
         }
 
-        shareToEmit.forEach{ shareLiveData.postValue(it)}
+        shareToEmit.forEach { shareLiveData.postValue(it) }
 
         Assert.assertEquals(shareToEmit, shareEmitted)
     }

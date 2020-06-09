@@ -27,5 +27,4 @@ class OCRemoteFileDataSource(
 ) : RemoteFileDataSource {
     override fun checkPathExistence(path: String, checkUserCredentials: Boolean): Boolean =
         fileService.checkPathExistence(path = path, isUserLogged = checkUserCredentials).data
-
 }

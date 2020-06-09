@@ -23,8 +23,8 @@ import com.owncloud.android.domain.mappers.RemoteMapper
 import com.owncloud.android.domain.sharing.shares.model.OCShare
 import com.owncloud.android.domain.sharing.shares.model.ShareType
 import com.owncloud.android.lib.resources.shares.RemoteShare
-import org.jetbrains.annotations.TestOnly
 import com.owncloud.android.lib.resources.shares.ShareType as RemoteShareType
+import org.jetbrains.annotations.TestOnly
 
 class RemoteShareMapper : RemoteMapper<OCShare, RemoteShare> {
     override fun toModel(remote: RemoteShare?): OCShare? =

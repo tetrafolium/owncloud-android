@@ -52,6 +52,8 @@ import com.owncloud.android.utils.AppTestUtil.OC_FOLDER
 import com.owncloud.android.utils.DateUtils
 import io.mockk.every
 import io.mockk.mockk
+import java.text.SimpleDateFormat
+import java.util.Date
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Test
@@ -60,8 +62,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class PublicShareCreationDialogFragmentTest {
     private val ocCapabilityViewModel = mockk<OCCapabilityViewModel>(relaxed = true)
@@ -205,7 +205,7 @@ class PublicShareCreationDialogFragmentTest {
         onView(withId(android.R.id.button1)).perform(click())
         onView(withId(R.id.shareViaLinkExpirationValue))
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-        //TODO: check the date form the picker
+        // TODO: check the date form the picker
     }
 
     @Test
@@ -426,8 +426,8 @@ class PublicShareCreationDialogFragmentTest {
     fun passwordEnforcedClearErrorMessageIfSwitchsToNotEnforced() {
         val commonError = "Common error"
 
-        //One permission with password enforced. Error is cleaned after switching permission
-        //to a non-forced one
+        // One permission with password enforced. Error is cleaned after switching permission
+        // to a non-forced one
         loadPublicShareDialogFragment(
             isFolder = true,
             capabilities = OC_CAPABILITY.copy(

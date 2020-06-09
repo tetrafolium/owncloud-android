@@ -49,12 +49,12 @@ import com.owncloud.android.presentation.viewmodels.capabilities.OCCapabilityVie
 import com.owncloud.android.presentation.viewmodels.sharing.OCShareViewModel
 import com.owncloud.android.utils.DisplayUtils
 import com.owncloud.android.utils.MimetypeIconUtil
+import java.util.Locale
 import kotlinx.android.synthetic.main.share_file_layout.*
 import kotlinx.android.synthetic.main.share_file_layout.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
-import java.util.Locale
 
 /**
  * Fragment for Sharing a file with sharees (users or groups) or creating
@@ -113,7 +113,7 @@ class ShareFileFragment : Fragment(), ShareUserListAdapter.ShareUserAdapterListe
      */
     private var capabilities: OCCapability? = null
 
-    private// Array with numbers already set in public link names
+    private // Array with numbers already set in public link names
     // Inspect public links for default names already used
     // better not suggesting a name than crashing
     // Sort used numbers in ascending order
@@ -205,7 +205,8 @@ class ShareFileFragment : Fragment(), ShareUserListAdapter.ShareUserAdapterListe
      * {@inheritDoc}
      */
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         Timber.d("onCreateView")
@@ -504,7 +505,7 @@ class ShareFileFragment : Fragment(), ShareUserListAdapter.ShareUserAdapterListe
     }
 
     override fun copyOrSendPublicLink(share: OCShare) {
-        //GetLink from the server and show ShareLinkToDialog
+        // GetLink from the server and show ShareLinkToDialog
         listener?.copyOrSendPublicLink(share)
     }
 
@@ -573,7 +574,7 @@ class ShareFileFragment : Fragment(), ShareUserListAdapter.ShareUserAdapterListe
          * Public factory method to create new ShareFileFragment instances.
          *
          * @param fileToShare An [OCFile] to show in the fragment
-         * @param account     An ownCloud account
+         * @param account An ownCloud account
          * @return A new instance of fragment ShareFileFragment.
          */
         fun newInstance(

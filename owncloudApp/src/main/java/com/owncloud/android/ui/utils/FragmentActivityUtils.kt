@@ -24,7 +24,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 
 fun FragmentActivity.showDialogFragment(
-    newFragment: DialogFragment, fragmentTag: String
+    newFragment: DialogFragment,
+    fragmentTag: String
 ) {
     val ft = supportFragmentManager.beginTransaction()
     val prev = supportFragmentManager.findFragmentByTag(fragmentTag)

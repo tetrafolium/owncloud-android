@@ -41,7 +41,7 @@ class OCSettingsLogTest {
     @Test
     fun itemsToolbar() {
         onView(withId(R.id.search_button)).check(matches(isDisplayed()))
-        //Values not i18n
+        // Values not i18n
         onView(withText("LOGCAT")).check(matches(isDisplayed()))
         onView(withText("LOGFILE")).check(matches(isDisplayed()))
     }
@@ -49,7 +49,7 @@ class OCSettingsLogTest {
     @Test
     fun itemsLogLevel() {
         openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
-        //Values not i18n
+        // Values not i18n
         onView(withText("Verbose")).check(matches(isDisplayed()))
         onView(withText("Debug")).check(matches(isDisplayed()))
         onView(withText("Info")).check(matches(isDisplayed()))

@@ -19,8 +19,8 @@
 
 package com.owncloud.android.domain.sharing.shares.usecases
 
-import com.owncloud.android.domain.sharing.shares.ShareRepository
 import com.owncloud.android.domain.BaseUseCaseWithResult
+import com.owncloud.android.domain.sharing.shares.ShareRepository
 import com.owncloud.android.domain.sharing.shares.model.ShareType
 
 class CreatePrivateShareAsyncUseCase(

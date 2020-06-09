@@ -46,13 +46,13 @@ class OCSettingsPatternLockTest {
 
     @After
     fun tearDown() {
-        //Clean preferences
+        // Clean preferences
         PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit()
     }
 
     @Test
     fun patternLockView() {
-        //Open Activity in pattern creation mode
+        // Open Activity in pattern creation mode
         openPatternActivity(PatternLockActivity.ACTION_REQUEST_WITH_RESULT)
 
         onView(withText(R.string.pattern_configure_pattern)).check(matches(isDisplayed()))
@@ -63,10 +63,10 @@ class OCSettingsPatternLockTest {
 
     @Test
     fun removePatternLock() {
-        //Save a pattern in Preferences
+        // Save a pattern in Preferences
         storePattern()
 
-        //Open Activity in pattern deletion mode
+        // Open Activity in pattern deletion mode
         openPatternActivity(PatternLockActivity.ACTION_CHECK_WITH_RESULT)
 
         onView(withText(R.string.pattern_remove_pattern)).check(matches(isDisplayed()))

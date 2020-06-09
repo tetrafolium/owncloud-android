@@ -26,8 +26,8 @@ import com.owncloud.android.domain.exceptions.SpecificServiceUnavailableExceptio
 import com.owncloud.android.domain.server.model.AuthenticationMethod
 import com.owncloud.android.lib.common.http.HttpConstants
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.status.services.ServerInfoService
 import com.owncloud.android.lib.resources.status.OwnCloudVersion
+import com.owncloud.android.lib.resources.status.services.ServerInfoService
 
 class OCRemoteServerInfoDataSource(
     private val serverInfoService: ServerInfoService
@@ -55,7 +55,7 @@ class OCRemoteServerInfoDataSource(
             var isBasic = false
             authenticateHeaders.forEach { authenticateHeader ->
                 if (authenticateHeader.contains(AuthenticationMethod.BEARER_TOKEN.toString())) {
-                    return AuthenticationMethod.BEARER_TOKEN  // Bearer top priority
+                    return AuthenticationMethod.BEARER_TOKEN // Bearer top priority
                 } else if (authenticateHeader.contains(AuthenticationMethod.BASIC_HTTP_AUTH.toString())) {
                     isBasic = true
                 }

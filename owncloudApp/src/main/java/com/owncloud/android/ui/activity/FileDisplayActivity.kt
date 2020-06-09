@@ -101,15 +101,15 @@ import com.owncloud.android.utils.Extras
 import com.owncloud.android.utils.FileStorageUtils
 import com.owncloud.android.utils.PermissionUtil
 import com.owncloud.android.utils.PreferenceUtils
+import java.io.File
+import java.util.ArrayList
+import kotlin.coroutines.CoroutineContext
 import kotlinx.android.synthetic.main.nav_coordinator_layout.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
-import java.util.ArrayList
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Displays, what files the user has available in his ownCloud. This is the main view.
@@ -163,7 +163,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this)
 
-        /// Load of saved instance state
+        // / Load of saved instance state
         if (savedInstanceState != null) {
             Timber.d(savedInstanceState.toString())
 
@@ -190,7 +190,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
             )
         }
 
-        /// USER INTERFACE
+        // / USER INTERFACE
 
         // Inflate and set the layout view
         setContentView(R.layout.activity_main)
@@ -217,7 +217,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
             taskRetainerFragment = TaskRetainerFragment()
             fm.beginTransaction()
                 .add(taskRetainerFragment, TaskRetainerFragment.FTAG_TASK_RETAINER_FRAGMENT).commit()
-        }   // else, Fragment already created and retained across configuration change
+        } // else, Fragment already created and retained across configuration change
 
         Timber.v("onCreate() end")
 
@@ -262,7 +262,8 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String>, grantResults: IntArray
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         when (requestCode) {
             PermissionUtil.PERMISSIONS_WRITE_EXTERNAL_STORAGE -> {
@@ -283,7 +284,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
     override fun onAccountSet(stateWasRecovered: Boolean) {
         super.onAccountSet(stateWasRecovered)
         if (account != null) {
-            /// Check whether the 'main' OCFile handled by the Activity is contained in the
+            // / Check whether the 'main' OCFile handled by the Activity is contained in the
             // current Account
             var file: OCFile? = file
             // get parent from path
@@ -306,7 +307,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
             }
             if (file == null) {
                 // fall back to root folder
-                file = storageManager.getFileByPath(OCFile.ROOT_PATH)  // never returns null
+                file = storageManager.getFileByPath(OCFile.ROOT_PATH) // never returns null
             }
             setFile(file)
 
@@ -322,7 +323,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                         startSyncFolderOperation(file, false)
                     }
                 }
-
             } else {
                 file?.isFolder?.let { isFolder ->
                     updateFragmentsVisibility(!isFolder)
@@ -341,11 +341,11 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
 
     private fun initFragmentsWithFile() {
         if (account != null && file != null) {
-            /// First fragment
+            // / First fragment
             listOfFilesFragment?.listDirectory(currentDir)
                 ?: Timber.e("Still have a chance to lose the initialization of list fragment >(")
 
-            /// Second fragment
+            // / Second fragment
             val file = file
             val secondFragment = chooseInitialSecondFragment(file)
             secondFragment?.let {
@@ -353,7 +353,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                 updateFragmentsVisibility(true)
                 updateActionBarTitleAndHomeButton(file)
             } ?: cleanSecondFragment()
-
         } else {
             Timber.e("initFragmentsWithFile() called with invalid nulls! account is $account, file is $file")
         }
@@ -372,7 +371,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
 
         if (secondFragment == null) { // If second fragment has not been chosen yet, choose it
             if (file != null && !file.isFolder) {
-                if ((PreviewAudioFragment.canBePreviewed(file) || PreviewVideoFragment.canBePreviewed(file)) && file.lastSyncDateForProperties > 0  // temporal fix
+                if ((PreviewAudioFragment.canBePreviewed(file) || PreviewVideoFragment.canBePreviewed(file)) && file.lastSyncDateForProperties > 0 // temporal fix
                 ) {
                     val startPlaybackPosition = intent.getIntExtra(PreviewVideoActivity.EXTRA_START_POSITION, 0)
                     val autoplay = intent.getBooleanExtra(PreviewVideoActivity.EXTRA_AUTOPLAY, true)
@@ -385,7 +384,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                             startPlaybackPosition,
                             autoplay
                         )
-
                     } else {
 
                         secondFragment = PreviewVideoFragment.newInstance(
@@ -395,13 +393,11 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                             autoplay
                         )
                     }
-
                 } else if (PreviewTextFragment.canBePreviewed(file)) {
                     secondFragment = PreviewTextFragment.newInstance(
                         file,
                         account
                     )
-
                 } else {
                     secondFragment = FileDetailFragment.newInstance(file, account)
                 }
@@ -439,7 +435,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                 rightFragmentContainer?.visibility = View.VISIBLE
                 showOrHideBottomNavBar(show = false)
             }
-
         } else {
             if (leftFragmentContainer?.visibility != View.VISIBLE) {
                 leftFragmentContainer?.visibility = View.VISIBLE
@@ -621,12 +616,10 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
         if (requestCode == REQUEST_CODE__SELECT_CONTENT_FROM_APPS && (resultCode == Activity.RESULT_OK || resultCode == RESULT_OK_AND_MOVE)) {
 
             requestUploadOfContentFromApps(data, resultCode)
-
         } else if (requestCode == REQUEST_CODE__UPLOAD_FROM_CAMERA) {
             if (resultCode == Activity.RESULT_OK || resultCode == RESULT_OK_AND_MOVE) {
                 filesUploadHelper?.onActivityResult(object : FilesUploadHelper.OnCheckAvailableSpaceListener {
                     override fun onCheckAvailableSpaceStart() {
-
                     }
 
                     override fun onCheckAvailableSpaceFinished(
@@ -648,7 +641,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                 { requestMoveOperation(data!!) },
                 DELAY_TO_REQUEST_OPERATIONS_LATER
             )
-
         } else if (requestCode == REQUEST_CODE__COPY_FILES && resultCode == Activity.RESULT_OK) {
             handler.postDelayed(
                 { requestCopyOperation(data!!) },
@@ -677,7 +669,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                 false, // do not create parent folder if not existent
                 UploadFileOperation.CREATED_BY_USER
             )
-
         } else {
             Timber.d("User clicked on 'Update' with no selection")
             showMessageInSnackbar(R.id.ListLayout, getString(R.string.filedisplay_no_file_selected))
@@ -710,8 +701,8 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
             remotePath,
             account,
             behaviour,
-            false, null// Not needed copy temp task listener
-        )// Not show waiting dialog while file is being copied from private storage
+            false, null // Not needed copy temp task listener
+        ) // Not show waiting dialog while file is being copied from private storage
 
         uploader.uploadUris()
     }
@@ -767,7 +758,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                 }
                 listOfFiles?.onBrowseUp()
             }
-            if (listOfFiles != null) {  // should never be null, indeed
+            if (listOfFiles != null) { // should never be null, indeed
                 file = listOfFiles.currentFile
                 listOfFiles.listDirectory(false)
             }
@@ -783,7 +774,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
         outState.putParcelable(KEY_WAITING_TO_PREVIEW, fileWaitingToPreview)
         outState.putBoolean(KEY_SYNC_IN_PROGRESS, syncInProgress)
         outState.putParcelable(KEY_FILE_LIST_OPTION, fileListOption)
-        //outState.putBoolean(KEY_REFRESH_SHARES_IN_PROGRESS,
+        // outState.putBoolean(KEY_REFRESH_SHARES_IN_PROGRESS,
         // mRefreshSharesInProgress);
         outState.putParcelable(KEY_WAITING_TO_SEND, waitingToSend)
         outState.putParcelable(KEY_UPLOAD_HELPER, filesUploadHelper)
@@ -872,7 +863,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
 
                 if (FileSyncAdapter.EVENT_FULL_SYNC_START == event) {
                     syncInProgress = true
-
                 } else {
                     var currentFile: OCFile? = if (file == null)
                         null
@@ -893,7 +883,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                             )
                         )
                         browseToRoot()
-
                     } else {
                         if (currentFile == null && !file.isFolder) {
                             // currently selected file was removed in the server, and now we
@@ -915,7 +904,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
 
                     if (RefreshFolderOperation.EVENT_SINGLE_FOLDER_CONTENTS_SYNCED == event) {
                         if (!synchResult?.isSuccess!!) {
-                            /// TODO refactor and make common
+                            // / TODO refactor and make common
                             if (ResultCode.UNAUTHORIZED == synchResult.code ||
                                 synchResult.isException && synchResult.exception is AuthenticatorException
                             ) {
@@ -1139,20 +1128,20 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
         }
 
         private fun refreshSecondFragment(
-            downloadEvent: String?, downloadedRemotePath: String,
+            downloadEvent: String?,
+            downloadedRemotePath: String,
             success: Boolean
         ) {
             val secondFragment = secondFragment
             if (secondFragment != null) {
                 var fragmentReplaced = false
                 if (secondFragment is FileDetailFragment) {
-                    /// user was watching download progress
+                    // / user was watching download progress
                     val detailsFragment = secondFragment as FileDetailFragment?
                     val fileInFragment = detailsFragment?.file
                     if (fileInFragment != null && downloadedRemotePath != fileInFragment.remotePath) {
                         // the user browsed to other file ; forget the automatic preview
                         fileWaitingToPreview = null
-
                     } else if (downloadEvent == FileDownloader.getDownloadFinishMessage()) {
                         //  replace the right panel if waiting for preview
                         val waitedPreview = fileWaitingToPreview?.remotePath == downloadedRemotePath
@@ -1189,7 +1178,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
 
     fun browseToRoot() {
         val listOfFiles = listOfFilesFragment
-        if (listOfFiles != null) {  // should never be null, indeed
+        if (listOfFiles != null) { // should never be null, indeed
             val root = storageManager.getFileByPath(OCFile.ROOT_PATH)
             listOfFiles.listDirectory(root)
             file = listOfFiles.currentFile
@@ -1226,7 +1215,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
     override fun updateActionBarTitleAndHomeButton(chosenFileFromParam: OCFile?) {
         var chosenFile = chosenFileFromParam
         if (chosenFile == null) {
-            chosenFile = file     // if no file is passed, current file decides
+            chosenFile = file // if no file is passed, current file decides
         }
         super.updateActionBarTitleAndHomeButton(chosenFile)
         if (chosenFile?.remotePath == OCFile.ROOT_PATH && (!fileListOption.isAllFiles())) {
@@ -1279,7 +1268,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                         showDetails(file)
                     }
                 }
-
             } else if (component == ComponentName(
                     this@FileDisplayActivity,
                     FileUploader::class.java
@@ -1320,7 +1308,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
      * in the current account.
      *
      * @param operation Removal operation performed.
-     * @param result    Result of the removal.
+     * @param result Result of the removal.
      */
     override fun onRemoteOperationFinish(operation: RemoteOperation<*>, result: RemoteOperationResult<*>) {
         super.onRemoteOperationFinish(operation, result)
@@ -1340,7 +1328,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
      * remove a file.
      *
      * @param operation Removal operation performed.
-     * @param result    Result of the removal.
+     * @param result Result of the removal.
      */
     private fun onRemoveFileOperationFinish(
         operation: RemoveFileOperation,
@@ -1385,7 +1373,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
      * file.
      *
      * @param operation Move operation performed.
-     * @param result    Result of the move operation.
+     * @param result Result of the move operation.
      */
     private fun onMoveFileOperationFinish(
         operation: MoveFileOperation,
@@ -1399,11 +1387,9 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                     R.id.ListLayout,
                     ErrorMessageAdapter.getResultMessage(result, operation, resources)
                 )
-
             } catch (e: NotFoundException) {
                 Timber.e(e, "Error while trying to show fail message")
             }
-
         }
     }
 
@@ -1412,7 +1398,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
      * file.
      *
      * @param operation Copy operation performed.
-     * @param result    Result of the copy operation.
+     * @param result Result of the copy operation.
      */
     private fun onCopyFileOperationFinish(operation: CopyFileOperation, result: RemoteOperationResult<*>) {
         if (result.isSuccess) {
@@ -1423,11 +1409,9 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                     R.id.ListLayout,
                     ErrorMessageAdapter.getResultMessage(result, operation, resources)
                 )
-
             } catch (e: NotFoundException) {
                 Timber.e(e, "Error while trying to show fail message")
             }
-
         }
     }
 
@@ -1436,7 +1420,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
      * a file.
      *
      * @param operation Renaming operation performed.
-     * @param result    Result of the renaming.
+     * @param result Result of the renaming.
      */
     private fun onRenameFileOperationFinish(
         operation: RenameFileOperation,
@@ -1455,7 +1439,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
             if (storageManager.getFileById(renamedFile!!.parentId) == currentDir) {
                 refreshListOfFilesFragment(true)
             }
-
         } else {
             showMessageInSnackbar(
                 R.id.ListLayout,
@@ -1483,7 +1466,6 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                     secondFragment.onSyncEvent(FileDownloader.getDownloadAddedMessage(), false, null)
                     invalidateOptionsMenu()
                 }
-
             } else if (secondFragment == null) {
                 showMessageInSnackbar(
                     R.id.ListLayout,
@@ -1492,13 +1474,12 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
             }
         }
 
-        /// no matter if sync was right or not - if there was no transfer and the file is down, OPEN it
+        // / no matter if sync was right or not - if there was no transfer and the file is down, OPEN it
         val waitedForPreview = fileWaitingToPreview?.let { it == operation.localFile && it.isDown } ?: false
         if (!operation.transferWasRequested() and waitedForPreview) {
             fileOperationsHelper.openFile(fileWaitingToPreview)
             fileWaitingToPreview = null
         }
-
     }
 
     /**
@@ -1506,7 +1487,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
      * new folder
      *
      * @param operation Creation operation performed.
-     * @param result    Result of the creation.
+     * @param result Result of the creation.
      */
     private fun onCreateFolderOperationFinish(
         operation: CreateFolderOperation,
@@ -1523,14 +1504,13 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
             } catch (e: NotFoundException) {
                 Timber.e(e, "Error while trying to show fail message")
             }
-
         }
     }
 
     private fun requestForDownload() {
         val account = account
 
-        //if (!fileWaitingToPreview.isDownloading()) {
+        // if (!fileWaitingToPreview.isDownloading()) {
         // If the file is not being downloaded, start the download
         if (!mDownloaderBinder.isDownloading(account, fileWaitingToPreview)) {
             val i = Intent(this, FileDownloader::class.java)
@@ -1555,7 +1535,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
      * associated shares), but not their contents. Only the contents of files marked to be kept-in-sync are
      * synchronized too.
      *
-     * @param folder     Folder to refresh.
+     * @param folder Folder to refresh.
      * @param ignoreETag If 'true', the data from the server will be fetched and sync'ed even if the eTag
      * didn't change.
      */
@@ -1578,13 +1558,13 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
                     synchFolderOp.execute(
                         storageManager,
                         MainApp.appContext, null, null
-                    )// unneeded, handling via SyncBroadcastReceiver
+                    ) // unneeded, handling via SyncBroadcastReceiver
 
                     val fileListFragment = listOfFilesFragment
                     fileListFragment?.setProgressBarAsIndeterminate(true)
 
                     setBackgroundText()
-                }   // else: NOTHING ; lets' not refresh when the user rotates the device but there is
+                } // else: NOTHING ; lets' not refresh when the user rotates the device but there is
                 // another window floating over
             },
             DELAY_TO_REQUEST_OPERATIONS_LATER + 350
@@ -1630,13 +1610,12 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
         showDetailsIntent.putExtra(EXTRA_FILE, file)
         showDetailsIntent.putExtra(EXTRA_ACCOUNT, account)
         startActivity(showDetailsIntent)
-
     }
 
     /**
      * Stars the preview of an already down audio [OCFile].
      *
-     * @param file                  Media [OCFile] to preview.
+     * @param file Media [OCFile] to preview.
      * @param startPlaybackPosition Media position where the playback will be started,
      * in milliseconds.
      */
@@ -1656,7 +1635,7 @@ class FileDisplayActivity : FileActivity(), FileFragment.ContainerActivity, OnEn
     /**
      * Stars the preview of an already down video [OCFile].
      *
-     * @param file                  Media [OCFile] to preview.
+     * @param file Media [OCFile] to preview.
      * @param startPlaybackPosition Media position where the playback will be started,
      * in milliseconds.
      */

@@ -35,5 +35,4 @@ class OCRemoteUserDataSource(
             userService.getUserInfo()
         }.let { return remoteUserInfoMapper.toModel(it)!! }
     }
-
 }

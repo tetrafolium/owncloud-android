@@ -46,6 +46,10 @@ import com.owncloud.android.testutil.OC_SHARE
 import com.owncloud.android.utils.AppTestUtil.OC_FILE
 import io.mockk.every
 import io.mockk.mockk
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.GregorianCalendar
+import java.util.TimeZone
 import org.junit.Before
 import org.junit.Test
 import org.koin.android.ext.koin.androidContext
@@ -53,10 +57,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.GregorianCalendar
-import java.util.TimeZone
 
 class PublicShareEditionDialogFragmentTest {
     private val ocCapabilityViewModel = mockk<OCCapabilityViewModel>(relaxed = true)

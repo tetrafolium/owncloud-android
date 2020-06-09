@@ -37,7 +37,8 @@ import com.owncloud.android.utils.PreferenceUtils
  * Adapter to show a user/group in Share With List
  */
 class ShareUserListAdapter(
-    private val mContext: Context, resource: Int,
+    private val mContext: Context,
+    resource: Int,
     private var shares: List<OCShare>,
     private val listener: ShareUserAdapterListener
 ) : ArrayAdapter<OCShare>(mContext, resource) {
@@ -80,14 +81,13 @@ class ShareUserListAdapter(
             userName.text = name
             iconView.setImageDrawable(icon)
 
-            /// bind listener to edit privileges
+            // / bind listener to edit privileges
             val editShareButton = view.findViewById<ImageView>(R.id.editShareButton)
             editShareButton.setOnClickListener { listener.editShare(shares[position]) }
 
-            /// bind listener to unshare
+            // / bind listener to unshare
             val unshareButton = view.findViewById<ImageView>(R.id.unshareButton)
             unshareButton.setOnClickListener { listener.unshareButtonPressed(shares[position]) }
-
         }
         return view
     }

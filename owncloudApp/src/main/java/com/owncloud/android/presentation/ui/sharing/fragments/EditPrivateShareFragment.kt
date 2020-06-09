@@ -110,7 +110,8 @@ class EditPrivateShareFragment : DialogFragment() {
      * {@inheritDoc}
      */
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         Timber.d("onCreateView")
@@ -168,7 +169,7 @@ class EditPrivateShareFragment : DialogFragment() {
             compound.isChecked = canEdit
 
             if (file!!.isFolder) {
-                /// TODO change areEditOptionsAvailable in order to delete !isFederated
+                // / TODO change areEditOptionsAvailable in order to delete !isFederated
                 // from checking when iOS is ready
                 compound = canEditCreateCheckBox
                 compound.isChecked = sharePermissions and RemoteShare.CREATE_PERMISSION_FLAG > 0
@@ -191,7 +192,7 @@ class EditPrivateShareFragment : DialogFragment() {
      * Binds or unbinds listener for user actions to enable or disable a permission on the edited share
      * to the views receiving the user events.
      *
-     * @param enable            When 'true', listener is bound to view; when 'false', it is unbound.
+     * @param enable When 'true', listener is bound to view; when 'false', it is unbound.
      */
     private fun setPermissionsListening(enable: Boolean) {
         if (enable && onPrivilegeChangeListener == null) {
@@ -227,8 +228,8 @@ class EditPrivateShareFragment : DialogFragment() {
          * Called by every [SwitchCompat] and [CheckBox] in the fragment to update
          * the state of its associated permission.
          *
-         * @param compound  [CompoundButton] toggled by the user
-         * @param isChecked     New switch state.
+         * @param compound [CompoundButton] toggled by the user
+         * @param isChecked New switch state.
          */
         override fun onCheckedChanged(compound: CompoundButton, isChecked: Boolean) {
             if (!isResumed) {
@@ -236,7 +237,7 @@ class EditPrivateShareFragment : DialogFragment() {
                 // Fragment recreation on device rotations
                 return
             }
-            /// else, getView() cannot be NULL
+            // / else, getView() cannot be NULL
 
             var subordinate: CompoundButton
             when (compound.id) {
@@ -247,24 +248,24 @@ class EditPrivateShareFragment : DialogFragment() {
 
                 R.id.canEditSwitch -> {
                     Timber.v("canEditCheckBox toggled to $isChecked")
-                    /// sync subordinate CheckBoxes
+                    // / sync subordinate CheckBoxes
                     val isFederated = share?.shareType == ShareType.FEDERATED
                     if (file?.isFolder == true) {
                         if (isChecked) {
                             if (!isFederated) {
-                                /// not federated shares -> enable all the subpermisions
+                                // / not federated shares -> enable all the subpermisions
                                 for (i in sSubordinateCheckBoxIds.indices) {
                                     //noinspection ConstantConditions, prevented in the method beginning
                                     subordinate = view!!.findViewById(sSubordinateCheckBoxIds[i])
                                     if (!isFederated) { // TODO delete when iOS is ready
                                         subordinate.visibility = View.VISIBLE
                                     }
-                                    if (!subordinate.isChecked && !file!!.isSharedWithMe) {          // see (1)
+                                    if (!subordinate.isChecked && !file!!.isSharedWithMe) { // see (1)
                                         toggleDisablingListener(subordinate)
                                     }
                                 }
                             } else {
-                                /// federated share -> enable delete subpermission, as server side; TODO why?
+                                // / federated share -> enable delete subpermission, as server side; TODO why?
                                 //noinspection ConstantConditions, prevented in the method beginning
                                 subordinate = canEditDeleteCheckBox
                                 if (!subordinate.isChecked) {
@@ -283,8 +284,8 @@ class EditPrivateShareFragment : DialogFragment() {
                         }
                     }
 
-                    if (!(file?.isFolder == true && isChecked && file?.isSharedWithMe == true)       // see (1)
-                        || isFederated
+                    if (!(file?.isFolder == true && isChecked && file?.isSharedWithMe == true) || // see (1)
+                        isFederated
                     ) {
                         updatePermissionsToShare()
                     }
@@ -307,7 +308,7 @@ class EditPrivateShareFragment : DialogFragment() {
                     syncCanEditSwitch(compound, isChecked)
                     updatePermissionsToShare()
                 }
-            }// updatePermissionsToShare()   // see (1)
+            } // updatePermissionsToShare()   // see (1)
             // (1) These modifications result in an exceptional UI behaviour for the case
             // where the switch 'can edit' is enabled for a *reshared folder*; if the same
             // behaviour was applied than for owned folder, and the user did not have full
@@ -322,8 +323,8 @@ class EditPrivateShareFragment : DialogFragment() {
          *
          * If any subordinate is enabled, "can edit" has to be enabled.
          *
-         * @param subordinateCheckBoxView   Subordinate [CheckBox] that was changed.
-         * @param isChecked                 'true' iif subordinateCheckBoxView was checked.
+         * @param subordinateCheckBoxView Subordinate [CheckBox] that was changed.
+         * @param isChecked 'true' iif subordinateCheckBoxView was checked.
          */
         private fun syncCanEditSwitch(subordinateCheckBoxView: View, isChecked: Boolean) {
             val canEditCompound = canEditSwitch
@@ -355,7 +356,7 @@ class EditPrivateShareFragment : DialogFragment() {
         /**
          * Toggle value of received [CompoundButton] granting that its change listener is not called.
          *
-         * @param compound      [CompoundButton] (switch or checkBox) to toggle without reporting to
+         * @param compound [CompoundButton] (switch or checkBox) to toggle without reporting to
          * the change listener
          */
         private fun toggleDisablingListener(compound: CompoundButton) {
@@ -449,9 +450,9 @@ class EditPrivateShareFragment : DialogFragment() {
         /**
          * Public factory method to create new EditPrivateShareFragment instances.
          *
-         * @param shareToEdit   An [OCShare] to show and edit in the fragment
-         * @param sharedFile    The [OCFile] bound to 'shareToEdit'
-         * @param account       The ownCloud account holding 'sharedFile'
+         * @param shareToEdit An [OCShare] to show and edit in the fragment
+         * @param sharedFile The [OCFile] bound to 'shareToEdit'
+         * @param account The ownCloud account holding 'sharedFile'
          * @return A new instance of fragment EditPrivateShareFragment.
          */
         fun newInstance(shareToEdit: OCShare, sharedFile: OCFile, account: Account): EditPrivateShareFragment {

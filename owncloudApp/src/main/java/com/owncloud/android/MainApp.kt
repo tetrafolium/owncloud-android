@@ -49,11 +49,11 @@ import com.owncloud.android.ui.activity.BiometricActivity
 import com.owncloud.android.ui.activity.PassCodeActivity
 import com.owncloud.android.ui.activity.PatternLockActivity
 import com.owncloud.android.ui.activity.WhatsNewActivity
+import java.io.File
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import timber.log.Timber
-import java.io.File
 
 /**
  * Main Application of the project
@@ -102,7 +102,7 @@ class MainApp : MultiDexApplication() {
                     WhatsNewActivity.runIfNeeded(activity)
                 }
 
-                PreferenceManager.migrateFingerprintToBiometricKey(applicationContext);
+                PreferenceManager.migrateFingerprintToBiometricKey(applicationContext)
             }
 
             override fun onActivityStarted(activity: Activity) {
@@ -197,7 +197,6 @@ class MainApp : MultiDexApplication() {
                 } catch (e: PackageManager.NameNotFoundException) {
                     0
                 }
-
             }
 
         val authority: String

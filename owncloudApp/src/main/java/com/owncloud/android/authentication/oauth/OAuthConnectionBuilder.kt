@@ -4,8 +4,6 @@ import android.content.Context
 import android.net.Uri
 import com.owncloud.android.lib.common.network.AdvancedX509TrustManager
 import com.owncloud.android.lib.common.network.NetworkUtils
-import net.openid.appauth.connectivity.ConnectionBuilder
-import timber.log.Timber
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -17,6 +15,8 @@ import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
+import net.openid.appauth.connectivity.ConnectionBuilder
+import timber.log.Timber
 
 /**
  * Based on [net.openid.appauth.connectivity.DefaultConnectionBuilder] but permitting http connections in addition

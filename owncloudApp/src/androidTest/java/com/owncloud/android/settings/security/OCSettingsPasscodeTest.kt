@@ -61,13 +61,13 @@ class OCSettingsPasscodeTest {
 
     @After
     fun tearDown() {
-        //Clean preferences
+        // Clean preferences
         PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit()
     }
 
     @Test
     fun passcodeView() {
-        //Open Activity in passcode creation mode
+        // Open Activity in passcode creation mode
         openPasscodeActivity(PassCodeActivity.ACTION_REQUEST_WITH_RESULT)
 
         onView(withId(R.id.header)).check(matches(isDisplayed()))
@@ -83,10 +83,10 @@ class OCSettingsPasscodeTest {
 
     @Test
     fun firstTry() {
-        //Open Activity in passcode creation mode
+        // Open Activity in passcode creation mode
         openPasscodeActivity(PassCodeActivity.ACTION_REQUEST_WITH_RESULT)
 
-        //First typing
+        // First typing
         typePasscode(defaultPassCode)
 
         onView(withText(R.string.pass_code_reenter_your_pass_code)).check(matches(isDisplayed()))
@@ -95,15 +95,15 @@ class OCSettingsPasscodeTest {
 
     @Test
     fun secondTryCorrect() {
-        //Open Activity in passcode creation mode
+        // Open Activity in passcode creation mode
         openPasscodeActivity(PassCodeActivity.ACTION_REQUEST_WITH_RESULT)
 
-        //First typing
+        // First typing
         typePasscode(defaultPassCode)
-        //Second typing
+        // Second typing
         typePasscode(defaultPassCode)
 
-        //Checking that the setResult returns the typed passcode
+        // Checking that the setResult returns the typed passcode
         assertThat(activityRule.activityResult, hasResultCode(Activity.RESULT_OK))
         assertThat(activityRule.activityResult, hasResultData(hasExtra(keyPassCode, passCodeToSave)))
 
@@ -113,12 +113,12 @@ class OCSettingsPasscodeTest {
     @Test
     @Ignore
     fun secondTryIncorrect() {
-        //Open Activity in passcode creation mode
+        // Open Activity in passcode creation mode
         openPasscodeActivity(PassCodeActivity.ACTION_REQUEST_WITH_RESULT)
 
-        //First typing
+        // First typing
         typePasscode(defaultPassCode)
-        //Second typing
+        // Second typing
         typePasscode(wrongPassCode)
 
         onView(withText(R.string.pass_code_reenter_your_pass_code)).check(doesNotExist())
@@ -129,7 +129,7 @@ class OCSettingsPasscodeTest {
 
     @Test
     fun cancelFirstTry() {
-        //Open Activity in passcode creation mode
+        // Open Activity in passcode creation mode
         openPasscodeActivity(PassCodeActivity.ACTION_REQUEST_WITH_RESULT)
 
         onView(withId(R.id.txt0)).perform(replaceText("1"))
@@ -142,10 +142,10 @@ class OCSettingsPasscodeTest {
 
     @Test
     fun cancelSecondTry() {
-        //Open Activity in passcode creation mode
+        // Open Activity in passcode creation mode
         openPasscodeActivity(PassCodeActivity.ACTION_REQUEST_WITH_RESULT)
 
-        //First typing
+        // First typing
         typePasscode(defaultPassCode)
 
         onView(withId(R.id.txt0)).perform(replaceText("1"))
@@ -157,10 +157,10 @@ class OCSettingsPasscodeTest {
 
     @Test
     fun deletePasscodeView() {
-        //Save a passcode in Preferences
+        // Save a passcode in Preferences
         storePasscode()
 
-        //Open Activity in passcode deletion mode
+        // Open Activity in passcode deletion mode
         openPasscodeActivity(PassCodeActivity.ACTION_CHECK_WITH_RESULT)
 
         onView(withText(R.string.pass_code_remove_your_pass_code)).check(matches(isDisplayed()))
@@ -168,13 +168,13 @@ class OCSettingsPasscodeTest {
 
     @Test
     fun deletePasscodeCorrect() {
-        //Save a passcode in Preferences
+        // Save a passcode in Preferences
         storePasscode(passCodeToSave)
 
-        //Open Activity in passcode deletion mode
+        // Open Activity in passcode deletion mode
         openPasscodeActivity(PassCodeActivity.ACTION_CHECK_WITH_RESULT)
 
-        //Type correct passcode
+        // Type correct passcode
         typePasscode(defaultPassCode)
 
         assertTrue(errorMessage, activityRule.activity.isFinishing)
@@ -182,13 +182,13 @@ class OCSettingsPasscodeTest {
 
     @Test
     fun deletePasscodeIncorrect() {
-        //Save a passcode in Preferences
+        // Save a passcode in Preferences
         storePasscode(passCodeToSave)
 
-        //Open Activity in passcode deletion mode
+        // Open Activity in passcode deletion mode
         openPasscodeActivity(PassCodeActivity.ACTION_CHECK_WITH_RESULT)
 
-        //Type incorrect passcode
+        // Type incorrect passcode
         typePasscode(wrongPassCode)
 
         onView(withText(R.string.pass_code_enter_pass_code)).check(matches(isDisplayed()))
@@ -217,5 +217,4 @@ class OCSettingsPasscodeTest {
         appPrefs.putBoolean(PassCodeActivity.PREFERENCE_SET_PASSCODE, true)
         appPrefs.apply()
     }
-
 }

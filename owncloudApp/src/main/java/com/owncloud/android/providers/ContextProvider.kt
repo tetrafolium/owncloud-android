@@ -21,7 +21,6 @@
 package com.owncloud.android.providers
 
 import android.content.Context
-import android.content.res.Resources
 
 interface ContextProvider {
 
@@ -29,5 +28,4 @@ interface ContextProvider {
     fun getString(id: Int): String
     fun getContext(): Context
     fun isConnected(): Boolean
-
 }

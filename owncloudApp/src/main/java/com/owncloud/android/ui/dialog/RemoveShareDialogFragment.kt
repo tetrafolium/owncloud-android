@@ -93,9 +93,9 @@ class RemoveShareDialogFragment : ConfirmationDialogFragment(), ConfirmationDial
         /**
          * Public factory method to create new RemoveFilesDialogFragment instances.
          *
-         * @param share           [OCShare] to remove.
-         * @param account         [Account] which the share belongs to
-         * @return                Dialog ready to show.
+         * @param share [OCShare] to remove.
+         * @param account [Account] which the share belongs to
+         * @return Dialog ready to show.
          */
         fun newInstance(share: OCShare, account: Account): RemoveShareDialogFragment {
             val frag = RemoveShareDialogFragment()

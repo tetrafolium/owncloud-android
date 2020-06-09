@@ -42,12 +42,12 @@ import com.owncloud.android.domain.sharing.sharees.GetShareesAsyncUseCase
 import com.owncloud.android.domain.sharing.shares.model.ShareType
 import com.owncloud.android.extensions.parseError
 import com.owncloud.android.lib.resources.shares.GetRemoteShareesOperation
+import java.util.HashMap
+import java.util.Locale
 import org.json.JSONException
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import timber.log.Timber
-import java.util.HashMap
-import java.util.Locale
 
 /**
  * Content provider for search suggestions, to search for users and groups existing in an ownCloud server.
@@ -81,7 +81,6 @@ class UsersAndGroupsSearchProvider : ContentProvider() {
             suggestIntentAction = context.resources.getString(R.string.search_suggest_intent_action)
 
             return true
-
         } catch (t: Throwable) {
             Timber.e(t, "Fail creating provider")
             return false
@@ -94,13 +93,13 @@ class UsersAndGroupsSearchProvider : ContentProvider() {
      *
      * Reference: http://developer.android.com/guide/topics/search/adding-custom-suggestions.html#CustomContentProvider
      *
-     * @param uri           Content [Uri], formattted as
+     * @param uri Content [Uri], formattted as
      * "content://com.owncloud.android.providers.UsersAndGroupsSearchProvider/" +
      * [android.app.SearchManager.SUGGEST_URI_PATH_QUERY] + "/" + 'userQuery'
-     * @param projection    Expected to be NULL.
-     * @param selection     Expected to be NULL.
+     * @param projection Expected to be NULL.
+     * @param selection Expected to be NULL.
      * @param selectionArgs Expected to be NULL.
-     * @param sortOrder     Expected to be NULL.
+     * @param sortOrder Expected to be NULL.
      * @return Cursor with users and groups in the ownCloud server that match 'userQuery'.
      */
     override fun query(
@@ -122,8 +121,8 @@ class UsersAndGroupsSearchProvider : ContentProvider() {
 
         val userQuery = uri.lastPathSegment!!.toLowerCase(Locale.getDefault())
 
-        /// need to trust on the AccountUtils to get the current account since the query in the client side is not
-        /// directly started by our code, but from SearchView implementation
+        // / need to trust on the AccountUtils to get the current account since the query in the client side is not
+        // / directly started by our code, but from SearchView implementation
         val account = AccountUtils.getCurrentOwnCloudAccount(context)
 
         val getStoredCapabilitiesUseCase: GetStoredCapabilitiesUseCase by inject()
@@ -192,7 +191,6 @@ class UsersAndGroupsSearchProvider : ContentProvider() {
                             userName
                         else
                             "$userName ($shareWithAdditionalInfo)"
-
                     } catch (e: JSONException) {
                         Timber.e(e, "Exception while parsing shareWithAdditionalInfo")
                     }
@@ -228,9 +226,9 @@ class UsersAndGroupsSearchProvider : ContentProvider() {
 
                     if (displayName != null && dataUri != null) {
                         response.newRow()
-                            .add(count++)             // BaseColumns._ID
-                            .add(displayName)         // SearchManager.SUGGEST_COLUMN_TEXT_1
-                            .add(icon)                // SearchManager.SUGGEST_COLUMN_ICON_1
+                            .add(count++) // BaseColumns._ID
+                            .add(displayName) // SearchManager.SUGGEST_COLUMN_TEXT_1
+                            .add(icon) // SearchManager.SUGGEST_COLUMN_ICON_1
                             .add(dataUri)
                     }
                 }

@@ -28,9 +28,9 @@ import com.owncloud.android.data.capabilities.datasources.mapper.OCCapabilityMap
 import com.owncloud.android.domain.capabilities.model.CapabilityBooleanType
 import com.owncloud.android.testutil.OC_CAPABILITY
 import com.owncloud.android.testutil.livedata.getLastEmittedValue
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

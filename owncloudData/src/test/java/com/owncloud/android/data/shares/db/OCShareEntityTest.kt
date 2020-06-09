@@ -20,8 +20,8 @@
 package com.owncloud.android.data.shares.db
 
 import com.owncloud.android.data.sharing.shares.db.OCShareEntity
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class OCShareEntityTest {

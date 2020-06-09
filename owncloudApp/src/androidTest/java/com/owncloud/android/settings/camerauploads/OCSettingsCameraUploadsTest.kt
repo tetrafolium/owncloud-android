@@ -65,7 +65,7 @@ class OCSettingsCameraUploadsTest {
         mPrefCameraPictureUploads = activityRule.activity.findPreference(cameraPictureUploads) as CheckBoxPreference
         mPrefCameraVideoUploads = activityRule.activity.findPreference(cameraVideoUploads) as CheckBoxPreference
 
-        //Only interested in "Camera Uploads" section, so we can get rid of the other categories.
+        // Only interested in "Camera Uploads" section, so we can get rid of the other categories.
         val preferenceScreen = activityRule.activity.preferenceScreen as PreferenceScreen
         val securityCategory =
             activityRule.activity.findPreference("security_category") as PreferenceCategory
@@ -77,19 +77,19 @@ class OCSettingsCameraUploadsTest {
 
     @After
     fun tearDown() {
-        //Clean preferences
+        // Clean preferences
         PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit()
     }
 
     @Test
     fun checkTitle() {
-        //Asserts
+        // Asserts
         onView(withText(R.string.actionbar_settings)).check(matches(isDisplayed()))
     }
 
     @Test
     fun pictureUploadsView() {
-        //Asserts
+        // Asserts
         onView(withText(R.string.prefs_camera_picture_upload)).check(matches(isDisplayed()))
         onView(withText(R.string.prefs_camera_picture_upload_summary)).check(matches(isDisplayed()))
         onView(withText(R.string.prefs_camera_picture_upload_path_title)).check(doesNotExist())
@@ -98,7 +98,7 @@ class OCSettingsCameraUploadsTest {
 
     @Test
     fun videoUploadsView() {
-        //Asserts
+        // Asserts
         onView(withText(R.string.prefs_camera_video_upload)).check(matches(isDisplayed()))
         onView(withText(R.string.prefs_camera_video_upload_summary)).check(matches(isDisplayed()))
         onView(withText(R.string.prefs_camera_video_upload_path_title)).check(doesNotExist())
@@ -107,7 +107,7 @@ class OCSettingsCameraUploadsTest {
 
     @Test
     fun optionsCameraFolderBehaviour() {
-        //Asserts
+        // Asserts
         onView(
             withText(
                 String.format(
@@ -125,7 +125,7 @@ class OCSettingsCameraUploadsTest {
     fun enablePictureUploads() {
         onView(withText(R.string.prefs_camera_picture_upload)).perform(click())
         onView(withText(android.R.string.ok)).perform(click())
-        //Asserts
+        // Asserts
         assertTrue(mPrefCameraPictureUploads.isChecked)
         onView(withText(R.string.prefs_camera_picture_upload_path_title)).check(matches(isDisplayed()))
         onView(withText(R.string.camera_picture_upload_on_wifi)).check(matches(isDisplayed()))
@@ -135,7 +135,7 @@ class OCSettingsCameraUploadsTest {
     fun enableVideoUploads() {
         onView(withText(R.string.prefs_camera_video_upload)).perform(click())
         onView(withText(android.R.string.ok)).perform(click())
-        //Asserts
+        // Asserts
         assertTrue(mPrefCameraVideoUploads.isChecked)
         onView(withText(R.string.prefs_camera_video_upload_path_title)).check(matches(isDisplayed()))
         onView(withText(R.string.camera_video_upload_on_wifi)).check(matches(isDisplayed()))
@@ -146,7 +146,7 @@ class OCSettingsCameraUploadsTest {
         enableCameraPictureUploads()
         onView(withText(R.string.prefs_camera_picture_upload)).perform(click())
         onView(withText(R.string.common_yes)).perform(click())
-        //Asserts
+        // Asserts
         assertFalse(mPrefCameraPictureUploads.isChecked)
         onView(withText(R.string.prefs_camera_picture_upload_path_title)).check(doesNotExist())
         onView(withText(R.string.camera_picture_upload_on_wifi)).check(doesNotExist())
@@ -157,7 +157,7 @@ class OCSettingsCameraUploadsTest {
         enableCameraPictureUploads()
         onView(withText(R.string.prefs_camera_picture_upload)).perform(click())
         onView(withText(R.string.common_no)).perform(click())
-        //Asserts
+        // Asserts
         assertTrue(mPrefCameraPictureUploads.isChecked)
         onView(withText(R.string.prefs_camera_picture_upload_path_title)).check(matches(isDisplayed()))
         onView(withText(R.string.camera_picture_upload_on_wifi)).check(matches(isDisplayed()))
@@ -168,7 +168,7 @@ class OCSettingsCameraUploadsTest {
         enableCameraVideoUploads()
         onView(withText(R.string.prefs_camera_video_upload)).perform(click())
         onView(withText(R.string.common_yes)).perform(click())
-        //Asserts
+        // Asserts
         assertFalse(mPrefCameraVideoUploads.isChecked)
         onView(withText(R.string.prefs_camera_video_upload_path_title)).check(doesNotExist())
         onView(withText(R.string.camera_video_upload_on_wifi)).check(doesNotExist())
@@ -179,7 +179,7 @@ class OCSettingsCameraUploadsTest {
         enableCameraVideoUploads()
         onView(withText(R.string.prefs_camera_video_upload)).perform(click())
         onView(withText(R.string.common_no)).perform(click())
-        //Asserts
+        // Asserts
         assertTrue(mPrefCameraVideoUploads.isChecked)
         onView(withText(R.string.prefs_camera_video_upload_path_title)).check(matches(isDisplayed()))
         onView(withText(R.string.camera_video_upload_on_wifi)).check(matches(isDisplayed()))
@@ -188,7 +188,7 @@ class OCSettingsCameraUploadsTest {
     @Test
     fun cameraFolderView() {
         enableCameraPictureUploads()
-        //Asserts
+        // Asserts
         onView(
             withText(
                 String.format(
@@ -207,7 +207,7 @@ class OCSettingsCameraUploadsTest {
             Environment.DIRECTORY_DCIM
         ).absolutePath + "/Camera"
         Intents.init()
-        //Asserts
+        // Asserts
         onView(
             withText(
                 String.format(
@@ -228,7 +228,7 @@ class OCSettingsCameraUploadsTest {
         enableCameraPictureUploads()
         onData(PreferenceMatchers.withTitle(R.string.prefs_camera_upload_behaviour_title)).perform(click())
         onView(withText(R.string.pref_behaviour_entries_move)).perform(click())
-        //Asserts
+        // Asserts
         onView(withText(R.string.pref_behaviour_entries_move)).check(matches(isDisplayed()))
     }
 

@@ -48,7 +48,7 @@ class OCUserRepositoryTest {
 
     @Test(expected = Exception::class)
     fun checkPathExistenceExistsNoConnection() {
-        every { remoteUserDataSource.getUserInfo() }  throws Exception()
+        every { remoteUserDataSource.getUserInfo() } throws Exception()
 
         ocUserRepository.getUserInfo()
 

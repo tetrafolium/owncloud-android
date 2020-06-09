@@ -39,7 +39,6 @@ inline fun <reified T> LiveData<T>.getEmittedValues(
                 removeObserver(this)
             }
             latch.countDown()
-
         }
     }
     observeForever(observer)

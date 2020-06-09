@@ -51,14 +51,14 @@ import com.owncloud.android.presentation.viewmodels.capabilities.OCCapabilityVie
 import com.owncloud.android.presentation.viewmodels.sharing.OCShareViewModel
 import com.owncloud.android.ui.dialog.ExpirationDatePickerDialogFragment
 import com.owncloud.android.utils.DateUtils
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
 import kotlinx.android.synthetic.main.share_public_dialog.*
 import kotlinx.android.synthetic.main.share_public_dialog.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class PublicShareDialogFragment : DialogFragment() {
 
@@ -104,7 +104,7 @@ class PublicShareDialogFragment : DialogFragment() {
         get() = view != null && shareViaLinkPasswordValue.inputType and
                 InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
 
-    private// Parse expiration date and convert it to milliseconds
+    private // Parse expiration date and convert it to milliseconds
     // remember: format is defined by date picker
     val expirationDateValueInMillis: Long
         get() {
@@ -117,7 +117,6 @@ class PublicShareDialogFragment : DialogFragment() {
                 } catch (e: ParseException) {
                     Timber.e(e, "Error reading expiration date from input field")
                 }
-
             }
             return publicLinkExpirationDateInMillis
         }
@@ -166,7 +165,8 @@ class PublicShareDialogFragment : DialogFragment() {
     private fun updating(): Boolean = publicShare != null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.share_public_dialog, container, false)
@@ -210,7 +210,6 @@ class PublicShareDialogFragment : DialogFragment() {
                 view.shareViaLinkExpirationValue?.visibility = View.VISIBLE
                 view.shareViaLinkExpirationValue?.text = formattedDate
             }
-
         } else {
             view.shareViaLinkNameValue?.setText(arguments?.getString(ARG_DEFAULT_LINK_NAME, ""))
         }
@@ -346,7 +345,7 @@ class PublicShareDialogFragment : DialogFragment() {
      * When (hasFocus), the button to toggle password visibility is shown.
      * When (!hasFocus), the button is made invisible and the password is hidden.
      *
-     * @param hasFocus          'True' if focus is received, 'false' if is lost
+     * @param hasFocus 'True' if focus is received, 'false' if is lost
      */
     private fun onPasswordFocusChanged(hasFocus: Boolean) {
         if (hasFocus) {
@@ -510,7 +509,7 @@ class PublicShareDialogFragment : DialogFragment() {
          * Called by R.id.shareViaLinkPasswordSwitch to set or clear the password.
          *
          * @param switchView [SwitchCompat] toggled by the user, R.id.shareViaLinkPasswordSwitch
-         * @param isChecked  New switch state.
+         * @param isChecked New switch state.
          */
         override fun onCheckedChanged(switchView: CompoundButton, isChecked: Boolean) {
             if (isChecked) {
@@ -522,7 +521,6 @@ class PublicShareDialogFragment : DialogFragment() {
                     Context.INPUT_METHOD_SERVICE
                 ) as InputMethodManager?
                 mgr?.showSoftInput(shareViaLinkPasswordValue, InputMethodManager.SHOW_IMPLICIT)
-
             } else {
                 shareViaLinkPasswordValue?.visibility = View.GONE
                 shareViaLinkPasswordValue?.text?.clear()
@@ -552,7 +550,7 @@ class PublicShareDialogFragment : DialogFragment() {
          * Called by R.id.shareViaLinkExpirationSwitch to set or clear the expiration date.
          *
          * @param switchView [SwitchCompat] toggled by the user, R.id.shareViaLinkExpirationSwitch
-         * @param isChecked  New switch state.
+         * @param isChecked New switch state.
          */
         override fun onCheckedChanged(switchView: CompoundButton, isChecked: Boolean) {
             if (!isResumed) {
@@ -791,7 +789,7 @@ class PublicShareDialogFragment : DialogFragment() {
          *
          * Dialog shown this way is intended to CREATE a new public share.
          *
-         * @param   fileToShare     File to share with a new public share.
+         * @param fileToShare File to share with a new public share.
          */
         fun newInstanceToCreate(
             fileToShare: OCFile,
@@ -812,7 +810,7 @@ class PublicShareDialogFragment : DialogFragment() {
          *
          * Dialog shown this way is intended to UPDATE an existing public share.
          *
-         * @param   publicShare           Public share to update.
+         * @param publicShare Public share to update.
          */
         fun newInstanceToUpdate(
             fileToShare: OCFile,

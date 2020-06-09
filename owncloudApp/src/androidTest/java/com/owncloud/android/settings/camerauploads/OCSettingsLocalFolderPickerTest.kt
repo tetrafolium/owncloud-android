@@ -49,8 +49,8 @@ class OCSettingsLocalFolderPickerTest {
         onView(withId(R.id.folder_picker_btn_home)).check(matches(isDisplayed()))
     }
 
-    //Activity is finished after assertion is checked. Will think whether the following
-    //two tests make sense
+    // Activity is finished after assertion is checked. Will think whether the following
+    // two tests make sense
     @Ignore
     @Test
     fun cancelButtonDismiss() {

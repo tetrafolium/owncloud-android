@@ -83,7 +83,7 @@ class OCCapabilityViewModelTest {
         Dispatchers.setMain(testCoroutineDispatcher)
         ocContextProvider = mockk(relaxed = true)
 
-        //TODO: Add tests when is not connected
+        // TODO: Add tests when is not connected
         every { ocContextProvider.isConnected() } returns true
 
         Dispatchers.setMain(testCoroutineDispatcher)

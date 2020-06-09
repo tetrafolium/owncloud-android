@@ -20,18 +20,18 @@
 package com.owncloud.android.data.file.datasource
 
 import com.owncloud.android.data.files.datasources.implementation.OCRemoteFileDataSource
-import com.owncloud.android.lib.resources.files.services.implementation.OCFileService
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
+import com.owncloud.android.lib.resources.files.services.implementation.OCFileService
 import com.owncloud.android.testutil.OC_SERVER_INFO
 import com.owncloud.android.utils.createRemoteOperationResultMock
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.lang.Exception
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import java.lang.Exception
 
 class OCRemoteFileDataSourceTest {
     private lateinit var ocRemoteFileDataSource: OCRemoteFileDataSource

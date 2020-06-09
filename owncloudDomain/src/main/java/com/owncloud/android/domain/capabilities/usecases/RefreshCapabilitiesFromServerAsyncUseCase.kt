@@ -19,8 +19,8 @@
 
 package com.owncloud.android.domain.capabilities.usecases
 
-import com.owncloud.android.domain.capabilities.CapabilityRepository
 import com.owncloud.android.domain.BaseUseCaseWithResult
+import com.owncloud.android.domain.capabilities.CapabilityRepository
 
 class RefreshCapabilitiesFromServerAsyncUseCase(
     private val capabilityRepository: CapabilityRepository

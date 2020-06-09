@@ -37,7 +37,6 @@ val MIGRATION_28_29 = object : Migration(28, 29) {
             )
             execSQL("DROP TABLE ${ProviderTableMeta.CAPABILITIES_TABLE_NAME}")
             execSQL("ALTER TABLE ${ProviderTableMeta.CAPABILITIES_TABLE_NAME}2 RENAME TO ${ProviderTableMeta.CAPABILITIES_TABLE_NAME}")
-
         }
     }
 }

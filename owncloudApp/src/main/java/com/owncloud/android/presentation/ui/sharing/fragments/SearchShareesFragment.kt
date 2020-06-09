@@ -98,7 +98,8 @@ class SearchShareesFragment : Fragment(),
      * {@inheritDoc}
      */
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -113,21 +114,21 @@ class SearchShareesFragment : Fragment(),
         searchView.setSearchableInfo(
             searchManager.getSearchableInfo(
                 requireActivity().componentName
-            )   // assumes parent activity is the searchable activity
+            ) // assumes parent activity is the searchable activity
         )
-        searchView.setIconifiedByDefault(false)    // do not iconify the widget; expand it by default
+        searchView.setIconifiedByDefault(false) // do not iconify the widget; expand it by default
 
         searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI // avoid fullscreen with softkeyboard
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 Timber.v("onQueryTextSubmit intercepted, query: $query")
-                return true    // return true to prevent the query is processed to be queried;
+                return true // return true to prevent the query is processed to be queried;
                 // a user / group will be picked only if selected in the list of suggestions
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                return false   // let it for the parent listener in the hierarchy / default behaviour
+                return false // let it for the parent listener in the hierarchy / default behaviour
             }
         })
 
@@ -239,8 +240,8 @@ class SearchShareesFragment : Fragment(),
         /**
          * Public factory method to create new SearchShareesFragment instances.
          *
-         * @param fileToShare   An [OCFile] to be shared
-         * @param account       The ownCloud account containing fileToShare
+         * @param fileToShare An [OCFile] to be shared
+         * @param account The ownCloud account containing fileToShare
          * @return A new instance of fragment SearchShareesFragment.
          */
         fun newInstance(fileToShare: OCFile, account: Account) = SearchShareesFragment().apply {

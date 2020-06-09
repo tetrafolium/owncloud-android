@@ -83,7 +83,6 @@ class OCLocalAuthenticationDataSourceTest {
             OC_ACCOUNT.type
         )
         mockkStatic(PreferenceManager::class)
-
     }
 
     @Test

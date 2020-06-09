@@ -80,9 +80,9 @@ class ErrorMessageAdapter {
          * Return an internationalized user message corresponding to an operation result
          * and the operation performed.
          *
-         * @param result                Result of a [RemoteOperation] performed.
-         * @param operation             Operation performed.
-         * @param resources             Reference to app resources, for i18n.
+         * @param result Result of a [RemoteOperation] performed.
+         * @param operation Operation performed.
+         * @param resources Reference to app resources, for i18n.
          * @return User message corresponding to 'result' and 'operation'
          */
         fun getResultMessage(
@@ -172,8 +172,8 @@ class ErrorMessageAdapter {
          * Return a user message corresponding to an operation result with no knowledge about the operation
          * performed.
          *
-         * @param result        Result of a [RemoteOperation] performed.
-         * @param res           Reference to app resources, for i18n.
+         * @param result Result of a [RemoteOperation] performed.
+         * @param res Reference to app resources, for i18n.
          * @return User message corresponding to 'result'.
          */
         private fun getCommonMessageForResult(
@@ -213,8 +213,8 @@ class ErrorMessageAdapter {
         /**
          * Return a user message corresponding to a generic error for a given operation.
          *
-         * @param operation     Operation performed.
-         * @param res           Reference to app resources, for i18n.
+         * @param operation Operation performed.
+         * @param res Reference to app resources, for i18n.
          * @return User message corresponding to a generic error of 'operation'.
          */
         private fun getGenericErrorMessageForOperation(

@@ -23,33 +23,24 @@ package com.owncloud.android.utils;
  * Represents a session to an ownCloud instance
  */
 public class OwnCloudSession {
-    private String mSessionName;
-    private String mSessionUrl;
-    private int mEntryId;
+  private String mSessionName;
+  private String mSessionUrl;
+  private int mEntryId;
 
-    public OwnCloudSession(final String name, final String url, final int entryId) {
-        mSessionName = name;
-        mSessionUrl = url;
-        mEntryId = entryId;
-    }
+  public OwnCloudSession(final String name, final String url,
+                         final int entryId) {
+    mSessionName = name;
+    mSessionUrl = url;
+    mEntryId = entryId;
+  }
 
-    public void setName(final String name) {
-        mSessionName = name;
-    }
+  public void setName(final String name) { mSessionName = name; }
 
-    public String getName() {
-        return mSessionName;
-    }
+  public String getName() { return mSessionName; }
 
-    public void setUrl(final String url) {
-        mSessionUrl = url;
-    }
+  public void setUrl(final String url) { mSessionUrl = url; }
 
-    public String getUrl() {
-        return mSessionUrl;
-    }
+  public String getUrl() { return mSessionUrl; }
 
-    public int getEntryId() {
-        return mEntryId;
-    }
+  public int getEntryId() { return mEntryId; }
 }

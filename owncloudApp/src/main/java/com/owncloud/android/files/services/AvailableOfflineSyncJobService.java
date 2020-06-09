@@ -19,13 +19,14 @@
 
 package com.owncloud.android.files.services;
 
+import static com.owncloud.android.ui.notifications.NotificationUtils.notifyConflict;
+
 import android.accounts.Account;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.os.AsyncTask;
-
 import androidx.core.util.Pair;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.authentication.AccountUtils;
@@ -35,146 +36,160 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.operations.SynchronizeFileOperation;
 import com.owncloud.android.utils.Extras;
 import com.owncloud.android.utils.FileStorageUtils;
-import timber.log.Timber;
-
 import java.io.File;
 import java.util.List;
-
-import static com.owncloud.android.ui.notifications.NotificationUtils.notifyConflict;
+import timber.log.Timber;
 
 /**
- * Job to watch for local changes in available offline files (formerly known as kept-in-sync files) and try to
- * synchronize them with the OC server.
- * This job should be executed every 15 minutes since a file is set as available offline for the first time and stopped
- * when there's no available offline files
+ * Job to watch for local changes in available offline files (formerly known as
+ * kept-in-sync files) and try to synchronize them with the OC server. This job
+ * should be executed every 15 minutes since a file is set as available offline
+ * for the first time and stopped when there's no available offline files
  */
 public class AvailableOfflineSyncJobService extends JobService {
 
-    @Override
-    public boolean onStartJob(final JobParameters jobParameters) {
-        Timber.d("Starting job to sync available offline files");
+  @Override
+  public boolean onStartJob(final JobParameters jobParameters) {
+    Timber.d("Starting job to sync available offline files");
 
-        new AvailableOfflineJobTask(this).execute(jobParameters);
+    new AvailableOfflineJobTask(this).execute(jobParameters);
 
-        return true; // True because we have a thread still running in background
-    }
+    return true; // True because we have a thread still running in background
+  }
 
-    private static class AvailableOfflineJobTask extends AsyncTask<JobParameters, Void, JobParameters> {
+  private static class AvailableOfflineJobTask
+      extends AsyncTask<JobParameters, Void, JobParameters> {
 
-        private final JobService mAvailableOfflineJobService;
+    private final JobService mAvailableOfflineJobService;
 
-        public AvailableOfflineJobTask(final JobService mAvailableOfflineJobService) {
-            this.mAvailableOfflineJobService = mAvailableOfflineJobService;
-        }
-
-        @Override
-        protected JobParameters doInBackground(final JobParameters... jobParams) {
-
-            String accountName = jobParams[0].getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
-
-            Account account = AccountUtils.getOwnCloudAccountByName(mAvailableOfflineJobService, accountName);
-
-            FileDataStorageManager fileDataStorageManager = new FileDataStorageManager(
-                mAvailableOfflineJobService, account, mAvailableOfflineJobService.getContentResolver()
-            );
-
-            List<Pair<OCFile, String>> availableOfflineFilesFromEveryAccount = fileDataStorageManager.
-                    getAvailableOfflineFilesFromEveryAccount();
-
-            // Cancel periodic job if there's no available offline files to watch for local changes
-            if (availableOfflineFilesFromEveryAccount.isEmpty()) {
-                cancelPeriodicJob(jobParams[0].getJobId());
-                return jobParams[0];
-            } else {
-                syncAvailableOfflineFiles(availableOfflineFilesFromEveryAccount);
-            }
-
-            return jobParams[0];
-        }
-
-        private void syncAvailableOfflineFiles(final List<Pair<OCFile, String>> availableOfflineFilesForAccount) {
-            for (Pair<OCFile, String> fileForAccount : availableOfflineFilesForAccount) {
-
-                String localPath = fileForAccount.first.getStoragePath();
-
-                if (localPath == null) {
-                    localPath = FileStorageUtils.getDefaultSavePathFor(
-                                    fileForAccount.second, // Account name
-                                    fileForAccount.first   // OCFile
-                                );
-                }
-
-                File localFile = new File(localPath);
-
-                if (localFile.lastModified() <= fileForAccount.first.getLastSyncDateForData()
-                        && MainApp.Companion.isDeveloper()) {
-                    Timber.i("File " + fileForAccount.first.getRemotePath() + " already synchronized "
-                             + "in account " + fileForAccount.second + ", ignoring");
-                    continue;
-                }
-
-                startSyncOperation(fileForAccount.first, fileForAccount.second);
-            }
-        }
-
-        /**
-         * Triggers an operation to synchronize the contents of a recently modified available offline file with
-         * its remote counterpart in the associated ownCloud account.
-         *
-         * @param availableOfflineFile file to synchronize
-         * @param accountName          account to synchronize the available offline file with
-         */
-        private void startSyncOperation(final OCFile availableOfflineFile, final String accountName) {
-            if (MainApp.Companion.isDeveloper()) {
-                Timber.i("Requested synchronization for file %1s in account %2s",
-                         availableOfflineFile.getRemotePath(), accountName);
-            }
-
-            Account account = AccountUtils.getOwnCloudAccountByName(mAvailableOfflineJobService, accountName);
-
-            FileDataStorageManager storageManager =
-                new FileDataStorageManager(
-                mAvailableOfflineJobService, account, mAvailableOfflineJobService.getContentResolver()
-            );
-
-            SynchronizeFileOperation synchronizeFileOperation =
-                new SynchronizeFileOperation(availableOfflineFile, null, account, false,
-                                             mAvailableOfflineJobService, true);
-
-            RemoteOperationResult result = synchronizeFileOperation.
-                                           execute(storageManager, mAvailableOfflineJobService);
-
-            if (result.getCode() == RemoteOperationResult.ResultCode.SYNC_CONFLICT) {
-                notifyConflict(availableOfflineFile, account, mAvailableOfflineJobService);
-            }
-        }
-
-        /**
-         * Cancel the periodic job
-         *
-         * @param jobId id of the job to cancel
-         */
-        private void cancelPeriodicJob(final int jobId) {
-            JobScheduler jobScheduler = (JobScheduler) mAvailableOfflineJobService.getSystemService(
-                                            Context.JOB_SCHEDULER_SERVICE);
-
-            jobScheduler.cancel(jobId);
-
-            Timber.d("No available offline files to check, cancelling the periodic job");
-        }
-
-        @Override
-        protected void onPostExecute(final JobParameters jobParameters) {
-            mAvailableOfflineJobService.jobFinished(jobParameters, false);
-        }
+    public AvailableOfflineJobTask(
+        final JobService mAvailableOfflineJobService) {
+      this.mAvailableOfflineJobService = mAvailableOfflineJobService;
     }
 
     @Override
-    /*
-     * Called by the system if the job is cancelled before being finished
+    protected JobParameters doInBackground(final JobParameters... jobParams) {
+
+      String accountName =
+          jobParams[0].getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
+
+      Account account = AccountUtils.getOwnCloudAccountByName(
+          mAvailableOfflineJobService, accountName);
+
+      FileDataStorageManager fileDataStorageManager =
+          new FileDataStorageManager(
+              mAvailableOfflineJobService, account,
+              mAvailableOfflineJobService.getContentResolver());
+
+      List<Pair<OCFile, String>> availableOfflineFilesFromEveryAccount =
+          fileDataStorageManager.getAvailableOfflineFilesFromEveryAccount();
+
+      // Cancel periodic job if there's no available offline files to watch for
+      // local changes
+      if (availableOfflineFilesFromEveryAccount.isEmpty()) {
+        cancelPeriodicJob(jobParams[0].getJobId());
+        return jobParams[0];
+      } else {
+        syncAvailableOfflineFiles(availableOfflineFilesFromEveryAccount);
+      }
+
+      return jobParams[0];
+    }
+
+    private void syncAvailableOfflineFiles(
+        final List<Pair<OCFile, String>> availableOfflineFilesForAccount) {
+      for (Pair<OCFile, String> fileForAccount :
+           availableOfflineFilesForAccount) {
+
+        String localPath = fileForAccount.first.getStoragePath();
+
+        if (localPath == null) {
+          localPath = FileStorageUtils.getDefaultSavePathFor(
+              fileForAccount.second, // Account name
+              fileForAccount.first   // OCFile
+          );
+        }
+
+        File localFile = new File(localPath);
+
+        if (localFile.lastModified() <=
+                fileForAccount.first.getLastSyncDateForData() &&
+            MainApp.Companion.isDeveloper()) {
+          Timber.i("File " + fileForAccount.first.getRemotePath() +
+                   " already synchronized "
+                   + "in account " + fileForAccount.second + ", ignoring");
+          continue;
+        }
+
+        startSyncOperation(fileForAccount.first, fileForAccount.second);
+      }
+    }
+
+    /**
+     * Triggers an operation to synchronize the contents of a recently modified
+     * available offline file with its remote counterpart in the associated
+     * ownCloud account.
+     *
+     * @param availableOfflineFile file to synchronize
+     * @param accountName          account to synchronize the available offline
+     *     file with
      */
-    public boolean onStopJob(final JobParameters jobParameters) {
-        Timber.d("Job was cancelled before finishing.");
-        return true;
+    private void startSyncOperation(final OCFile availableOfflineFile,
+                                    final String accountName) {
+      if (MainApp.Companion.isDeveloper()) {
+        Timber.i("Requested synchronization for file %1s in account %2s",
+                 availableOfflineFile.getRemotePath(), accountName);
+      }
+
+      Account account = AccountUtils.getOwnCloudAccountByName(
+          mAvailableOfflineJobService, accountName);
+
+      FileDataStorageManager storageManager = new FileDataStorageManager(
+          mAvailableOfflineJobService, account,
+          mAvailableOfflineJobService.getContentResolver());
+
+      SynchronizeFileOperation synchronizeFileOperation =
+          new SynchronizeFileOperation(availableOfflineFile, null, account,
+                                       false, mAvailableOfflineJobService,
+                                       true);
+
+      RemoteOperationResult result = synchronizeFileOperation.execute(
+          storageManager, mAvailableOfflineJobService);
+
+      if (result.getCode() == RemoteOperationResult.ResultCode.SYNC_CONFLICT) {
+        notifyConflict(availableOfflineFile, account,
+                       mAvailableOfflineJobService);
+      }
     }
+
+    /**
+     * Cancel the periodic job
+     *
+     * @param jobId id of the job to cancel
+     */
+    private void cancelPeriodicJob(final int jobId) {
+      JobScheduler jobScheduler =
+          (JobScheduler)mAvailableOfflineJobService.getSystemService(
+              Context.JOB_SCHEDULER_SERVICE);
+
+      jobScheduler.cancel(jobId);
+
+      Timber.d(
+          "No available offline files to check, cancelling the periodic job");
+    }
+
+    @Override
+    protected void onPostExecute(final JobParameters jobParameters) {
+      mAvailableOfflineJobService.jobFinished(jobParameters, false);
+    }
+  }
+
+  @Override
+  /*
+   * Called by the system if the job is cancelled before being finished
+   */
+  public boolean onStopJob(final JobParameters jobParameters) {
+    Timber.d("Job was cancelled before finishing.");
+    return true;
+  }
 }

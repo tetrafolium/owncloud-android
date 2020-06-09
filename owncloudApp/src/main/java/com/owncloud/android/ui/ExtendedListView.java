@@ -24,54 +24,55 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.ListView;
-
 import timber.log.Timber;
 
 /**
- * ListView allowing to specify the position of an item that should be centered in the visible area, if possible.
+ * ListView allowing to specify the position of an item that should be centered
+ * in the visible area, if possible.
  *
- * The cleanest way I found to overcome the problem due to getHeight() returns 0 until the view is really drawn.
+ * The cleanest way I found to overcome the problem due to getHeight() returns 0
+ * until the view is really drawn.
  */
 public class ExtendedListView extends ListView {
 
-    private int mPositionToSetAndCenter = 0;
+  private int mPositionToSetAndCenter = 0;
 
-    public ExtendedListView(final Context context) {
-        super(context);
+  public ExtendedListView(final Context context) { super(context); }
+
+  public ExtendedListView(final Context context, final AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  public ExtendedListView(final Context context, final AttributeSet attrs,
+                          final int defStyle) {
+    super(context, attrs, defStyle);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   *
+   */
+  @Override
+  protected void onDraw(final Canvas canvas) {
+    super.onDraw(canvas);
+    if (mPositionToSetAndCenter > 0) {
+      Timber.v("Centering around position %s", mPositionToSetAndCenter);
+      this.setSelectionFromTop(mPositionToSetAndCenter, getHeight() / 2);
+      mPositionToSetAndCenter = 0;
     }
+  }
 
-    public ExtendedListView(final Context context, final AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public ExtendedListView(final Context context, final AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     *
-     */
-    @Override
-    protected void onDraw(final Canvas canvas) {
-        super.onDraw(canvas);
-        if (mPositionToSetAndCenter > 0) {
-            Timber.v("Centering around position %s", mPositionToSetAndCenter);
-            this.setSelectionFromTop(mPositionToSetAndCenter, getHeight() / 2);
-            mPositionToSetAndCenter = 0;
-        }
-    }
-
-    /**
-     * Public method to set the position of the item that should be centered in the visible area of the view.
-     *
-     * The position is saved here and checked in onDraw().
-     *
-     * @param position         Position (in the list of items) of the item to center in the visible area.
-     */
-    public void setAndCenterSelection(final int position) {
-        mPositionToSetAndCenter = position;
-    }
-
+  /**
+   * Public method to set the position of the item that should be centered in
+   * the visible area of the view.
+   *
+   * The position is saved here and checked in onDraw().
+   *
+   * @param position         Position (in the list of items) of the item to
+   *     center in the visible area.
+   */
+  public void setAndCenterSelection(final int position) {
+    mPositionToSetAndCenter = position;
+  }
 }

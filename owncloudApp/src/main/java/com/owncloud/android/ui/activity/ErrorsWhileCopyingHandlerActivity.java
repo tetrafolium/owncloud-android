@@ -38,7 +38,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
@@ -48,243 +47,256 @@ import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.ui.dialog.LoadingDialog;
 import com.owncloud.android.utils.FileStorageUtils;
 import com.owncloud.android.utils.PreferenceUtils;
-import timber.log.Timber;
-
 import java.io.File;
 import java.util.ArrayList;
+import timber.log.Timber;
 
 /**
- * Activity reporting errors occurred when local files uploaded to an ownCloud account with an app
- * in version under 1.3.16 where being copied to the ownCloud local folder.
+ * Activity reporting errors occurred when local files uploaded to an ownCloud
+ * account with an app in version under 1.3.16 where being copied to the
+ * ownCloud local folder.
  *
- * Allows the user move the files to the ownCloud local folder. let them unlinked to the remote
- * files.
+ * Allows the user move the files to the ownCloud local folder. let them
+ * unlinked to the remote files.
  *
- * Shown when the error notification summarizing the list of errors is clicked by the user.
+ * Shown when the error notification summarizing the list of errors is clicked
+ * by the user.
  */
-public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
-    implements OnClickListener {
+public class ErrorsWhileCopyingHandlerActivity
+    extends AppCompatActivity implements OnClickListener {
 
-    public static final String EXTRA_ACCOUNT =
-        ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".KEY_ACCOUNT";
-    public static final String EXTRA_LOCAL_PATHS =
-        ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".EXTRA_LOCAL_PATHS";
-    public static final String EXTRA_REMOTE_PATHS =
-        ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() + ".EXTRA_REMOTE_PATHS";
+  public static final String EXTRA_ACCOUNT =
+      ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() +
+      ".KEY_ACCOUNT";
+  public static final String EXTRA_LOCAL_PATHS =
+      ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() +
+      ".EXTRA_LOCAL_PATHS";
+  public static final String EXTRA_REMOTE_PATHS =
+      ErrorsWhileCopyingHandlerActivity.class.getCanonicalName() +
+      ".EXTRA_REMOTE_PATHS";
 
-    private static final String WAIT_DIALOG_TAG = "WAIT_DIALOG";
+  private static final String WAIT_DIALOG_TAG = "WAIT_DIALOG";
 
-    protected Account mAccount;
-    protected FileDataStorageManager mStorageManager;
-    protected ArrayList<String> mLocalPaths;
-    protected ArrayList<String> mRemotePaths;
-    protected ArrayAdapter<String> mAdapter;
-    protected Handler mHandler;
-    private DialogFragment mCurrentDialog;
+  protected Account mAccount;
+  protected FileDataStorageManager mStorageManager;
+  protected ArrayList<String> mLocalPaths;
+  protected ArrayList<String> mRemotePaths;
+  protected ArrayAdapter<String> mAdapter;
+  protected Handler mHandler;
+  private DialogFragment mCurrentDialog;
+
+  /**
+   * {@link}
+   */
+  @Override
+  protected void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    /// read extra parameters in intent
+    Intent intent = getIntent();
+    mAccount = intent.getParcelableExtra(EXTRA_ACCOUNT);
+    mRemotePaths = intent.getStringArrayListExtra(EXTRA_REMOTE_PATHS);
+    mLocalPaths = intent.getStringArrayListExtra(EXTRA_LOCAL_PATHS);
+    mStorageManager =
+        new FileDataStorageManager(this, mAccount, getContentResolver());
+    mHandler = new Handler();
+    if (mCurrentDialog != null) {
+      mCurrentDialog.dismiss();
+      mCurrentDialog = null;
+    }
+
+    /// load generic layout
+    setContentView(R.layout.generic_explanation);
+
+    /// customize text message
+    TextView textView = findViewById(R.id.message);
+    String appName = getString(R.string.app_name);
+    String message = String.format(
+        getString(R.string.sync_foreign_files_forgotten_explanation), appName,
+        appName, appName, appName, mAccount.name);
+    textView.setText(message);
+    textView.setMovementMethod(new ScrollingMovementMethod());
+
+    // Allow or disallow touches with other visible windows
+    LinearLayout alertDialogListViewLayout =
+        findViewById(R.id.alertDialogListViewLayout);
+    alertDialogListViewLayout.setFilterTouchesWhenObscured(
+        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
+
+    /// load the list of local and remote files that failed
+    ListView listView = findViewById(R.id.list);
+    if (mLocalPaths != null && mLocalPaths.size() > 0) {
+      mAdapter = new ErrorsWhileCopyingListAdapter();
+      listView.setAdapter(mAdapter);
+    } else {
+      listView.setVisibility(View.GONE);
+      mAdapter = null;
+    }
+
+    /// customize buttons
+    Button cancelBtn = findViewById(R.id.cancel);
+    Button okBtn = findViewById(R.id.ok);
+
+    okBtn.setText(R.string.foreign_files_move);
+    cancelBtn.setOnClickListener(this);
+    okBtn.setOnClickListener(this);
+  }
+
+  /**
+   * Customized adapter, showing the local files as main text in two-lines list
+   * item and the remote files as the secondary text.
+   */
+  public class ErrorsWhileCopyingListAdapter extends ArrayAdapter<String> {
+
+    ErrorsWhileCopyingListAdapter() {
+      super(ErrorsWhileCopyingHandlerActivity.this,
+            android.R.layout.two_line_list_item, android.R.id.text1,
+            mLocalPaths);
+    }
+
+    @Override
+    public boolean isEnabled(final int position) {
+      return false;
+    }
 
     /**
-     * {@link}
+     * {@inheritDoc}
      */
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        /// read extra parameters in intent
-        Intent intent = getIntent();
-        mAccount = intent.getParcelableExtra(EXTRA_ACCOUNT);
-        mRemotePaths = intent.getStringArrayListExtra(EXTRA_REMOTE_PATHS);
-        mLocalPaths = intent.getStringArrayListExtra(EXTRA_LOCAL_PATHS);
-        mStorageManager = new FileDataStorageManager(this, mAccount, getContentResolver());
-        mHandler = new Handler();
-        if (mCurrentDialog != null) {
-            mCurrentDialog.dismiss();
-            mCurrentDialog = null;
+    public View getView(final int position, final View convertView,
+                        final ViewGroup parent) {
+      View view = convertView;
+      if (view == null) {
+        LayoutInflater vi =
+            (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = vi.inflate(android.R.layout.two_line_list_item, null);
+      }
+      if (view != null) {
+        String localPath = getItem(position);
+        if (localPath != null) {
+          TextView text1 = view.findViewById(android.R.id.text1);
+          if (text1 != null) {
+            text1.setText(String.format(
+                getString(R.string.foreign_files_local_text), localPath));
+          }
         }
-
-        /// load generic layout
-        setContentView(R.layout.generic_explanation);
-
-        /// customize text message
-        TextView textView = findViewById(R.id.message);
-        String appName = getString(R.string.app_name);
-        String message = String.format(getString(R.string.sync_foreign_files_forgotten_explanation),
-                                       appName, appName, appName, appName, mAccount.name);
-        textView.setText(message);
-        textView.setMovementMethod(new ScrollingMovementMethod());
-
-        // Allow or disallow touches with other visible windows
-        LinearLayout alertDialogListViewLayout = findViewById(R.id.alertDialogListViewLayout);
-        alertDialogListViewLayout.setFilterTouchesWhenObscured(
-            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
-        );
-
-        /// load the list of local and remote files that failed
-        ListView listView = findViewById(R.id.list);
-        if (mLocalPaths != null && mLocalPaths.size() > 0) {
-            mAdapter = new ErrorsWhileCopyingListAdapter();
-            listView.setAdapter(mAdapter);
-        } else {
-            listView.setVisibility(View.GONE);
-            mAdapter = null;
+        if (mRemotePaths != null && mRemotePaths.size() > 0 && position >= 0 &&
+            position < mRemotePaths.size()) {
+          TextView text2 = view.findViewById(android.R.id.text2);
+          String remotePath = mRemotePaths.get(position);
+          if (text2 != null && remotePath != null) {
+            text2.setText(String.format(
+                getString(R.string.foreign_files_remote_text), remotePath));
+          }
         }
-
-        /// customize buttons
-        Button cancelBtn = findViewById(R.id.cancel);
-        Button okBtn = findViewById(R.id.ok);
-
-        okBtn.setText(R.string.foreign_files_move);
-        cancelBtn.setOnClickListener(this);
-        okBtn.setOnClickListener(this);
+      }
+      return view;
     }
+  }
+
+  /**
+   * Listener method to perform the MOVE / CANCEL action available in this
+   * activity.
+   *
+   * @param v     Clicked view (button MOVE or CANCEL)
+   */
+  @Override
+  public void onClick(final View v) {
+    if (v.getId() == R.id.ok) {
+      /// perform movement operation in background thread
+      Timber.d("Clicked MOVE, start movement");
+      new MoveFilesTask().execute();
+
+    } else if (v.getId() == R.id.cancel) {
+      /// just finish
+      Timber.d("Clicked CANCEL, bye");
+      finish();
+
+    } else {
+      Timber.e("Clicked phantom button, id: %s", v.getId());
+    }
+  }
+
+  /**
+   * Asynchronous task performing the move of all the local files to the
+   * ownCloud folder.
+   */
+  private class MoveFilesTask extends AsyncTask<Void, Void, Boolean> {
 
     /**
-     * Customized adapter, showing the local files as main text in two-lines list item and the
-     * remote files as the secondary text.
+     * Updates the UI before trying the movement
      */
-    public class ErrorsWhileCopyingListAdapter extends ArrayAdapter<String> {
-
-        ErrorsWhileCopyingListAdapter() {
-            super(ErrorsWhileCopyingHandlerActivity.this, android.R.layout.two_line_list_item,
-                  android.R.id.text1, mLocalPaths);
-        }
-
-        @Override
-        public boolean isEnabled(final int position) {
-            return false;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public View getView(final int position, final View convertView, final ViewGroup parent) {
-            View view = convertView;
-            if (view == null) {
-                LayoutInflater vi = (LayoutInflater) getSystemService(
-                                        Context.LAYOUT_INFLATER_SERVICE);
-                view = vi.inflate(android.R.layout.two_line_list_item, null);
-            }
-            if (view != null) {
-                String localPath = getItem(position);
-                if (localPath != null) {
-                    TextView text1 = view.findViewById(android.R.id.text1);
-                    if (text1 != null) {
-                        text1.setText(String.format(getString(R.string.foreign_files_local_text), localPath));
-                    }
-                }
-                if (mRemotePaths != null && mRemotePaths.size() > 0 && position >= 0
-                        && position < mRemotePaths.size()) {
-                    TextView text2 = view.findViewById(android.R.id.text2);
-                    String remotePath = mRemotePaths.get(position);
-                    if (text2 != null && remotePath != null) {
-                        text2.setText(String.format(getString(R.string.foreign_files_remote_text), remotePath));
-                    }
-                }
-            }
-            return view;
-        }
+    @Override
+    protected void onPreExecute() {
+      /// progress dialog and disable 'Move' button
+      mCurrentDialog = LoadingDialog.newInstance(R.string.wait_a_moment, false);
+      mCurrentDialog.show(getSupportFragmentManager(), WAIT_DIALOG_TAG);
+      findViewById(R.id.ok).setEnabled(false);
     }
 
     /**
-     * Listener method to perform the MOVE / CANCEL action available in this activity.
+     * Performs the movement
      *
-     * @param v     Clicked view (button MOVE or CANCEL)
+     * @return     'False' when the movement of any file fails.
      */
     @Override
-    public void onClick(final View v) {
-        if (v.getId() == R.id.ok) {
-            /// perform movement operation in background thread
-            Timber.d("Clicked MOVE, start movement");
-            new MoveFilesTask().execute();
+    protected Boolean doInBackground(final Void... params) {
+      while (!mLocalPaths.isEmpty()) {
+        String currentPath = mLocalPaths.get(0);
+        File currentFile = new File(currentPath);
+        String expectedPath =
+            FileStorageUtils.getSavePath(mAccount.name) + mRemotePaths.get(0);
+        File expectedFile = new File(expectedPath);
 
-        } else if (v.getId() == R.id.cancel) {
-            /// just finish
-            Timber.d("Clicked CANCEL, bye");
-            finish();
+        if (expectedFile.equals(currentFile) ||
+            currentFile.renameTo(expectedFile)) {
+          // SUCCESS
+          OCFile file = mStorageManager.getFileByPath(mRemotePaths.get(0));
+          file.setStoragePath(expectedPath);
+          mStorageManager.saveFile(file);
+          mRemotePaths.remove(0);
+          mLocalPaths.remove(0);
 
         } else {
-            Timber.e("Clicked phantom button, id: %s", v.getId());
+          // FAIL
+          return false;
         }
+      }
+      return true;
     }
 
     /**
-     * Asynchronous task performing the move of all the local files to the ownCloud folder.
+     * Updates the activity UI after the movement of local files is tried.
+     *
+     * If the movement was successful for all the files, finishes the activity
+     * immediately.
+     *
+     * In other case, the list of remaining files is still available to retry
+     * the movement.
+     *
+     * @param result      'True' when the movement was successful.
      */
-    private class MoveFilesTask extends AsyncTask<Void, Void, Boolean> {
+    @Override
+    protected void onPostExecute(final Boolean result) {
+      mAdapter.notifyDataSetChanged();
+      mCurrentDialog.dismiss();
+      mCurrentDialog = null;
+      findViewById(R.id.ok).setEnabled(true);
 
-        /**
-         * Updates the UI before trying the movement
-         */
-        @Override
-        protected void onPreExecute() {
-            /// progress dialog and disable 'Move' button
-            mCurrentDialog = LoadingDialog.newInstance(R.string.wait_a_moment, false);
-            mCurrentDialog.show(getSupportFragmentManager(), WAIT_DIALOG_TAG);
-            findViewById(R.id.ok).setEnabled(false);
-        }
+      if (result) {
+        // nothing else to do in this activity
+        Toast t = Toast.makeText(ErrorsWhileCopyingHandlerActivity.this,
+                                 getString(R.string.foreign_files_success),
+                                 Toast.LENGTH_LONG);
+        t.show();
+        finish();
 
-        /**
-         * Performs the movement
-         *
-         * @return     'False' when the movement of any file fails.
-         */
-        @Override
-        protected Boolean doInBackground(final Void... params) {
-            while (!mLocalPaths.isEmpty()) {
-                String currentPath = mLocalPaths.get(0);
-                File currentFile = new File(currentPath);
-                String expectedPath = FileStorageUtils.getSavePath(mAccount.name) + mRemotePaths.get(0);
-                File expectedFile = new File(expectedPath);
-
-                if (expectedFile.equals(currentFile) || currentFile.renameTo(expectedFile)) {
-                    // SUCCESS
-                    OCFile file = mStorageManager.getFileByPath(mRemotePaths.get(0));
-                    file.setStoragePath(expectedPath);
-                    mStorageManager.saveFile(file);
-                    mRemotePaths.remove(0);
-                    mLocalPaths.remove(0);
-
-                } else {
-                    // FAIL
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /**
-         * Updates the activity UI after the movement of local files is tried.
-         *
-         * If the movement was successful for all the files, finishes the activity immediately.
-         *
-         * In other case, the list of remaining files is still available to retry the movement.
-         *
-         * @param result      'True' when the movement was successful.
-         */
-        @Override
-        protected void onPostExecute(final Boolean result) {
-            mAdapter.notifyDataSetChanged();
-            mCurrentDialog.dismiss();
-            mCurrentDialog = null;
-            findViewById(R.id.ok).setEnabled(true);
-
-            if (result) {
-                // nothing else to do in this activity
-                Toast t = Toast.makeText(ErrorsWhileCopyingHandlerActivity.this,
-                                         getString(R.string.foreign_files_success), Toast.LENGTH_LONG);
-                t.show();
-                finish();
-
-            } else {
-                Snackbar snackbar = Snackbar.make(
-                                        findViewById(android.R.id.content),
-                                        R.string.foreign_files_fail,
-                                        Snackbar.LENGTH_LONG
-                                    );
-                snackbar.show();
-
-            }
-        }
+      } else {
+        Snackbar snackbar =
+            Snackbar.make(findViewById(android.R.id.content),
+                          R.string.foreign_files_fail, Snackbar.LENGTH_LONG);
+        snackbar.show();
+      }
     }
-
+  }
 }

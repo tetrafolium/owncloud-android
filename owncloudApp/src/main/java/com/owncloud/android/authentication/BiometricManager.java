@@ -28,11 +28,9 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-
 import androidx.annotation.RequiresApi;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.ui.activity.BiometricActivity;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,107 +41,114 @@ import java.util.Set;
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class BiometricManager {
 
-    private static final Set<Class> sExemptOfBiometricActivites;
+  private static final Set<Class> sExemptOfBiometricActivites;
 
-    private androidx.biometric.BiometricManager mBiometricManager;
+  private androidx.biometric.BiometricManager mBiometricManager;
 
-    static {
-        sExemptOfBiometricActivites = new HashSet<>();
-        sExemptOfBiometricActivites.add(BiometricActivity.class);
-        // other activities may be exempted, if needed
+  static {
+    sExemptOfBiometricActivites = new HashSet<>();
+    sExemptOfBiometricActivites.add(BiometricActivity.class);
+    // other activities may be exempted, if needed
+  }
+
+  private static int BIOMETRIC_TIMEOUT = 1000;
+  // keeping a "low" positive value is the easiest way to prevent the biometric
+  // is requested on rotations
+
+  private static BiometricManager mBiometricManagerInstance = null;
+
+  public static BiometricManager getBiometricManager(final Context context) {
+
+    if (mBiometricManagerInstance == null) {
+      mBiometricManagerInstance = new BiometricManager();
+      mBiometricManagerInstance.mBiometricManager =
+          androidx.biometric.BiometricManager.from(context);
     }
+    return mBiometricManagerInstance;
+  }
 
-    private static int BIOMETRIC_TIMEOUT = 1000;
-    // keeping a "low" positive value is the easiest way to prevent the biometric is requested on rotations
+  private Long mTimestamp = 0L;
+  private int mVisibleActivitiesCounter = 0;
 
-    private static BiometricManager mBiometricManagerInstance = null;
+  private BiometricManager() {}
 
-    public static BiometricManager getBiometricManager(final Context context) {
+  public void onActivityStarted(final Activity activity) {
 
-        if (mBiometricManagerInstance == null) {
-            mBiometricManagerInstance = new BiometricManager();
-            mBiometricManagerInstance.mBiometricManager = androidx.biometric.BiometricManager.from(context);
+    if (!sExemptOfBiometricActivites.contains(activity.getClass())) {
+
+      if (biometricShouldBeRequested()) {
+
+        if (isHardwareDetected() && hasEnrolledBiometric()) {
+          // Use biometric lock
+          Intent i = new Intent(MainApp.Companion.getAppContext(),
+                                BiometricActivity.class);
+          activity.startActivity(i);
+        } else if (PassCodeManager.getPassCodeManager().isPassCodeEnabled()) {
+          // Cancel biometric lock and use passcode unlock method
+          PassCodeManager.getPassCodeManager().onBiometricCancelled(activity);
+          mVisibleActivitiesCounter++;
+        } else if (PatternManager.getPatternManager().isPatternEnabled()) {
+          // Cancel biometric lock and use pattern unlock method
+          PatternManager.getPatternManager().onBiometricCancelled(activity);
+          mVisibleActivitiesCounter++;
         }
-        return mBiometricManagerInstance;
+      }
     }
 
-    private Long mTimestamp = 0L;
-    private int mVisibleActivitiesCounter = 0;
+    mVisibleActivitiesCounter++; // keep it AFTER biometricShouldBeRequested was
+                                 // checked
+  }
 
-    private BiometricManager() {
+  public void onActivityStopped(final Activity activity) {
+    if (mVisibleActivitiesCounter > 0) {
+      mVisibleActivitiesCounter--;
+    }
+    setUnlockTimestamp();
+    PowerManager powerMgr =
+        (PowerManager)activity.getSystemService(Context.POWER_SERVICE);
+    if (isBiometricEnabled() && powerMgr != null && !powerMgr.isScreenOn()) {
+      activity.moveTaskToBack(true);
+    }
+  }
+
+  private void setUnlockTimestamp() {
+    mTimestamp = SystemClock.elapsedRealtime();
+  }
+
+  private boolean biometricShouldBeRequested() {
+
+    if ((SystemClock.elapsedRealtime() - mTimestamp) > BIOMETRIC_TIMEOUT &&
+        mVisibleActivitiesCounter <= 0) {
+      return isBiometricEnabled();
     }
 
-    public void onActivityStarted(final Activity activity) {
+    return false;
+  }
 
-        if (!sExemptOfBiometricActivites.contains(activity.getClass())) {
+  protected boolean isBiometricEnabled() {
+    SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(
+        MainApp.Companion.getAppContext());
+    return (
+        appPrefs.getBoolean(BiometricActivity.PREFERENCE_SET_BIOMETRIC, false));
+  }
 
-            if (biometricShouldBeRequested()) {
+  public boolean isHardwareDetected() {
+    return mBiometricManager.canAuthenticate() !=
+        androidx.biometric.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE &&
+        mBiometricManager.canAuthenticate() !=
+            androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+  }
 
-                if (isHardwareDetected() && hasEnrolledBiometric()) {
-                    // Use biometric lock
-                    Intent i = new Intent(MainApp.Companion.getAppContext(), BiometricActivity.class);
-                    activity.startActivity(i);
-                } else if (PassCodeManager.getPassCodeManager().isPassCodeEnabled()) {
-                    // Cancel biometric lock and use passcode unlock method
-                    PassCodeManager.getPassCodeManager().onBiometricCancelled(activity);
-                    mVisibleActivitiesCounter++;
-                } else if (PatternManager.getPatternManager().isPatternEnabled()) {
-                    // Cancel biometric lock and use pattern unlock method
-                    PatternManager.getPatternManager().onBiometricCancelled(activity);
-                    mVisibleActivitiesCounter++;
-                }
+  public boolean hasEnrolledBiometric() {
+    return mBiometricManager.canAuthenticate() !=
+        androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED;
+  }
 
-            }
-        }
-
-        mVisibleActivitiesCounter++;    // keep it AFTER biometricShouldBeRequested was checked
-    }
-
-    public void onActivityStopped(final Activity activity) {
-        if (mVisibleActivitiesCounter > 0) {
-            mVisibleActivitiesCounter--;
-        }
-        setUnlockTimestamp();
-        PowerManager powerMgr = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
-        if (isBiometricEnabled() && powerMgr != null && !powerMgr.isScreenOn()) {
-            activity.moveTaskToBack(true);
-        }
-    }
-
-    private void setUnlockTimestamp() {
-        mTimestamp = SystemClock.elapsedRealtime();
-    }
-
-    private boolean biometricShouldBeRequested() {
-
-        if ((SystemClock.elapsedRealtime() - mTimestamp) > BIOMETRIC_TIMEOUT && mVisibleActivitiesCounter <= 0) {
-            return isBiometricEnabled();
-        }
-
-        return false;
-    }
-
-    protected boolean isBiometricEnabled() {
-        SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(MainApp.Companion.getAppContext());
-        return (appPrefs.getBoolean(BiometricActivity.PREFERENCE_SET_BIOMETRIC, false));
-    }
-
-    public boolean isHardwareDetected() {
-        return mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE
-               && mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
-    }
-
-    public boolean hasEnrolledBiometric() {
-        return mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED;
-    }
-
-    /**
-     * This can be used for example for onActivityResult, where you don't want to re authenticate
-     * again.
-     *
-     * USE WITH CARE
-     */
-    public void bayPassUnlockOnce() {
-        setUnlockTimestamp();
-    }
+  /**
+   * This can be used for example for onActivityResult, where you don't want to
+   * re authenticate again.
+   *
+   * USE WITH CARE
+   */
+  public void bayPassUnlockOnce() { setUnlockTimestamp(); }
 }

@@ -21,7 +21,6 @@ package com.owncloud.android.ui.controller;
 import android.accounts.Account;
 import android.view.View;
 import android.widget.ProgressBar;
-
 import androidx.annotation.UiThread;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.files.services.FileDownloader;
@@ -34,145 +33,150 @@ import timber.log.Timber;
  * Controller updating a progress bar with the progress of a file transfer
  * reported from upload or download service.
  */
-public class TransferProgressController implements OnDatatransferProgressListener {
+public class TransferProgressController
+    implements OnDatatransferProgressListener {
 
-    private ProgressBar mProgressBar = null;
-    private ComponentsGetter mComponentsGetter = null;
-    private int mLastPercent = 0;
+  private ProgressBar mProgressBar = null;
+  private ComponentsGetter mComponentsGetter = null;
+  private int mLastPercent = 0;
 
-    public TransferProgressController(final ComponentsGetter componentsGetter) {
-        if (componentsGetter == null) {
-            throw new IllegalArgumentException("Received NULL componentsGetter");
-        }
-        mComponentsGetter = componentsGetter;
+  public TransferProgressController(final ComponentsGetter componentsGetter) {
+    if (componentsGetter == null) {
+      throw new IllegalArgumentException("Received NULL componentsGetter");
+    }
+    mComponentsGetter = componentsGetter;
+  }
+
+  /**
+   * Sets the progress bar that will updated with file transfer progress
+   *
+   * Accepts null input to stop updating any view.
+   *
+   * @param progressBar   Progress bar to update with progress transfer.
+   */
+  public void setProgressBar(final ProgressBar progressBar) {
+    mProgressBar = progressBar;
+    if (mProgressBar != null) {
+      reset();
+    }
+  }
+
+  @UiThread
+  public void showProgressBar() {
+    if (mProgressBar != null) {
+      mProgressBar.setVisibility(View.VISIBLE);
+    }
+  }
+
+  public void hideProgressBar() {
+    if (mProgressBar != null) {
+      mProgressBar.setVisibility(View.INVISIBLE);
+    }
+  }
+
+  /**
+   * Subscribes the controller to monitor transfers of the received file both in
+   * {@link FileDownloader} and
+   * {@link FileUploader} services, if available.
+   *
+   * This method may be called several times for the same file, resulting in a
+   * single subscription.
+   *
+   * @param file          File to monitor in transfer services.
+   * @param account       ownCloud account containing file.
+   */
+  @UiThread
+  public void startListeningProgressFor(final OCFile file,
+                                        final Account account) {
+    FileDownloader.FileDownloaderBinder downloaderBinder =
+        mComponentsGetter.getFileDownloaderBinder();
+    FileUploader.FileUploaderBinder uploaderBinder =
+        mComponentsGetter.getFileUploaderBinder();
+
+    if (downloaderBinder != null) {
+      downloaderBinder.addDatatransferProgressListener(this, account, file);
+      if (mProgressBar != null &&
+          downloaderBinder.isDownloading(account, file)) {
+        mProgressBar.setIndeterminate(true);
+      }
+    } else {
+      Timber.i("Download service not ready to notify progress");
     }
 
-    /**
-     * Sets the progress bar that will updated with file transfer progress
-     *
-     * Accepts null input to stop updating any view.
-     *
-     * @param progressBar   Progress bar to update with progress transfer.
-     */
-    public void setProgressBar(final ProgressBar progressBar) {
-        mProgressBar = progressBar;
-        if (mProgressBar != null) {
-            reset();
-        }
+    if (uploaderBinder != null) {
+      uploaderBinder.addDatatransferProgressListener(this, account, file);
+      if (mProgressBar != null && uploaderBinder.isUploading(account, file)) {
+        mProgressBar.setIndeterminate(true);
+      }
+    } else {
+      Timber.i("Upload service not ready to notify progress");
     }
+  }
 
-    @UiThread
-    public void showProgressBar() {
-        if (mProgressBar != null) {
+  /**
+   * Unsubscribes the controller from {@link FileDownloader} and {@link
+   * FileUploader} services.
+   *
+   * @param file          File to stop monitoring in transfer services.
+   * @param account       ownCloud account containing file.
+   */
+  @UiThread
+  public void stopListeningProgressFor(final OCFile file,
+                                       final Account account) {
+    if (mComponentsGetter.getFileDownloaderBinder() != null) {
+      mComponentsGetter.getFileDownloaderBinder()
+          .removeDatatransferProgressListener(this, account, file);
+    }
+    if (mComponentsGetter.getFileUploaderBinder() != null) {
+      mComponentsGetter.getFileUploaderBinder()
+          .removeDatatransferProgressListener(this, account, file);
+    }
+    if (mProgressBar != null) {
+      mProgressBar.setIndeterminate(false);
+    }
+  }
+
+  /**
+   * Implementation of {@link OnDatatransferProgressListener}, called from
+   * {@link FileUploader} or
+   * {@link FileDownloader} to report the trasnfer progress of a monitored file.
+   *
+   * @param progressRate              Bytes transferred from the previous call.
+   * @param totalTransferredSoFar     Total of bytes transferred so far.
+   * @param totalToTransfer           Total of bytes to transfer.
+   * @param filename                  Name of the transferred file.
+   */
+  @Override
+  public void
+  onTransferProgress(final long progressRate, final long totalTransferredSoFar,
+                     final long totalToTransfer, final String filename) {
+    if (mProgressBar != null) {
+      final int percent = (int)(100.0 * ((double)totalTransferredSoFar) /
+                                ((double)totalToTransfer));
+      if (percent != mLastPercent) {
+        mProgressBar.post(new Runnable() {
+          @Override
+          public void run() {
             mProgressBar.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void hideProgressBar() {
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    /**
-     * Subscribes the controller to monitor transfers of the received file both in {@link FileDownloader} and
-     * {@link FileUploader} services, if available.
-     *
-     * This method may be called several times for the same file, resulting in a single subscription.
-     *
-     * @param file          File to monitor in transfer services.
-     * @param account       ownCloud account containing file.
-     */
-    @UiThread
-    public void startListeningProgressFor(final OCFile file, final Account account) {
-        FileDownloader.FileDownloaderBinder downloaderBinder = mComponentsGetter.getFileDownloaderBinder();
-        FileUploader.FileUploaderBinder uploaderBinder = mComponentsGetter.getFileUploaderBinder();
-
-        if (downloaderBinder != null) {
-            downloaderBinder.addDatatransferProgressListener(this, account, file);
-            if (mProgressBar != null && downloaderBinder.isDownloading(account, file)) {
-                mProgressBar.setIndeterminate(true);
-            }
-        } else {
-            Timber.i("Download service not ready to notify progress");
-        }
-
-        if (uploaderBinder != null) {
-            uploaderBinder.addDatatransferProgressListener(this, account, file);
-            if (mProgressBar != null && uploaderBinder.isUploading(account, file)) {
-                mProgressBar.setIndeterminate(true);
-            }
-        } else {
-            Timber.i("Upload service not ready to notify progress");
-        }
-    }
-
-    /**
-     * Unsubscribes the controller from {@link FileDownloader} and {@link FileUploader} services.
-     *
-     * @param file          File to stop monitoring in transfer services.
-     * @param account       ownCloud account containing file.
-     */
-    @UiThread
-    public void stopListeningProgressFor(final OCFile file, final Account account) {
-        if (mComponentsGetter.getFileDownloaderBinder() != null) {
-            mComponentsGetter.getFileDownloaderBinder().
-            removeDatatransferProgressListener(this, account, file);
-        }
-        if (mComponentsGetter.getFileUploaderBinder() != null) {
-            mComponentsGetter.getFileUploaderBinder().
-            removeDatatransferProgressListener(this, account, file);
-        }
-        if (mProgressBar != null) {
             mProgressBar.setIndeterminate(false);
-        }
+            mProgressBar.setProgress(percent);
+            mProgressBar.invalidate();
+          }
+        });
+      }
+      mLastPercent = percent;
     }
+  }
 
-    /**
-     * Implementation of {@link OnDatatransferProgressListener}, called from {@link FileUploader} or
-     * {@link FileDownloader} to report the trasnfer progress of a monitored file.
-     *
-     * @param progressRate              Bytes transferred from the previous call.
-     * @param totalTransferredSoFar     Total of bytes transferred so far.
-     * @param totalToTransfer           Total of bytes to transfer.
-     * @param filename                  Name of the transferred file.
-     */
-    @Override
-    public void onTransferProgress(
-        final long progressRate,
-        final long totalTransferredSoFar,
-        final long totalToTransfer,
-        final String filename
-    ) {
-        if (mProgressBar != null) {
-            final int percent = (int) (100.0 * ((double) totalTransferredSoFar) / ((double) totalToTransfer));
-            if (percent != mLastPercent) {
-                mProgressBar.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        mProgressBar.setIndeterminate(false);
-                        mProgressBar.setProgress(percent);
-                        mProgressBar.invalidate();
-                    }
-                }
-                );
-            }
-            mLastPercent = percent;
-        }
+  /**
+   * Initializes the properties of the linked progress bar, if any.
+   */
+  private void reset() {
+    mLastPercent = -1;
+    if (mProgressBar != null) {
+      mProgressBar.setMax(100);
+      mProgressBar.setProgress(0);
+      mProgressBar.setIndeterminate(false);
     }
-
-    /**
-     * Initializes the properties of the linked progress bar, if any.
-     */
-    private void reset() {
-        mLastPercent = -1;
-        if (mProgressBar != null) {
-            mProgressBar.setMax(100);
-            mProgressBar.setProgress(0);
-            mProgressBar.setIndeterminate(false);
-        }
-    }
-
+  }
 }

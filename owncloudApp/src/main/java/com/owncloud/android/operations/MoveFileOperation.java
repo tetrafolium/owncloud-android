@@ -33,68 +33,75 @@ import com.owncloud.android.utils.RemoteFileUtils;
  */
 public class MoveFileOperation extends SyncOperation {
 
-    protected String mSrcPath;
-    protected String mTargetParentPath;
-    protected OCFile mFile;
+  protected String mSrcPath;
+  protected String mTargetParentPath;
+  protected OCFile mFile;
 
-    /**
-     * Constructor
-     *
-     * @param srcPath           Remote path of the {@link OCFile} to move.
-     * @param targetParentPath  Path to the folder where the file will be moved into.
-     */
-    public MoveFileOperation(final String srcPath, final String targetParentPath) {
-        mSrcPath = srcPath;
-        mTargetParentPath = targetParentPath;
-        if (!mTargetParentPath.endsWith(OCFile.PATH_SEPARATOR)) {
-            mTargetParentPath += OCFile.PATH_SEPARATOR;
-        }
-
-        mFile = null;
+  /**
+   * Constructor
+   *
+   * @param srcPath           Remote path of the {@link OCFile} to move.
+   * @param targetParentPath  Path to the folder where the file will be moved
+   *     into.
+   */
+  public MoveFileOperation(final String srcPath,
+                           final String targetParentPath) {
+    mSrcPath = srcPath;
+    mTargetParentPath = targetParentPath;
+    if (!mTargetParentPath.endsWith(OCFile.PATH_SEPARATOR)) {
+      mTargetParentPath += OCFile.PATH_SEPARATOR;
     }
 
-    /**
-     * Performs the operation.
-     *
-     * @param   client      Client object to communicate with the remote ownCloud server.
-     */
-    @Override
-    protected RemoteOperationResult run(final OwnCloudClient client) {
-        RemoteOperationResult result;
+    mFile = null;
+  }
 
-        /// 1. check move validity
-        if (mTargetParentPath.startsWith(mSrcPath)) {
-            return new RemoteOperationResult<>(ResultCode.INVALID_MOVE_INTO_DESCENDANT);
-        }
-        mFile = getStorageManager().getFileByPath(mSrcPath);
-        if (mFile == null) {
-            return new RemoteOperationResult<>(ResultCode.FILE_NOT_FOUND);
-        }
+  /**
+   * Performs the operation.
+   *
+   * @param   client      Client object to communicate with the remote ownCloud
+   *     server.
+   */
+  @Override
+  protected RemoteOperationResult run(final OwnCloudClient client) {
+    RemoteOperationResult result;
 
-        /// 2. remote move
-        String targetRemotePath = mTargetParentPath + mFile.getFileName();
-        // Check if target remote path already exists on server or add suffix (2), (3) ... otherwise
-        String finalRemotePath = RemoteFileUtils.Companion.getAvailableRemotePath(client, targetRemotePath);
-        if (mFile.isFolder()) {
-            finalRemotePath += OCFile.PATH_SEPARATOR;
-        }
-        MoveRemoteFileOperation operation = new MoveRemoteFileOperation(
-            mSrcPath,
-            finalRemotePath,
-            false
-        );
-        result = operation.execute(client);
-
-        /// 3. local move
-        if (result.isSuccess()) {
-            getStorageManager().moveLocalFile(mFile, finalRemotePath, mTargetParentPath);
-
-            // adjust available offline status after move resume observation of file after rename
-            OCFile updatedFile = getStorageManager().getFileById(mFile.getFileId());
-            OCFile.AvailableOfflineStatus updatedAvOffStatus = updatedFile.getAvailableOfflineStatus();
-        }
-        // TODO handle ResultCode.PARTIAL_MOVE_DONE in client Activity, for the moment
-
-        return result;
+    /// 1. check move validity
+    if (mTargetParentPath.startsWith(mSrcPath)) {
+      return new RemoteOperationResult<>(
+          ResultCode.INVALID_MOVE_INTO_DESCENDANT);
     }
+    mFile = getStorageManager().getFileByPath(mSrcPath);
+    if (mFile == null) {
+      return new RemoteOperationResult<>(ResultCode.FILE_NOT_FOUND);
+    }
+
+    /// 2. remote move
+    String targetRemotePath = mTargetParentPath + mFile.getFileName();
+    // Check if target remote path already exists on server or add suffix (2),
+    // (3) ... otherwise
+    String finalRemotePath = RemoteFileUtils.Companion.getAvailableRemotePath(
+        client, targetRemotePath);
+    if (mFile.isFolder()) {
+      finalRemotePath += OCFile.PATH_SEPARATOR;
+    }
+    MoveRemoteFileOperation operation =
+        new MoveRemoteFileOperation(mSrcPath, finalRemotePath, false);
+    result = operation.execute(client);
+
+    /// 3. local move
+    if (result.isSuccess()) {
+      getStorageManager().moveLocalFile(mFile, finalRemotePath,
+                                        mTargetParentPath);
+
+      // adjust available offline status after move resume observation of file
+      // after rename
+      OCFile updatedFile = getStorageManager().getFileById(mFile.getFileId());
+      OCFile.AvailableOfflineStatus updatedAvOffStatus =
+          updatedFile.getAvailableOfflineStatus();
+    }
+    // TODO handle ResultCode.PARTIAL_MOVE_DONE in client Activity, for the
+    // moment
+
+    return result;
+  }
 }

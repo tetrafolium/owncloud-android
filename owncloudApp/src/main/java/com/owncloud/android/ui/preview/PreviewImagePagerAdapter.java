@@ -22,7 +22,6 @@ package com.owncloud.android.ui.preview;
 
 import android.accounts.Account;
 import android.view.ViewGroup;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -31,206 +30,207 @@ import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.files.services.FileDownloader;
 import com.owncloud.android.ui.fragment.FileFragment;
 import com.owncloud.android.utils.FileStorageUtils;
-import timber.log.Timber;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import timber.log.Timber;
 
 /**
  * Adapter class that provides Fragment instances
  */
-//public class PreviewImagePagerAdapter extends PagerAdapter {
+// public class PreviewImagePagerAdapter extends PagerAdapter {
 public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
 
-    private Vector<OCFile> mImageFiles;
-    private Account mAccount;
-    private Set<Object> mObsoleteFragments;
-    private Set<Integer> mObsoletePositions;
-    private Set<Integer> mDownloadErrors;
-    private FileDataStorageManager mStorageManager;
+  private Vector<OCFile> mImageFiles;
+  private Account mAccount;
+  private Set<Object> mObsoleteFragments;
+  private Set<Integer> mObsoletePositions;
+  private Set<Integer> mDownloadErrors;
+  private FileDataStorageManager mStorageManager;
 
-    private Map<Integer, FileFragment> mCachedFragments;
+  private Map<Integer, FileFragment> mCachedFragments;
 
-    /**
-     * Constructor.
-     *
-     * @param fragmentManager {@link FragmentManager} instance that will handle
-     *                        the {@link Fragment}s provided by the adapter.
-     * @param parentFolder    Folder where images will be searched for.
-     * @param storageManager  Bridge to database.
-     */
-    public PreviewImagePagerAdapter(final FragmentManager fragmentManager, final OCFile parentFolder,
-                                    final Account account, final FileDataStorageManager storageManager) {
-        super(fragmentManager);
+  /**
+   * Constructor.
+   *
+   * @param fragmentManager {@link FragmentManager} instance that will handle
+   *                        the {@link Fragment}s provided by the adapter.
+   * @param parentFolder    Folder where images will be searched for.
+   * @param storageManager  Bridge to database.
+   */
+  public PreviewImagePagerAdapter(final FragmentManager fragmentManager,
+                                  final OCFile parentFolder,
+                                  final Account account,
+                                  final FileDataStorageManager storageManager) {
+    super(fragmentManager);
 
-        if (fragmentManager == null) {
-            throw new IllegalArgumentException("NULL FragmentManager instance");
-        }
-        if (parentFolder == null) {
-            throw new IllegalArgumentException("NULL parent folder");
-        }
-        if (storageManager == null) {
-            throw new IllegalArgumentException("NULL storage manager");
-        }
-
-        mAccount = account;
-        mStorageManager = storageManager;
-        mImageFiles = mStorageManager.getFolderImages(parentFolder);
-
-        mImageFiles = FileStorageUtils.sortFolder(mImageFiles, FileStorageUtils.mSortOrderFileDisp,
-                      FileStorageUtils.mSortAscendingFileDisp);
-
-        mObsoleteFragments = new HashSet<>();
-        mObsoletePositions = new HashSet<>();
-        mDownloadErrors = new HashSet<>();
-        //mFragmentManager = fragmentManager;
-        mCachedFragments = new HashMap<>();
+    if (fragmentManager == null) {
+      throw new IllegalArgumentException("NULL FragmentManager instance");
+    }
+    if (parentFolder == null) {
+      throw new IllegalArgumentException("NULL parent folder");
+    }
+    if (storageManager == null) {
+      throw new IllegalArgumentException("NULL storage manager");
     }
 
-    /**
-     * Returns the image files handled by the adapter.
-     *
-     * @return A vector with the image files handled by the adapter.
-     */
-    protected OCFile getFileAt(final int position) {
-        return mImageFiles.get(position);
+    mAccount = account;
+    mStorageManager = storageManager;
+    mImageFiles = mStorageManager.getFolderImages(parentFolder);
+
+    mImageFiles = FileStorageUtils.sortFolder(
+        mImageFiles, FileStorageUtils.mSortOrderFileDisp,
+        FileStorageUtils.mSortAscendingFileDisp);
+
+    mObsoleteFragments = new HashSet<>();
+    mObsoletePositions = new HashSet<>();
+    mDownloadErrors = new HashSet<>();
+    // mFragmentManager = fragmentManager;
+    mCachedFragments = new HashMap<>();
+  }
+
+  /**
+   * Returns the image files handled by the adapter.
+   *
+   * @return A vector with the image files handled by the adapter.
+   */
+  protected OCFile getFileAt(final int position) {
+    return mImageFiles.get(position);
+  }
+
+  public Fragment getItem(final int i) {
+    OCFile file = mImageFiles.get(i);
+    Fragment fragment;
+    if (file.isDown()) {
+      fragment = PreviewImageFragment.newInstance(
+          file, mAccount, mObsoletePositions.contains(i));
+
+    } else if (mDownloadErrors.contains(i)) {
+      fragment = FileDownloadFragment.newInstance(file, mAccount, true);
+      ((FileDownloadFragment)fragment).setError(true);
+      mDownloadErrors.remove(i);
+
+    } else {
+      fragment = FileDownloadFragment.newInstance(
+          file, mAccount, mObsoletePositions.contains(i));
     }
+    mObsoletePositions.remove(i);
+    return fragment;
+  }
 
-    public Fragment getItem(final int i) {
-        OCFile file = mImageFiles.get(i);
-        Fragment fragment;
-        if (file.isDown()) {
-            fragment = PreviewImageFragment.newInstance(
-                           file,
-                           mAccount,
-                           mObsoletePositions.contains(i)
-                       );
+  public int getFilePosition(final OCFile file) {
+    return mImageFiles.indexOf(file);
+  }
 
-        } else if (mDownloadErrors.contains(i)) {
-            fragment = FileDownloadFragment.newInstance(file, mAccount, true);
-            ((FileDownloadFragment) fragment).setError(true);
-            mDownloadErrors.remove(i);
+  @Override
+  public int getCount() {
+    return mImageFiles.size();
+  }
+
+  @Override
+  public CharSequence getPageTitle(final int position) {
+    return mImageFiles.get(position).getFileName();
+  }
+
+  private void updateFile(final int position, final OCFile file) {
+    FileFragment fragmentToUpdate = mCachedFragments.get(position);
+    if (fragmentToUpdate != null) {
+      mObsoleteFragments.add(fragmentToUpdate);
+    }
+    mObsoletePositions.add(position);
+    mImageFiles.set(position, file);
+  }
+
+  private void updateWithDownloadError(final int position) {
+    FileFragment fragmentToUpdate = mCachedFragments.get(position);
+    if (fragmentToUpdate != null) {
+      mObsoleteFragments.add(fragmentToUpdate);
+    }
+    mDownloadErrors.add(position);
+  }
+
+  public void onTransferServiceConnected() {
+    for (FileFragment fragmentToUpdate : mCachedFragments.values()) {
+      if (fragmentToUpdate != null) {
+        fragmentToUpdate.onTransferServiceConnected();
+      }
+    }
+  }
+
+  public void clearErrorAt(final int position) {
+    FileFragment fragmentToUpdate = mCachedFragments.get(position);
+    if (fragmentToUpdate != null) {
+      mObsoleteFragments.add(fragmentToUpdate);
+    }
+    mDownloadErrors.remove(position);
+  }
+
+  @Override
+  public int getItemPosition(final Object object) {
+    if (mObsoleteFragments.contains(object)) {
+      mObsoleteFragments.remove(object);
+      return POSITION_NONE;
+    }
+    return super.getItemPosition(object);
+  }
+
+  @Override
+  public Object instantiateItem(final ViewGroup container, final int position) {
+    Object fragment = super.instantiateItem(container, position);
+    mCachedFragments.put(position, (FileFragment)fragment);
+    return fragment;
+  }
+
+  @Override
+  public void destroyItem(final ViewGroup container, final int position,
+                          final Object object) {
+    mCachedFragments.remove(position);
+    super.destroyItem(container, position, object);
+  }
+
+  public boolean pendingErrorAt(final int position) {
+    return mDownloadErrors.contains(position);
+  }
+
+  /**
+   * Reset the image zoom to default value for each CachedFragments
+   */
+  public void resetZoom() {
+    Iterator<FileFragment> entries = mCachedFragments.values().iterator();
+    while (entries.hasNext()) {
+      FileFragment fileFragment = entries.next();
+      if (fileFragment instanceof PreviewImageFragment) {
+        ((PreviewImageFragment)fileFragment).getImageView().setScale(1, true);
+      }
+    }
+  }
+
+  public void onDownloadEvent(final OCFile file, final String action,
+                              final boolean success) {
+    int position = getFilePosition(file);
+    if (position >= 0) {
+      if (action.equals(FileDownloader.getDownloadFinishMessage())) {
+        if (success) {
+          updateFile(position, file);
 
         } else {
-            fragment = FileDownloadFragment.newInstance(
-                           file, mAccount, mObsoletePositions.contains(i)
-                       );
+          updateWithDownloadError(position);
         }
-        mObsoletePositions.remove(i);
-        return fragment;
+      }
+      FileFragment fragment = mCachedFragments.get(position);
+      if (fragment instanceof FileDownloadFragment && success) {
+        // trigger the creation of new PreviewImageFragment to replace current
+        // FileDownloadFragment only if the download succeded. If not trigger an
+        // error
+        notifyDataSetChanged();
+      } else if (fragment != null) {
+        fragment.onSyncEvent(action, success, null);
+      }
+    } else {
+      Timber.d("Download finished, but the fragment is offscreen");
     }
-
-    public int getFilePosition(final OCFile file) {
-        return mImageFiles.indexOf(file);
-    }
-
-    @Override
-    public int getCount() {
-        return mImageFiles.size();
-    }
-
-    @Override
-    public CharSequence getPageTitle(final int position) {
-        return mImageFiles.get(position).getFileName();
-    }
-
-    private void updateFile(final int position, final OCFile file) {
-        FileFragment fragmentToUpdate = mCachedFragments.get(position);
-        if (fragmentToUpdate != null) {
-            mObsoleteFragments.add(fragmentToUpdate);
-        }
-        mObsoletePositions.add(position);
-        mImageFiles.set(position, file);
-    }
-
-    private void updateWithDownloadError(final int position) {
-        FileFragment fragmentToUpdate = mCachedFragments.get(position);
-        if (fragmentToUpdate != null) {
-            mObsoleteFragments.add(fragmentToUpdate);
-        }
-        mDownloadErrors.add(position);
-    }
-
-    public void onTransferServiceConnected() {
-        for (FileFragment fragmentToUpdate : mCachedFragments.values()) {
-            if (fragmentToUpdate != null) {
-                fragmentToUpdate.onTransferServiceConnected();
-            }
-        }
-    }
-
-    public void clearErrorAt(final int position) {
-        FileFragment fragmentToUpdate = mCachedFragments.get(position);
-        if (fragmentToUpdate != null) {
-            mObsoleteFragments.add(fragmentToUpdate);
-        }
-        mDownloadErrors.remove(position);
-    }
-
-    @Override
-    public int getItemPosition(final Object object) {
-        if (mObsoleteFragments.contains(object)) {
-            mObsoleteFragments.remove(object);
-            return POSITION_NONE;
-        }
-        return super.getItemPosition(object);
-    }
-
-    @Override
-    public Object instantiateItem(final ViewGroup container, final int position) {
-        Object fragment = super.instantiateItem(container, position);
-        mCachedFragments.put(position, (FileFragment) fragment);
-        return fragment;
-    }
-
-    @Override
-    public void destroyItem(final ViewGroup container, final int position, final Object object) {
-        mCachedFragments.remove(position);
-        super.destroyItem(container, position, object);
-    }
-
-    public boolean pendingErrorAt(final int position) {
-        return mDownloadErrors.contains(position);
-    }
-
-    /**
-     * Reset the image zoom to default value for each CachedFragments
-     */
-    public void resetZoom() {
-        Iterator<FileFragment> entries = mCachedFragments.values().iterator();
-        while (entries.hasNext()) {
-            FileFragment fileFragment = entries.next();
-            if (fileFragment instanceof PreviewImageFragment) {
-                ((PreviewImageFragment) fileFragment).getImageView().setScale(1, true);
-            }
-        }
-    }
-
-    public void onDownloadEvent(final OCFile file, final String action, final boolean success) {
-        int position = getFilePosition(file);
-        if (position >= 0) {
-            if (action.equals(FileDownloader.getDownloadFinishMessage())) {
-                if (success) {
-                    updateFile(position, file);
-
-                } else {
-                    updateWithDownloadError(position);
-                }
-            }
-            FileFragment fragment = mCachedFragments.get(position);
-            if (fragment instanceof FileDownloadFragment && success) {
-                // trigger the creation of new PreviewImageFragment to replace current FileDownloadFragment
-                // only if the download succeded. If not trigger an error
-                notifyDataSetChanged();
-            } else if (fragment != null) {
-                fragment.onSyncEvent(action, success, null);
-            }
-        } else {
-            Timber.d("Download finished, but the fragment is offscreen");
-        }
-    }
+  }
 }

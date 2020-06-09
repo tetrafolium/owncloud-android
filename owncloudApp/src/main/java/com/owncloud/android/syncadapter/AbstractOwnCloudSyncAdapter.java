@@ -28,83 +28,74 @@ import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
-
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.lib.common.OwnCloudAccount;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.SingleSessionManager;
 import com.owncloud.android.lib.common.accounts.AccountUtils.AccountNotFoundException;
-
 import java.io.IOException;
 
 /**
- * Base synchronization adapter for ownCloud designed to be subclassed for different
- * resource types, like FileSync, ConcatsSync, CalendarSync, etc..
+ * Base synchronization adapter for ownCloud designed to be subclassed for
+ * different resource types, like FileSync, ConcatsSync, CalendarSync, etc..
  *
  * Implements the standard {@link AbstractThreadedSyncAdapter}.
  */
-public abstract class AbstractOwnCloudSyncAdapter extends
-    AbstractThreadedSyncAdapter {
+public abstract class AbstractOwnCloudSyncAdapter
+    extends AbstractThreadedSyncAdapter {
 
-    private AccountManager accountManager;
-    private Account account;
-    private ContentProviderClient mContentProviderClient;
-    private FileDataStorageManager mStoreManager;
+  private AccountManager accountManager;
+  private Account account;
+  private ContentProviderClient mContentProviderClient;
+  private FileDataStorageManager mStoreManager;
 
-    private OwnCloudClient mClient = null;
+  private OwnCloudClient mClient = null;
 
-    public AbstractOwnCloudSyncAdapter(final Context context, final boolean autoInitialize) {
-        super(context, autoInitialize);
-        this.setAccountManager(AccountManager.get(context));
-    }
+  public AbstractOwnCloudSyncAdapter(final Context context,
+                                     final boolean autoInitialize) {
+    super(context, autoInitialize);
+    this.setAccountManager(AccountManager.get(context));
+  }
 
-    public AbstractOwnCloudSyncAdapter(final Context context, final boolean autoInitialize,
-                                       final boolean allowParallelSyncs) {
-        super(context, autoInitialize, allowParallelSyncs);
-        this.setAccountManager(AccountManager.get(context));
-    }
+  public AbstractOwnCloudSyncAdapter(final Context context,
+                                     final boolean autoInitialize,
+                                     final boolean allowParallelSyncs) {
+    super(context, autoInitialize, allowParallelSyncs);
+    this.setAccountManager(AccountManager.get(context));
+  }
 
-    public AccountManager getAccountManager() {
-        return accountManager;
-    }
+  public AccountManager getAccountManager() { return accountManager; }
 
-    public void setAccountManager(final AccountManager accountManager) {
-        this.accountManager = accountManager;
-    }
+  public void setAccountManager(final AccountManager accountManager) {
+    this.accountManager = accountManager;
+  }
 
-    public Account getAccount() {
-        return account;
-    }
+  public Account getAccount() { return account; }
 
-    public void setAccount(final Account account) {
-        this.account = account;
-    }
+  public void setAccount(final Account account) { this.account = account; }
 
-    public ContentProviderClient getContentProviderClient() {
-        return mContentProviderClient;
-    }
+  public ContentProviderClient getContentProviderClient() {
+    return mContentProviderClient;
+  }
 
-    public void setContentProviderClient(final ContentProviderClient contentProvider) {
-        this.mContentProviderClient = contentProvider;
-    }
+  public void
+  setContentProviderClient(final ContentProviderClient contentProvider) {
+    this.mContentProviderClient = contentProvider;
+  }
 
-    public void setStorageManager(final FileDataStorageManager storage_manager) {
-        mStoreManager = storage_manager;
-    }
+  public void setStorageManager(final FileDataStorageManager storage_manager) {
+    mStoreManager = storage_manager;
+  }
 
-    public FileDataStorageManager getStorageManager() {
-        return mStoreManager;
-    }
+  public FileDataStorageManager getStorageManager() { return mStoreManager; }
 
-    protected void initClientForCurrentAccount() throws OperationCanceledException,
-        AuthenticatorException, IOException, AccountNotFoundException {
-        OwnCloudAccount ocAccount = new OwnCloudAccount(account, getContext());
-        mClient = SingleSessionManager.getDefaultSingleton().
-                  getClientFor(ocAccount, getContext());
-    }
+  protected void initClientForCurrentAccount()
+      throws OperationCanceledException, AuthenticatorException, IOException,
+             AccountNotFoundException {
+    OwnCloudAccount ocAccount = new OwnCloudAccount(account, getContext());
+    mClient = SingleSessionManager.getDefaultSingleton().getClientFor(
+        ocAccount, getContext());
+  }
 
-    protected OwnCloudClient getClient() {
-        return mClient;
-    }
-
+  protected OwnCloudClient getClient() { return mClient; }
 }

@@ -26,35 +26,23 @@ import android.view.View.OnClickListener;
  * Represents an Item on the ActionBar.
  */
 public class ActionItem {
-    private Drawable mIcon;
-    private String mTitle;
-    private OnClickListener mClickListener;
+  private Drawable mIcon;
+  private String mTitle;
+  private OnClickListener mClickListener;
 
-    public ActionItem() {
-    }
+  public ActionItem() {}
 
-    public void setTitle(final String title) {
-        mTitle = title;
-    }
+  public void setTitle(final String title) { mTitle = title; }
 
-    public String getTitle() {
-        return mTitle;
-    }
+  public String getTitle() { return mTitle; }
 
-    public void setIcon(final Drawable icon) {
-        mIcon = icon;
-    }
+  public void setIcon(final Drawable icon) { mIcon = icon; }
 
-    public Drawable getIcon() {
-        return mIcon;
-    }
+  public Drawable getIcon() { return mIcon; }
 
-    public void setOnClickListener(final OnClickListener listener) {
-        mClickListener = listener;
-    }
+  public void setOnClickListener(final OnClickListener listener) {
+    mClickListener = listener;
+  }
 
-    public OnClickListener getOnClickListerner() {
-        return mClickListener;
-    }
-
+  public OnClickListener getOnClickListerner() { return mClickListener; }
 }

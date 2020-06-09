@@ -33,7 +33,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -52,178 +51,191 @@ import com.owncloud.android.ui.whatsnew.ProgressIndicator;
 /**
  * @author Bartosz Przybylski
  */
-public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPageChangeListener {
+public class WhatsNewActivity
+    extends FragmentActivity implements ViewPager.OnPageChangeListener {
 
-    private static final String KEY_LAST_SEEN_VERSION_CODE = "lastSeenVersionCode";
+  private static final String KEY_LAST_SEEN_VERSION_CODE =
+      "lastSeenVersionCode";
 
-    private ImageButton mForwardFinishButton;
-    private ProgressIndicator mProgress;
-    private ViewPager mPager;
+  private ImageButton mForwardFinishButton;
+  private ProgressIndicator mProgress;
+  private ViewPager mPager;
 
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.whats_new_activity);
+  @Override
+  protected void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.whats_new_activity);
 
-        mProgress = findViewById(R.id.progressIndicator);
-        mPager = findViewById(R.id.contentPanel);
+    mProgress = findViewById(R.id.progressIndicator);
+    mPager = findViewById(R.id.contentPanel);
 
-        boolean isBeta = MainApp.Companion.isBeta();
+    boolean isBeta = MainApp.Companion.isBeta();
 
-        FeaturesViewAdapter adapter = new FeaturesViewAdapter(getSupportFragmentManager(),
-                FeatureList.getFiltered(getLastSeenVersionCode(), isFirstRun(), isBeta));
+    FeaturesViewAdapter adapter = new FeaturesViewAdapter(
+        getSupportFragmentManager(),
+        FeatureList.getFiltered(getLastSeenVersionCode(), isFirstRun(),
+                                isBeta));
 
-        mProgress.setNumberOfSteps(adapter.getCount());
-        mPager.setAdapter(adapter);
-        mPager.addOnPageChangeListener(this);
+    mProgress.setNumberOfSteps(adapter.getCount());
+    mPager.setAdapter(adapter);
+    mPager.addOnPageChangeListener(this);
 
-        mForwardFinishButton = findViewById(R.id.forward);
-        mForwardFinishButton.setOnClickListener(view -> {
-            if (mProgress.hasNextStep()) {
-                mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
-                mProgress.animateToStep(mPager.getCurrentItem() + 1);
-            } else {
-                finish();
-            }
-            updateNextButtonIfNeeded();
-        });
-        Button skipButton = findViewById(R.id.skip);
-        skipButton.setOnClickListener(view -> finish());
+    mForwardFinishButton = findViewById(R.id.forward);
+    mForwardFinishButton.setOnClickListener(view -> {
+      if (mProgress.hasNextStep()) {
+        mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
+        mProgress.animateToStep(mPager.getCurrentItem() + 1);
+      } else {
+        finish();
+      }
+      updateNextButtonIfNeeded();
+    });
+    Button skipButton = findViewById(R.id.skip);
+    skipButton.setOnClickListener(view -> finish());
 
-        updateNextButtonIfNeeded();
+    updateNextButtonIfNeeded();
 
-        // Wizard already shown
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putInt(KEY_LAST_SEEN_VERSION_CODE, MainApp.Companion.getVersionCode());
-        editor.apply();
+    // Wizard already shown
+    SharedPreferences pref =
+        PreferenceManager.getDefaultSharedPreferences(this);
+    SharedPreferences.Editor editor = pref.edit();
+    editor.putInt(KEY_LAST_SEEN_VERSION_CODE,
+                  MainApp.Companion.getVersionCode());
+    editor.apply();
+  }
+
+  @Override
+  public void onBackPressed() {
+    super.onBackPressed();
+  }
+
+  private void updateNextButtonIfNeeded() {
+    if (!mProgress.hasNextStep()) {
+      mForwardFinishButton.setImageResource(R.drawable.ic_done_white);
+      mForwardFinishButton.setBackground(
+          getResources().getDrawable(R.drawable.round_button));
+    } else {
+      mForwardFinishButton.setImageResource(R.drawable.ic_arrow_forward);
+      mForwardFinishButton.setBackground(null);
+    }
+  }
+
+  static private int getLastSeenVersionCode() {
+    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(
+        MainApp.Companion.getAppContext());
+    return pref.getInt(KEY_LAST_SEEN_VERSION_CODE, 0);
+  }
+
+  static private boolean isFirstRun() {
+    if (getLastSeenVersionCode() != 0) {
+      return false;
+    }
+    return AccountUtils.getCurrentOwnCloudAccount(
+               MainApp.Companion.getAppContext()) == null;
+  }
+
+  static public void runIfNeeded(final Context context) {
+    if (context instanceof WhatsNewActivity) {
+      return;
+    }
+
+    if (shouldShow(context)) {
+      context.startActivity(new Intent(context, WhatsNewActivity.class));
+    }
+  }
+
+  static private boolean shouldShow(final Context context) {
+    boolean isBeta = MainApp.Companion.isBeta();
+    boolean showWizard =
+        context.getResources().getBoolean(R.bool.wizard_enabled) &&
+        !BuildConfig.DEBUG;
+    return showWizard &&
+        ((isFirstRun() && context instanceof LoginActivity) ||
+         (!(isFirstRun() && (context instanceof FileDisplayActivity)) &&
+          !(context instanceof PassCodeActivity) &&
+          (FeatureList
+               .getFiltered(getLastSeenVersionCode(), isFirstRun(), isBeta)
+               .length > 0)
+
+              ));
+  }
+
+  @Override
+  public void onPageScrolled(final int position, final float positionOffset,
+                             final int positionOffsetPixels) {}
+
+  @Override
+  public void onPageSelected(final int position) {
+    mProgress.animateToStep(position + 1);
+    updateNextButtonIfNeeded();
+  }
+
+  @Override
+  public void onPageScrollStateChanged(final int state) {}
+
+  private final class FeaturesViewAdapter extends FragmentPagerAdapter {
+
+    FeatureItem[] mFeatures;
+
+    public FeaturesViewAdapter(final FragmentManager fm,
+                               final FeatureItem[] features) {
+      super(fm);
+      mFeatures = features;
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    private void updateNextButtonIfNeeded() {
-        if (!mProgress.hasNextStep()) {
-            mForwardFinishButton.setImageResource(R.drawable.ic_done_white);
-            mForwardFinishButton.setBackground(getResources().getDrawable(R.drawable.round_button));
-        } else {
-            mForwardFinishButton.setImageResource(R.drawable.ic_arrow_forward);
-            mForwardFinishButton.setBackground(null);
-        }
-    }
-
-    static private int getLastSeenVersionCode() {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainApp.Companion.getAppContext());
-        return pref.getInt(KEY_LAST_SEEN_VERSION_CODE, 0);
-    }
-
-    static private boolean isFirstRun() {
-        if (getLastSeenVersionCode() != 0) {
-            return false;
-        }
-        return AccountUtils.getCurrentOwnCloudAccount(MainApp.Companion.getAppContext()) == null;
-    }
-
-    static public void runIfNeeded(final Context context) {
-        if (context instanceof WhatsNewActivity) {
-            return;
-        }
-
-        if (shouldShow(context)) {
-            context.startActivity(new Intent(context, WhatsNewActivity.class));
-        }
-    }
-
-    static private boolean shouldShow(final Context context) {
-        boolean isBeta = MainApp.Companion.isBeta();
-        boolean showWizard = context.getResources().getBoolean(R.bool.wizard_enabled) && !BuildConfig.DEBUG;
-        return showWizard
-               && ((isFirstRun() && context instanceof LoginActivity)
-                || (
-                    !(isFirstRun() && (context instanceof FileDisplayActivity))
-                    && !(context instanceof PassCodeActivity)
-                    && (FeatureList.getFiltered(getLastSeenVersionCode(), isFirstRun(),
-                                             isBeta).length > 0)
-
-                ));
+    public Fragment getItem(final int position) {
+      return FeatureFragment.newInstance(mFeatures[position]);
     }
 
     @Override
-    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
+    public int getCount() {
+      return mFeatures.length;
+    }
+  }
+
+  public static class FeatureFragment extends Fragment {
+    private FeatureItem mItem;
+
+    static public FeatureFragment newInstance(final FeatureItem item) {
+      FeatureFragment f = new FeatureFragment();
+      Bundle args = new Bundle();
+      args.putParcelable("feature", item);
+      f.setArguments(args);
+      return f;
     }
 
     @Override
-    public void onPageSelected(final int position) {
-        mProgress.animateToStep(position + 1);
-        updateNextButtonIfNeeded();
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      mItem = getArguments() != null
+                  ? (FeatureItem)getArguments().getParcelable("feature")
+                  : null;
     }
 
+    @Nullable
     @Override
-    public void onPageScrollStateChanged(final int state) {
+    public View onCreateView(final LayoutInflater inflater,
+                             final @Nullable ViewGroup container,
+                             final @Nullable Bundle savedInstanceState) {
+      View v = inflater.inflate(R.layout.whats_new_element, container, false);
 
+      ImageView iv = v.findViewById(R.id.whatsNewImage);
+      if (mItem.shouldShowImage()) {
+        iv.setImageResource(mItem.getImage());
+      }
+
+      TextView tv2 = v.findViewById(R.id.whatsNewTitle);
+      if (mItem.shouldShowTitleText()) {
+        tv2.setText(mItem.getTitleText());
+      }
+
+      tv2 = v.findViewById(R.id.whatsNewText);
+      if (mItem.shouldShowContentText()) {
+        tv2.setText(mItem.getContentText());
+      }
+
+      return v;
     }
-
-    private final class FeaturesViewAdapter extends FragmentPagerAdapter {
-
-        FeatureItem[] mFeatures;
-
-        public FeaturesViewAdapter(final FragmentManager fm, final FeatureItem[] features) {
-            super(fm);
-            mFeatures = features;
-        }
-
-        @Override
-        public Fragment getItem(final int position) {
-            return FeatureFragment.newInstance(mFeatures[position]);
-        }
-
-        @Override
-        public int getCount() {
-            return mFeatures.length;
-        }
-    }
-
-    public static class FeatureFragment extends Fragment {
-        private FeatureItem mItem;
-
-        static public FeatureFragment newInstance(final FeatureItem item) {
-            FeatureFragment f = new FeatureFragment();
-            Bundle args = new Bundle();
-            args.putParcelable("feature", item);
-            f.setArguments(args);
-            return f;
-        }
-
-        @Override
-        public void onCreate(final @Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            mItem = getArguments() != null ? (FeatureItem) getArguments().getParcelable("feature") : null;
-        }
-
-        @Nullable
-        @Override
-        public View onCreateView(final LayoutInflater inflater, final @Nullable ViewGroup container,
-                                 final @Nullable Bundle savedInstanceState) {
-            View v = inflater.inflate(R.layout.whats_new_element, container, false);
-
-            ImageView iv = v.findViewById(R.id.whatsNewImage);
-            if (mItem.shouldShowImage()) {
-                iv.setImageResource(mItem.getImage());
-            }
-
-            TextView tv2 = v.findViewById(R.id.whatsNewTitle);
-            if (mItem.shouldShowTitleText()) {
-                tv2.setText(mItem.getTitleText());
-            }
-
-            tv2 = v.findViewById(R.id.whatsNewText);
-            if (mItem.shouldShowContentText()) {
-                tv2.setText(mItem.getContentText());
-            }
-
-            return v;
-        }
-    }
+  }
 }

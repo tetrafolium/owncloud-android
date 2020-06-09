@@ -22,7 +22,6 @@
 package com.owncloud.android.ui.fragment;
 
 import android.content.Context;
-
 import androidx.fragment.app.Fragment;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.files.services.FileDownloader;
@@ -34,122 +33,119 @@ import com.owncloud.android.ui.activity.ComponentsGetter;
  */
 public abstract class FileFragment extends Fragment {
 
-    private OCFile mFile;
+  private OCFile mFile;
 
-    protected ContainerActivity mContainerActivity;
+  protected ContainerActivity mContainerActivity;
 
-    /**
-     * Creates an empty fragment.
-     *
-     * It's necessary to keep a public constructor without parameters; the system uses it when
-     * tries to reinstantiate a fragment automatically.
-     */
-    public FileFragment() {
-        mFile = null;
+  /**
+   * Creates an empty fragment.
+   *
+   * It's necessary to keep a public constructor without parameters; the system
+   * uses it when tries to reinstantiate a fragment automatically.
+   */
+  public FileFragment() { mFile = null; }
+
+  /**
+   * Getter for the hold {@link OCFile}
+   *
+   * @return The {@link OCFile} hold
+   */
+  public OCFile getFile() { return mFile; }
+
+  protected void setFile(final OCFile file) { mFile = file; }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onAttach(final Context context) {
+    super.onAttach(context);
+    try {
+      mContainerActivity = (ContainerActivity)context;
+
+    } catch (ClassCastException e) {
+      throw new ClassCastException(context.toString() + " must implement " +
+                                   ContainerActivity.class.getSimpleName());
     }
+  }
 
-    /**
-     * Getter for the hold {@link OCFile}
-     *
-     * @return The {@link OCFile} hold
-     */
-    public OCFile getFile() {
-        return mFile;
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onDetach() {
+    mContainerActivity = null;
+    super.onDetach();
+  }
 
-    protected void setFile(final OCFile file) {
-        mFile = file;
-    }
+  public void onSyncEvent(final String syncEvent, final boolean success,
+                          final OCFile updatedFile) {
+    if (syncEvent.equals(FileUploader.getUploadStartMessage())) {
+      updateViewForSyncInProgress();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        try {
-            mContainerActivity = (ContainerActivity) context;
-
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement "
-                                         + ContainerActivity.class.getSimpleName());
+    } else if (syncEvent.equals(FileUploader.getUploadFinishMessage())) {
+      if (success) {
+        if (updatedFile != null) {
+          onFileMetadataChanged(updatedFile);
+        } else {
+          onFileMetadataChanged();
         }
-    }
+      }
+      updateViewForSyncOff();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onDetach() {
-        mContainerActivity = null;
-        super.onDetach();
-    }
+    } else if (syncEvent.equals(FileDownloader.getDownloadAddedMessage())) {
+      updateViewForSyncInProgress();
 
-    public void onSyncEvent(final String syncEvent, final boolean success, final OCFile updatedFile) {
-        if (syncEvent.equals(FileUploader.getUploadStartMessage())) {
-            updateViewForSyncInProgress();
-
-        } else if (syncEvent.equals(FileUploader.getUploadFinishMessage())) {
-            if (success) {
-                if (updatedFile != null) {
-                    onFileMetadataChanged(updatedFile);
-                } else {
-                    onFileMetadataChanged();
-                }
-            }
-            updateViewForSyncOff();
-
-        } else if (syncEvent.equals(FileDownloader.getDownloadAddedMessage())) {
-            updateViewForSyncInProgress();
-
-        } else if (syncEvent.equals(FileDownloader.getDownloadFinishMessage())) {
-            if (success) {
-                if (updatedFile != null) {
-                    onFileMetadataChanged(updatedFile);
-                } else {
-                    onFileMetadataChanged();
-                }
-                onFileContentChanged();
-            }
-            updateViewForSyncOff();
+    } else if (syncEvent.equals(FileDownloader.getDownloadFinishMessage())) {
+      if (success) {
+        if (updatedFile != null) {
+          onFileMetadataChanged(updatedFile);
+        } else {
+          onFileMetadataChanged();
         }
+        onFileContentChanged();
+      }
+      updateViewForSyncOff();
     }
+  }
 
-    public abstract void updateViewForSyncInProgress();
+  public abstract void updateViewForSyncInProgress();
 
-    public abstract void updateViewForSyncOff();
+  public abstract void updateViewForSyncOff();
 
-    public abstract void onTransferServiceConnected();
+  public abstract void onTransferServiceConnected();
 
-    public abstract void onFileMetadataChanged(OCFile updatedFile);
+  public abstract void onFileMetadataChanged(OCFile updatedFile);
 
-    public abstract void onFileMetadataChanged();
+  public abstract void onFileMetadataChanged();
 
-    public abstract void onFileContentChanged();
+  public abstract void onFileContentChanged();
+
+  /**
+   * Interface to implement by any Activity that includes some instance of
+   * FileListFragment Interface to implement by any Activity that includes some
+   * instance of FileFragment
+   */
+  public interface ContainerActivity extends ComponentsGetter {
 
     /**
-     * Interface to implement by any Activity that includes some instance of FileListFragment
-     * Interface to implement by any Activity that includes some instance of FileFragment
+     * Request the parent activity to show the details of an {@link OCFile}.
+     *
+     * @param file      File to show details
      */
-    public interface ContainerActivity extends ComponentsGetter {
+    void showDetails(OCFile file);
 
-        /**
-         * Request the parent activity to show the details of an {@link OCFile}.
-         *
-         * @param file      File to show details
-         */
-        void showDetails(OCFile file);
+    ///// TO UNIFY IN A SINGLE CALLBACK METHOD - EVENT NOTIFICATIONs  ->
+    ///something happened
+    // inside the fragment, MAYBE activity is interested --> unify in
+    // notification method
 
-        ///// TO UNIFY IN A SINGLE CALLBACK METHOD - EVENT NOTIFICATIONs  -> something happened
-        // inside the fragment, MAYBE activity is interested --> unify in notification method
-
-        /**
-         * Callback method invoked when a the user browsed into a different folder through the
-         * list of files
-         *
-         * @param folder
-         */
-        void onBrowsedDownTo(OCFile folder);
-
-    }
+    /**
+     * Callback method invoked when a the user browsed into a different folder
+     * through the list of files
+     *
+     * @param folder
+     */
+    void onBrowsedDownTo(OCFile folder);
+  }
 }

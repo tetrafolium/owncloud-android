@@ -22,7 +22,6 @@ package com.owncloud.android.files.services;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.datamodel.OCUpload;
 import com.owncloud.android.datamodel.UploadsStorageManager;
@@ -31,36 +30,43 @@ import timber.log.Timber;
 
 public class RetryUploadJobService extends JobService {
 
-    @Override
-    public boolean onStartJob(final JobParameters jobParameters) {
+  @Override
+  public boolean onStartJob(final JobParameters jobParameters) {
 
-        UploadsStorageManager uploadsStorageManager = new UploadsStorageManager(getContentResolver());
+    UploadsStorageManager uploadsStorageManager =
+        new UploadsStorageManager(getContentResolver());
 
-        String fileRemotePath = jobParameters.getExtras().getString(Extras.EXTRA_REMOTE_PATH);
+    String fileRemotePath =
+        jobParameters.getExtras().getString(Extras.EXTRA_REMOTE_PATH);
 
-        String accountName = jobParameters.getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
+    String accountName =
+        jobParameters.getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
 
-        Timber.d("Retrying upload of %1s in %2s", fileRemotePath, accountName);
+    Timber.d("Retrying upload of %1s in %2s", fileRemotePath, accountName);
 
-        // Get upload to be retried
-        OCUpload ocUpload = uploadsStorageManager.getLastUploadFor(new OCFile(fileRemotePath), accountName);
+    // Get upload to be retried
+    OCUpload ocUpload = uploadsStorageManager.getLastUploadFor(
+        new OCFile(fileRemotePath), accountName);
 
-        if (ocUpload != null) {
-            // Retry the upload
-            TransferRequester requester = new TransferRequester();
-            requester.retry(this, ocUpload, true);
+    if (ocUpload != null) {
+      // Retry the upload
+      TransferRequester requester = new TransferRequester();
+      requester.retry(this, ocUpload, true);
 
-        } else {
-            // easy if the user deletes the upload in uploads view before recovering network
-            Timber.w("No upload found in database for %1s in %2s", fileRemotePath, accountName);
-        }
-
-        jobFinished(jobParameters, false);  // done here, real job was delegated to another castle
-        return true;    // TODO or false? what is the real effect, Google!?!?!?!?
+    } else {
+      // easy if the user deletes the upload in uploads view before recovering
+      // network
+      Timber.w("No upload found in database for %1s in %2s", fileRemotePath,
+               accountName);
     }
 
-    @Override
-    public boolean onStopJob(final JobParameters jobParameters) {
-        return true;
-    }
+    jobFinished(jobParameters,
+                false); // done here, real job was delegated to another castle
+    return true; // TODO or false? what is the real effect, Google!?!?!?!?
+  }
+
+  @Override
+  public boolean onStopJob(final JobParameters jobParameters) {
+    return true;
+  }
 }

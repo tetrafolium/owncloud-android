@@ -23,7 +23,6 @@ package com.owncloud.android.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.files.services.FileDownloader;
 import com.owncloud.android.files.services.FileUploader;
@@ -34,77 +33,81 @@ import com.owncloud.android.ui.dialog.ConflictsResolveDialog.OnConflictDecisionM
 import timber.log.Timber;
 
 /**
- * Wrapper activity which will be launched if keep-in-sync file will be modified by external
- * application.
+ * Wrapper activity which will be launched if keep-in-sync file will be modified
+ * by external application.
  */
-public class ConflictsResolveActivity extends FileActivity implements OnConflictDecisionMadeListener {
+public class ConflictsResolveActivity
+    extends FileActivity implements OnConflictDecisionMadeListener {
 
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
+
+  @Override
+  public void conflictDecisionMade(final Decision decision) {
+
+    Integer behaviour = null;
+    Boolean forceOverwrite = null;
+
+    switch (decision) {
+    case CANCEL:
+      finish();
+      return;
+    case OVERWRITE:
+      // use local version -> overwrite on server
+      forceOverwrite = true;
+      break;
+    case KEEP_BOTH:
+      behaviour = FileUploader.LOCAL_BEHAVIOUR_MOVE;
+      break;
+    case SERVER:
+      // use server version -> delete local, request download
+      Intent intent = new Intent(this, FileDownloader.class);
+      intent.putExtra(FileDownloader.KEY_ACCOUNT, getAccount());
+      intent.putExtra(FileDownloader.KEY_FILE, getFile());
+      startService(intent);
+      finish();
+      return;
+    default:
+      Timber.e("Unhandled conflict decision %s", decision);
+      return;
     }
 
-    @Override
-    public void conflictDecisionMade(final Decision decision) {
+    TransferRequester requester = new TransferRequester();
+    requester.uploadUpdate(this, getAccount(), getFile(), behaviour,
+                           forceOverwrite, false);
+    finish();
+  }
 
-        Integer behaviour = null;
-        Boolean forceOverwrite = null;
-
-        switch (decision) {
-        case CANCEL:
-            finish();
-            return;
-        case OVERWRITE:
-            // use local version -> overwrite on server
-            forceOverwrite = true;
-            break;
-        case KEEP_BOTH:
-            behaviour = FileUploader.LOCAL_BEHAVIOUR_MOVE;
-            break;
-        case SERVER:
-            // use server version -> delete local, request download
-            Intent intent = new Intent(this, FileDownloader.class);
-            intent.putExtra(FileDownloader.KEY_ACCOUNT, getAccount());
-            intent.putExtra(FileDownloader.KEY_FILE, getFile());
-            startService(intent);
-            finish();
-            return;
-        default:
-            Timber.e("Unhandled conflict decision %s", decision);
-            return;
-        }
-
-        TransferRequester requester = new TransferRequester();
-        requester.uploadUpdate(this, getAccount(), getFile(), behaviour, forceOverwrite, false);
+  @Override
+  protected void onAccountSet(final boolean stateWasRecovered) {
+    super.onAccountSet(stateWasRecovered);
+    if (getAccount() != null) {
+      OCFile file = getFile();
+      if (getFile() == null) {
+        Timber.e("No conflictive file received");
         finish();
-    }
-
-    @Override
-    protected void onAccountSet(final boolean stateWasRecovered) {
-        super.onAccountSet(stateWasRecovered);
-        if (getAccount() != null) {
-            OCFile file = getFile();
-            if (getFile() == null) {
-                Timber.e("No conflictive file received");
-                finish();
-            } else {
-                /// Check whether the 'main' OCFile handled by the Activity is contained in the current Account
-                file = getStorageManager().getFileByPath(file.getRemotePath());   // file = null if not in the
-                // current Account
-                if (file != null) {
-                    setFile(file);
-                    ConflictsResolveDialog d = ConflictsResolveDialog.newInstance(file.getRemotePath(), this);
-                    d.showDialog(this);
-
-                } else {
-                    // account was changed to a different one - just finish
-                    finish();
-                }
-            }
+      } else {
+        /// Check whether the 'main' OCFile handled by the Activity is contained
+        /// in the current Account
+        file = getStorageManager().getFileByPath(
+            file.getRemotePath()); // file = null if not in the
+        // current Account
+        if (file != null) {
+          setFile(file);
+          ConflictsResolveDialog d =
+              ConflictsResolveDialog.newInstance(file.getRemotePath(), this);
+          d.showDialog(this);
 
         } else {
-            finish();
+          // account was changed to a different one - just finish
+          finish();
         }
+      }
 
+    } else {
+      finish();
     }
+  }
 }

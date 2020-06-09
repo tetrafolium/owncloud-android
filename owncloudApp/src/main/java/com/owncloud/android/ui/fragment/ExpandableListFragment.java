@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
-
 import com.owncloud.android.R;
 import com.owncloud.android.utils.PreferenceUtils;
 import timber.log.Timber;
@@ -37,59 +36,63 @@ import timber.log.Timber;
 /**
  *  Extending ExtendedListFragment. This allows dividing list in groups.
  */
-public class ExpandableListFragment extends ExtendedListFragment implements OnChildClickListener {
+public class ExpandableListFragment
+    extends ExtendedListFragment implements OnChildClickListener {
 
-    protected ExpandableListView mList;
+  protected ExpandableListView mList;
 
-    public void setListAdapter(final ExpandableListAdapter listAdapter) {
-        mList.setAdapter(listAdapter);
-        mList.invalidate();
-    }
+  public void setListAdapter(final ExpandableListAdapter listAdapter) {
+    mList.setAdapter(listAdapter);
+    mList.invalidate();
+  }
 
-    public ExpandableListView getListView() {
-        return mList;
-    }
+  public ExpandableListView getListView() { return mList; }
 
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        Timber.v("onCreateView");
+  @Override
+  public View onCreateView(final LayoutInflater inflater,
+                           final ViewGroup container,
+                           final Bundle savedInstanceState) {
+    Timber.v("onCreateView");
 
-        View v = inflater.inflate(R.layout.list_fragment_expandable, null);
+    View v = inflater.inflate(R.layout.list_fragment_expandable, null);
 
-        // Allow or disallow touches with other visible windows
-        v.setFilterTouchesWhenObscured(
-            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
-        );
+    // Allow or disallow touches with other visible windows
+    v.setFilterTouchesWhenObscured(
+        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
+            getContext()));
 
-        mEmptyListMessage = v.findViewById(R.id.empty_list_view);
-        mList = v.findViewById(R.id.list_root);
-        mList.setOnChildClickListener(this);
+    mEmptyListMessage = v.findViewById(R.id.empty_list_view);
+    mList = v.findViewById(R.id.list_root);
+    mList.setOnChildClickListener(this);
 
-        mList.setDivider(getResources().getDrawable(R.drawable.uploader_list_separator));
-        mList.setDividerHeight(1);
+    mList.setDivider(
+        getResources().getDrawable(R.drawable.uploader_list_separator));
+    mList.setDividerHeight(1);
 
-        //        if (savedInstanceState != null) {
-        //            int referencePosition = savedInstanceState.getInt(KEY_SAVED_LIST_POSITION);
-        //            setReferencePosition(referencePosition);
-        //        }
+    //        if (savedInstanceState != null) {
+    //            int referencePosition =
+    //            savedInstanceState.getInt(KEY_SAVED_LIST_POSITION);
+    //            setReferencePosition(referencePosition);
+    //        }
 
-        // Pull down refresh
-        mRefreshListLayout = v.findViewById(R.id.swipe_refresh_files);
-        mRefreshEmptyLayout = v.findViewById(R.id.swipe_refresh_files_emptyView);
+    // Pull down refresh
+    mRefreshListLayout = v.findViewById(R.id.swipe_refresh_files);
+    mRefreshEmptyLayout = v.findViewById(R.id.swipe_refresh_files_emptyView);
 
-        onCreateSwipeToRefresh(mRefreshListLayout);
-        onCreateSwipeToRefresh(mRefreshEmptyLayout);
+    onCreateSwipeToRefresh(mRefreshListLayout);
+    onCreateSwipeToRefresh(mRefreshEmptyLayout);
 
-        mList.setEmptyView(mRefreshEmptyLayout);
+    mList.setEmptyView(mRefreshEmptyLayout);
 
-        return v;
-    }
+    return v;
+  }
 
-    @Override
-    public boolean onChildClick(final ExpandableListView parent, final View v, final int groupPosition, final int childPosition, final long id) {
-        // to be @overriden
-        Timber.w("onChildClick(). This method should be overriden!");
-        return false;
-    }
-
+  @Override
+  public boolean onChildClick(final ExpandableListView parent, final View v,
+                              final int groupPosition, final int childPosition,
+                              final long id) {
+    // to be @overriden
+    Timber.w("onChildClick(). This method should be overriden!");
+    return false;
+  }
 }

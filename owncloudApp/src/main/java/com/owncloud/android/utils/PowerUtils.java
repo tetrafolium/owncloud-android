@@ -25,10 +25,9 @@ import android.os.PowerManager;
 
 public class PowerUtils {
 
-    public static boolean isDeviceIdle(final Context context) {
-        return (
-                   Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                   && ((PowerManager) context.getSystemService(Context.POWER_SERVICE)).isDeviceIdleMode()
-               );
-    }
+  public static boolean isDeviceIdle(final Context context) {
+    return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            ((PowerManager)context.getSystemService(Context.POWER_SERVICE))
+                .isDeviceIdleMode());
+  }
 }

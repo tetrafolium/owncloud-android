@@ -28,99 +28,97 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-
 import com.owncloud.android.MainApp;
 import com.owncloud.android.ui.activity.PatternLockActivity;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class PatternManager {
 
-    private static final Set<Class> sExemptOfPatternActivites;
-    private Long timeStamp = 0L;
-    private int mVisibleActivitiesCounter = 0;
+  private static final Set<Class> sExemptOfPatternActivites;
+  private Long timeStamp = 0L;
+  private int mVisibleActivitiesCounter = 0;
 
-    static {
-        sExemptOfPatternActivites = new HashSet<>();
-        sExemptOfPatternActivites.add(PatternLockActivity.class);
+  static {
+    sExemptOfPatternActivites = new HashSet<>();
+    sExemptOfPatternActivites.add(PatternLockActivity.class);
+  }
+
+  private static PatternManager mPatternManagerInstance = null;
+
+  public static PatternManager getPatternManager() {
+    if (mPatternManagerInstance == null) {
+      mPatternManagerInstance = new PatternManager();
     }
+    return mPatternManagerInstance;
+  }
 
-    private static PatternManager mPatternManagerInstance = null;
+  private PatternManager() {}
 
-    public static PatternManager getPatternManager() {
-        if (mPatternManagerInstance == null) {
-            mPatternManagerInstance = new PatternManager();
-        }
-        return mPatternManagerInstance;
-    }
+  public void onActivityStarted(final Activity activity) {
+    if (!sExemptOfPatternActivites.contains(activity.getClass()) &&
+        patternShouldBeRequested()) {
 
-    private PatternManager() {
-    }
-
-    public void onActivityStarted(final Activity activity) {
-        if (!sExemptOfPatternActivites.contains(activity.getClass()) && patternShouldBeRequested()) {
-
-            // Do not ask for pattern if biometric is enabled
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && BiometricManager.getBiometricManager(activity).
-                    isBiometricEnabled()) {
-                mVisibleActivitiesCounter++;
-                return;
-            }
-            checkPattern(activity);
-        }
+      // Do not ask for pattern if biometric is enabled
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+          BiometricManager.getBiometricManager(activity).isBiometricEnabled()) {
         mVisibleActivitiesCounter++;
+        return;
+      }
+      checkPattern(activity);
     }
+    mVisibleActivitiesCounter++;
+  }
 
-    private void setUnlockTimestamp() {
-        timeStamp = SystemClock.elapsedRealtime();
-    }
+  private void setUnlockTimestamp() {
+    timeStamp = SystemClock.elapsedRealtime();
+  }
 
-    public void onActivityStopped(final Activity activity) {
-        if (mVisibleActivitiesCounter > 0) {
-            mVisibleActivitiesCounter--;
-        }
-        setUnlockTimestamp();
-        PowerManager powerMgr = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
-        if (isPatternEnabled() && powerMgr != null && !powerMgr.isScreenOn()) {
-            activity.moveTaskToBack(true);
-        }
+  public void onActivityStopped(final Activity activity) {
+    if (mVisibleActivitiesCounter > 0) {
+      mVisibleActivitiesCounter--;
     }
+    setUnlockTimestamp();
+    PowerManager powerMgr =
+        (PowerManager)activity.getSystemService(Context.POWER_SERVICE);
+    if (isPatternEnabled() && powerMgr != null && !powerMgr.isScreenOn()) {
+      activity.moveTaskToBack(true);
+    }
+  }
 
-    public void onBiometricCancelled(final Activity activity) {
-        // Ask user for pattern
-        checkPattern(activity);
-    }
+  public void onBiometricCancelled(final Activity activity) {
+    // Ask user for pattern
+    checkPattern(activity);
+  }
 
-    private void checkPattern(final Activity activity) {
-        Intent i = new Intent(MainApp.Companion.getAppContext(), PatternLockActivity.class);
-        i.setAction(PatternLockActivity.ACTION_CHECK);
-        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        activity.startActivity(i);
-    }
+  private void checkPattern(final Activity activity) {
+    Intent i = new Intent(MainApp.Companion.getAppContext(),
+                          PatternLockActivity.class);
+    i.setAction(PatternLockActivity.ACTION_CHECK);
+    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT |
+               Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    activity.startActivity(i);
+  }
 
-    private boolean patternShouldBeRequested() {
-        int PATTERN_TIMEOUT = 1000;
-        if ((SystemClock.elapsedRealtime() - timeStamp) > PATTERN_TIMEOUT
-                && mVisibleActivitiesCounter <= 0
-           ) {
-            return isPatternEnabled();
-        }
-        return false;
+  private boolean patternShouldBeRequested() {
+    int PATTERN_TIMEOUT = 1000;
+    if ((SystemClock.elapsedRealtime() - timeStamp) > PATTERN_TIMEOUT &&
+        mVisibleActivitiesCounter <= 0) {
+      return isPatternEnabled();
     }
+    return false;
+  }
 
-    public boolean isPatternEnabled() {
-        SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(MainApp.Companion.getAppContext());
-        return appPrefs.getBoolean(PatternLockActivity.PREFERENCE_SET_PATTERN, false);
-    }
+  public boolean isPatternEnabled() {
+    SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(
+        MainApp.Companion.getAppContext());
+    return appPrefs.getBoolean(PatternLockActivity.PREFERENCE_SET_PATTERN,
+                               false);
+  }
 
-    /**
-     * This can be used for example for onActivityResult, where you don't want to re authenticate
-     * again.
-     * <p>
-     * USE WITH CARE
-     */
-    public void bayPassUnlockOnce() {
-        setUnlockTimestamp();
-    }
+  /**
+   * This can be used for example for onActivityResult, where you don't want to
+   * re authenticate again. <p> USE WITH CARE
+   */
+  public void bayPassUnlockOnce() { setUnlockTimestamp(); }
 }

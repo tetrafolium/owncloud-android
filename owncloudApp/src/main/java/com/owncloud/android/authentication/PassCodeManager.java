@@ -27,105 +27,106 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-
 import com.owncloud.android.MainApp;
 import com.owncloud.android.ui.activity.PassCodeActivity;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class PassCodeManager {
 
-    private static final Set<Class> sExemptOfPasscodeActivites;
+  private static final Set<Class> sExemptOfPasscodeActivites;
 
-    static {
-        sExemptOfPasscodeActivites = new HashSet<>();
-        sExemptOfPasscodeActivites.add(PassCodeActivity.class);
-        // other activities may be exempted, if needed
+  static {
+    sExemptOfPasscodeActivites = new HashSet<>();
+    sExemptOfPasscodeActivites.add(PassCodeActivity.class);
+    // other activities may be exempted, if needed
+  }
+
+  private static int PASS_CODE_TIMEOUT = 1000;
+  // keeping a "low" positive value is the easiest way to prevent the pass code
+  // is requested on rotations
+
+  public static PassCodeManager mPassCodeManagerInstance = null;
+
+  public static PassCodeManager getPassCodeManager() {
+    if (mPassCodeManagerInstance == null) {
+      mPassCodeManagerInstance = new PassCodeManager();
+    }
+    return mPassCodeManagerInstance;
+  }
+
+  private Long mTimestamp = 0L;
+  private int mVisibleActivitiesCounter = 0;
+
+  protected PassCodeManager() {}
+
+  public void onActivityStarted(final Activity activity) {
+
+    if (!sExemptOfPasscodeActivites.contains(activity.getClass()) &&
+        passCodeShouldBeRequested()) {
+
+      // Do not ask for passcode if biometric is enabled
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+          BiometricManager.getBiometricManager(activity).isBiometricEnabled()) {
+        mVisibleActivitiesCounter++;
+        return;
+      }
+
+      checkPasscode(activity);
     }
 
-    private static int PASS_CODE_TIMEOUT = 1000;
-    // keeping a "low" positive value is the easiest way to prevent the pass code is requested on rotations
+    mVisibleActivitiesCounter++; // keep it AFTER passCodeShouldBeRequested was
+                                 // checked
+  }
 
-    public static PassCodeManager mPassCodeManagerInstance = null;
-
-    public static PassCodeManager getPassCodeManager() {
-        if (mPassCodeManagerInstance == null) {
-            mPassCodeManagerInstance = new PassCodeManager();
-        }
-        return mPassCodeManagerInstance;
+  public void onActivityStopped(final Activity activity) {
+    if (mVisibleActivitiesCounter > 0) {
+      mVisibleActivitiesCounter--;
     }
-
-    private Long mTimestamp = 0L;
-    private int mVisibleActivitiesCounter = 0;
-
-    protected PassCodeManager() {
+    setUnlockTimestamp();
+    PowerManager powerMgr =
+        (PowerManager)activity.getSystemService(Context.POWER_SERVICE);
+    if (isPassCodeEnabled() && powerMgr != null && !powerMgr.isScreenOn()) {
+      activity.moveTaskToBack(true);
     }
+  }
 
-    public void onActivityStarted(final Activity activity) {
+  public void onBiometricCancelled(final Activity activity) {
+    // Ask user for passcode
+    checkPasscode(activity);
+  }
 
-        if (!sExemptOfPasscodeActivites.contains(activity.getClass()) && passCodeShouldBeRequested()) {
+  private void checkPasscode(final Activity activity) {
+    Intent i =
+        new Intent(MainApp.Companion.getAppContext(), PassCodeActivity.class);
+    i.setAction(PassCodeActivity.ACTION_CHECK);
+    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT |
+               Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    activity.startActivity(i);
+  }
 
-            // Do not ask for passcode if biometric is enabled
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && BiometricManager.getBiometricManager(activity).
-                    isBiometricEnabled()) {
-                mVisibleActivitiesCounter++;
-                return;
-            }
+  private void setUnlockTimestamp() {
+    mTimestamp = SystemClock.elapsedRealtime();
+  }
 
-            checkPasscode(activity);
-        }
-
-        mVisibleActivitiesCounter++;    // keep it AFTER passCodeShouldBeRequested was checked
+  private boolean passCodeShouldBeRequested() {
+    if ((SystemClock.elapsedRealtime() - mTimestamp) > PASS_CODE_TIMEOUT &&
+        mVisibleActivitiesCounter <= 0) {
+      return isPassCodeEnabled();
     }
+    return false;
+  }
 
-    public void onActivityStopped(final Activity activity) {
-        if (mVisibleActivitiesCounter > 0) {
-            mVisibleActivitiesCounter--;
-        }
-        setUnlockTimestamp();
-        PowerManager powerMgr = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
-        if (isPassCodeEnabled() && powerMgr != null && !powerMgr.isScreenOn()) {
-            activity.moveTaskToBack(true);
-        }
-    }
+  public boolean isPassCodeEnabled() {
+    SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(
+        MainApp.Companion.getAppContext());
+    return (
+        appPrefs.getBoolean(PassCodeActivity.PREFERENCE_SET_PASSCODE, false));
+  }
 
-    public void onBiometricCancelled(final Activity activity) {
-        // Ask user for passcode
-        checkPasscode(activity);
-    }
-
-    private void checkPasscode(final Activity activity) {
-        Intent i = new Intent(MainApp.Companion.getAppContext(), PassCodeActivity.class);
-        i.setAction(PassCodeActivity.ACTION_CHECK);
-        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        activity.startActivity(i);
-    }
-
-    private void setUnlockTimestamp() {
-        mTimestamp = SystemClock.elapsedRealtime();
-    }
-
-    private boolean passCodeShouldBeRequested() {
-        if ((SystemClock.elapsedRealtime() - mTimestamp) > PASS_CODE_TIMEOUT
-                && mVisibleActivitiesCounter <= 0) {
-            return isPassCodeEnabled();
-        }
-        return false;
-    }
-
-    public boolean isPassCodeEnabled() {
-        SharedPreferences appPrefs = PreferenceManager.getDefaultSharedPreferences(MainApp.Companion.getAppContext());
-        return (appPrefs.getBoolean(PassCodeActivity.PREFERENCE_SET_PASSCODE, false));
-    }
-
-    /**
-     * This can be used for example for onActivityResult, where you don't want to re authenticate
-     * again.
-     * <p>
-     * USE WITH CARE
-     */
-    public void bayPassUnlockOnce() {
-        setUnlockTimestamp();
-    }
+  /**
+   * This can be used for example for onActivityResult, where you don't want to
+   * re authenticate again. <p> USE WITH CARE
+   */
+  public void bayPassUnlockOnce() { setUnlockTimestamp(); }
 }

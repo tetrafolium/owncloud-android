@@ -21,7 +21,6 @@ package com.owncloud.android.operations;
 
 import android.accounts.Account;
 import android.content.Context;
-
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.datamodel.OCUpload;
 import com.owncloud.android.lib.common.OwnCloudClient;
@@ -31,77 +30,86 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.resources.files.FileUtils;
 import com.owncloud.android.lib.resources.files.chunks.ChunkedUploadRemoteFileOperation;
 import com.owncloud.android.operations.common.SyncOperation;
-
 import java.io.File;
 import java.util.Iterator;
 
 public class ChunkedUploadFileOperation extends UploadFileOperation {
 
-    private String mTransferId;
+  private String mTransferId;
 
-    public ChunkedUploadFileOperation(final Account account, final OCFile file, final OCUpload upload, final boolean forceOverwrite,
-                                      final int localBehaviour, final Context context) {
-        super(account, file, upload, forceOverwrite, localBehaviour, context);
-        mTransferId = upload.getTransferId();
+  public ChunkedUploadFileOperation(final Account account, final OCFile file,
+                                    final OCUpload upload,
+                                    final boolean forceOverwrite,
+                                    final int localBehaviour,
+                                    final Context context) {
+    super(account, file, upload, forceOverwrite, localBehaviour, context);
+    mTransferId = upload.getTransferId();
+  }
+
+  @Override
+  protected RemoteOperationResult
+  uploadRemoteFile(final OwnCloudClient client, final File temporalFile,
+                   final File originalFile, final String expectedPath,
+                   final File expectedFile, final String timeStamp) {
+    try {
+      RemoteOperationResult result;
+
+      // Step 1, create folder where we put the uploaded file chunks
+      result = createChunksFolder(String.valueOf(mTransferId));
+
+      if (!result.isSuccess()) {
+        return result;
+      }
+
+      // Step 2, start to upload chunks
+      mUploadOperation = new ChunkedUploadRemoteFileOperation(
+          mTransferId, mFile.getStoragePath(), mFile.getRemotePath(),
+          mFile.getMimetype(), mFile.getEtagInConflict(), timeStamp);
+
+      Iterator<OnDatatransferProgressListener> listener =
+          mDataTransferListeners.iterator();
+      while (listener.hasNext()) {
+        mUploadOperation.addDatatransferProgressListener(listener.next());
+      }
+
+      if (mCancellationRequested.get()) {
+        throw new OperationCancelledException();
+      }
+
+      result = mUploadOperation.execute(client);
+
+      // File chunks not properly uploaded
+      if (!result.isSuccess()) {
+        return result;
+      }
+
+      // Step 3, move remote file to final remote destination
+      moveChunksFileToFinalDestination(timeStamp, mFile.getFileLength());
+
+      // Step 4, move local file to final local destination
+      moveTemporalOriginalFiles(temporalFile, originalFile, expectedPath,
+                                expectedFile);
+
+      return result;
+    } catch (Exception e) {
+      return new RemoteOperationResult(e);
     }
+  }
 
-    @Override
-    protected RemoteOperationResult uploadRemoteFile(final OwnCloudClient client, final File temporalFile, final File originalFile,
-            final String expectedPath, final File expectedFile, final String timeStamp) {
-        try {
-            RemoteOperationResult result;
+  private RemoteOperationResult
+  createChunksFolder(final String remoteChunksFolder) {
+    SyncOperation syncOperation =
+        new CreateChunksFolderOperation(remoteChunksFolder);
+    return syncOperation.execute(getClient(), getStorageManager());
+  }
 
-            // Step 1, create folder where we put the uploaded file chunks
-            result = createChunksFolder(String.valueOf(mTransferId));
-
-            if (!result.isSuccess()) {
-                return result;
-            }
-
-            // Step 2, start to upload chunks
-            mUploadOperation = new ChunkedUploadRemoteFileOperation(mTransferId, mFile.getStoragePath(),
-                    mFile.getRemotePath(), mFile.getMimetype(), mFile.getEtagInConflict(), timeStamp);
-
-            Iterator<OnDatatransferProgressListener> listener = mDataTransferListeners.iterator();
-            while (listener.hasNext()) {
-                mUploadOperation.addDatatransferProgressListener(listener.next());
-            }
-
-            if (mCancellationRequested.get()) {
-                throw new OperationCancelledException();
-            }
-
-            result = mUploadOperation.execute(client);
-
-            // File chunks not properly uploaded
-            if (!result.isSuccess()) {
-                return result;
-            }
-
-            // Step 3, move remote file to final remote destination
-            moveChunksFileToFinalDestination(timeStamp, mFile.getFileLength());
-
-            // Step 4, move local file to final local destination
-            moveTemporalOriginalFiles(temporalFile, originalFile, expectedPath, expectedFile);
-
-            return result;
-        } catch (Exception e) {
-            return new RemoteOperationResult(e);
-        }
-    }
-
-    private RemoteOperationResult createChunksFolder(final String remoteChunksFolder) {
-        SyncOperation syncOperation = new CreateChunksFolderOperation(remoteChunksFolder);
-        return syncOperation.execute(getClient(), getStorageManager());
-    }
-
-    private RemoteOperationResult moveChunksFileToFinalDestination(final String fileLastModifTimestamp, final long fileLength) {
-        SyncOperation syncOperation = new MoveChunksFileOperation(
-            String.valueOf(mTransferId + FileUtils.PATH_SEPARATOR + FileUtils.FINAL_CHUNKS_FILE),
-            mFile.getRemotePath(),
-            fileLastModifTimestamp,
-            fileLength
-        );
-        return syncOperation.execute(getClient(), getStorageManager());
-    }
+  private RemoteOperationResult
+  moveChunksFileToFinalDestination(final String fileLastModifTimestamp,
+                                   final long fileLength) {
+    SyncOperation syncOperation = new MoveChunksFileOperation(
+        String.valueOf(mTransferId + FileUtils.PATH_SEPARATOR +
+                       FileUtils.FINAL_CHUNKS_FILE),
+        mFile.getRemotePath(), fileLastModifTimestamp, fileLength);
+    return syncOperation.execute(getClient(), getStorageManager());
+  }
 }

@@ -21,12 +21,15 @@ package com.owncloud.android.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.owncloud.android.ui.activity.Preferences;
 
 public class PreferenceUtils {
-    public static boolean shouldDisallowTouchesWithOtherVisibleWindows(final Context context) {
-        SharedPreferences appPrefs = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
-        return !appPrefs.getBoolean(Preferences.PREFERENCE_TOUCHES_WITH_OTHER_VISIBLE_WINDOWS, false);
-    }
+  public static boolean
+  shouldDisallowTouchesWithOtherVisibleWindows(final Context context) {
+    SharedPreferences appPrefs =
+        android.preference.PreferenceManager.getDefaultSharedPreferences(
+            context);
+    return !appPrefs.getBoolean(
+        Preferences.PREFERENCE_TOUCHES_WITH_OTHER_VISIBLE_WINDOWS, false);
+  }
 }

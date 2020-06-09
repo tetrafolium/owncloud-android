@@ -22,12 +22,8 @@ package com.owncloud.android.ui.adapter;
 
 import android.view.View;
 import android.widget.TextView;
-
 import com.owncloud.android.R;
 import com.owncloud.android.ui.dialog.SslUntrustedCertDialog;
-import timber.log.Timber;
-
-import javax.security.auth.x500.X500Principal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
@@ -36,213 +32,222 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.security.auth.x500.X500Principal;
+import timber.log.Timber;
 
 /**
  *
  */
-public class X509CertificateViewAdapter implements SslUntrustedCertDialog.CertificateViewAdapter {
+public class X509CertificateViewAdapter
+    implements SslUntrustedCertDialog.CertificateViewAdapter {
 
-    private X509Certificate mCertificate = null;
+  private X509Certificate mCertificate = null;
 
-    public X509CertificateViewAdapter(final X509Certificate certificate) {
-        mCertificate = certificate;
+  public X509CertificateViewAdapter(final X509Certificate certificate) {
+    mCertificate = certificate;
+  }
+
+  @Override
+  public void updateCertificateView(final View dialogView) {
+    TextView nullCerView = dialogView.findViewById(R.id.null_cert);
+
+    if (mCertificate != null) {
+      nullCerView.setVisibility(View.GONE);
+      showSubject(mCertificate.getSubjectX500Principal(), dialogView);
+      showIssuer(mCertificate.getIssuerX500Principal(), dialogView);
+      showValidity(mCertificate.getNotBefore(), mCertificate.getNotAfter(),
+                   dialogView);
+      showSignature(dialogView);
+
+    } else {
+      nullCerView.setVisibility(View.VISIBLE);
+    }
+  }
+
+  private byte[] getDigest(final String algorithm, final byte[] message) {
+    MessageDigest md = null;
+
+    try {
+      md = MessageDigest.getInstance(algorithm);
+    } catch (NoSuchAlgorithmException e) {
+      return null;
+    }
+    md.reset();
+    return md.digest(message);
+  }
+
+  private void showSignature(final View dialogView) {
+    byte[] cert = null;
+
+    TextView certFingerprintView =
+        dialogView.findViewById(R.id.value_certificate_fingerprint);
+    TextView algorithmView =
+        dialogView.findViewById(R.id.value_signature_algorithm);
+
+    try {
+      cert = mCertificate.getEncoded();
+      if (cert == null) {
+
+        certFingerprintView.setText(R.string.certificate_load_problem);
+        algorithmView.setText(R.string.certificate_load_problem);
+
+      } else {
+
+        certFingerprintView.setText(
+            getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-256",
+                                                   cert) +
+            getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-1", cert) +
+            getDigestHexBytesWithColonsAndNewLines(dialogView, "MD5", cert));
+        algorithmView.setText(mCertificate.getSigAlgName());
+      }
+
+    } catch (CertificateEncodingException e) {
+      Timber.e(e, "Problem while trying to decode the certificate.");
+    }
+  }
+
+  private final String getDigestHexBytesWithColonsAndNewLines(
+      final View dialogView, final String digestType, final byte[] cert) {
+    final byte[] rawDigest;
+    final String newLine = System.getProperty("line.separator");
+
+    rawDigest = getDigest(digestType, cert);
+
+    if (rawDigest == null) {
+      return digestType + ":" + newLine +
+          dialogView.getContext().getString(
+              R.string.digest_algorithm_not_available) +
+          newLine + newLine;
     }
 
-    @Override
-    public void updateCertificateView(final View dialogView) {
-        TextView nullCerView = dialogView.findViewById(R.id.null_cert);
+    final StringBuilder hex = new StringBuilder(3 * rawDigest.length);
 
-        if (mCertificate != null) {
-            nullCerView.setVisibility(View.GONE);
-            showSubject(mCertificate.getSubjectX500Principal(), dialogView);
-            showIssuer(mCertificate.getIssuerX500Principal(), dialogView);
-            showValidity(mCertificate.getNotBefore(), mCertificate.getNotAfter(), dialogView);
-            showSignature(dialogView);
-
-        } else {
-            nullCerView.setVisibility(View.VISIBLE);
-        }
+    for (final byte b : rawDigest) {
+      final int hiVal = (b & 0xF0) >> 4;
+      final int loVal = b & 0x0F;
+      hex.append((char)('0' + (hiVal + (hiVal / 10 * 7))));
+      hex.append((char)('0' + (loVal + (loVal / 10 * 7))));
+      hex.append(":");
     }
+    return digestType + ":" + newLine +
+        hex.toString().replaceFirst("\\:$", "") + newLine + newLine;
+  }
 
-    private byte[] getDigest(final String algorithm, final byte[] message) {
-        MessageDigest md = null;
+  private void showValidity(final Date notBefore, final Date notAfter,
+                            final View dialogView) {
+    TextView fromView = dialogView.findViewById(R.id.value_validity_from);
+    TextView toView = dialogView.findViewById(R.id.value_validity_to);
+    DateFormat dateFormat = DateFormat.getDateInstance();
+    fromView.setText(dateFormat.format(notBefore));
+    toView.setText(dateFormat.format(notAfter));
+  }
 
-        try {
-            md = MessageDigest.getInstance(algorithm);
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
-        md.reset();
-        return md.digest(message);
+  private void showSubject(final X500Principal subject, final View dialogView) {
+    Map<String, String> s = parsePrincipal(subject);
+    TextView cnView = dialogView.findViewById(R.id.value_subject_CN);
+    TextView oView = dialogView.findViewById(R.id.value_subject_O);
+    TextView ouView = dialogView.findViewById(R.id.value_subject_OU);
+    TextView cView = dialogView.findViewById(R.id.value_subject_C);
+    TextView stView = dialogView.findViewById(R.id.value_subject_ST);
+    TextView lView = dialogView.findViewById(R.id.value_subject_L);
+
+    if (s.get("CN") != null) {
+      cnView.setText(s.get("CN"));
+      cnView.setVisibility(View.VISIBLE);
+    } else {
+      cnView.setVisibility(View.GONE);
     }
-
-    private void showSignature(final View dialogView) {
-        byte[] cert = null;
-
-        TextView certFingerprintView = dialogView.findViewById(R.id.value_certificate_fingerprint);
-        TextView algorithmView = dialogView.findViewById(R.id.value_signature_algorithm);
-
-        try {
-            cert = mCertificate.getEncoded();
-            if (cert == null) {
-
-                certFingerprintView.setText(R.string.certificate_load_problem);
-                algorithmView.setText(R.string.certificate_load_problem);
-
-            } else {
-
-                certFingerprintView.setText(
-                    getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-256", cert)
-                    + getDigestHexBytesWithColonsAndNewLines(dialogView, "SHA-1", cert)
-                    + getDigestHexBytesWithColonsAndNewLines(dialogView, "MD5", cert));
-                algorithmView.setText(mCertificate.getSigAlgName());
-
-            }
-
-        } catch (CertificateEncodingException e) {
-            Timber.e(e, "Problem while trying to decode the certificate.");
-        }
-
+    if (s.get("O") != null) {
+      oView.setText(s.get("O"));
+      oView.setVisibility(View.VISIBLE);
+    } else {
+      oView.setVisibility(View.GONE);
     }
-
-    private final String getDigestHexBytesWithColonsAndNewLines(final View dialogView, final String digestType,
-            final byte[] cert) {
-        final byte[] rawDigest;
-        final String newLine = System.getProperty("line.separator");
-
-        rawDigest = getDigest(digestType, cert);
-
-        if (rawDigest == null) {
-            return digestType + ":" + newLine + dialogView.getContext().getString(R.string.digest_algorithm_not_available) + newLine + newLine;
-        }
-
-        final StringBuilder hex = new StringBuilder(3 * rawDigest.length);
-
-        for (final byte b : rawDigest) {
-            final int hiVal = (b & 0xF0) >> 4;
-            final int loVal = b & 0x0F;
-            hex.append((char) ('0' + (hiVal + (hiVal / 10 * 7))));
-            hex.append((char) ('0' + (loVal + (loVal / 10 * 7))));
-            hex.append(":");
-        }
-        return digestType + ":" + newLine + hex.toString().replaceFirst("\\:$", "") + newLine + newLine;
+    if (s.get("OU") != null) {
+      ouView.setText(s.get("OU"));
+      ouView.setVisibility(View.VISIBLE);
+    } else {
+      ouView.setVisibility(View.GONE);
     }
-
-    private void showValidity(final Date notBefore, final Date notAfter, final View dialogView) {
-        TextView fromView = dialogView.findViewById(R.id.value_validity_from);
-        TextView toView = dialogView.findViewById(R.id.value_validity_to);
-        DateFormat dateFormat = DateFormat.getDateInstance();
-        fromView.setText(dateFormat.format(notBefore));
-        toView.setText(dateFormat.format(notAfter));
+    if (s.get("C") != null) {
+      cView.setText(s.get("C"));
+      cView.setVisibility(View.VISIBLE);
+    } else {
+      cView.setVisibility(View.GONE);
     }
-
-    private void showSubject(final X500Principal subject, final View dialogView) {
-        Map<String, String> s = parsePrincipal(subject);
-        TextView cnView = dialogView.findViewById(R.id.value_subject_CN);
-        TextView oView = dialogView.findViewById(R.id.value_subject_O);
-        TextView ouView = dialogView.findViewById(R.id.value_subject_OU);
-        TextView cView = dialogView.findViewById(R.id.value_subject_C);
-        TextView stView = dialogView.findViewById(R.id.value_subject_ST);
-        TextView lView = dialogView.findViewById(R.id.value_subject_L);
-
-        if (s.get("CN") != null) {
-            cnView.setText(s.get("CN"));
-            cnView.setVisibility(View.VISIBLE);
-        } else {
-            cnView.setVisibility(View.GONE);
-        }
-        if (s.get("O") != null) {
-            oView.setText(s.get("O"));
-            oView.setVisibility(View.VISIBLE);
-        } else {
-            oView.setVisibility(View.GONE);
-        }
-        if (s.get("OU") != null) {
-            ouView.setText(s.get("OU"));
-            ouView.setVisibility(View.VISIBLE);
-        } else {
-            ouView.setVisibility(View.GONE);
-        }
-        if (s.get("C") != null) {
-            cView.setText(s.get("C"));
-            cView.setVisibility(View.VISIBLE);
-        } else {
-            cView.setVisibility(View.GONE);
-        }
-        if (s.get("ST") != null) {
-            stView.setText(s.get("ST"));
-            stView.setVisibility(View.VISIBLE);
-        } else {
-            stView.setVisibility(View.GONE);
-        }
-        if (s.get("L") != null) {
-            lView.setText(s.get("L"));
-            lView.setVisibility(View.VISIBLE);
-        } else {
-            lView.setVisibility(View.GONE);
-        }
+    if (s.get("ST") != null) {
+      stView.setText(s.get("ST"));
+      stView.setVisibility(View.VISIBLE);
+    } else {
+      stView.setVisibility(View.GONE);
     }
-
-    private void showIssuer(final X500Principal issuer, final View dialogView) {
-        Map<String, String> s = parsePrincipal(issuer);
-        TextView cnView = dialogView.findViewById(R.id.value_issuer_CN);
-        TextView oView = dialogView.findViewById(R.id.value_issuer_O);
-        TextView ouView = dialogView.findViewById(R.id.value_issuer_OU);
-        TextView cView = dialogView.findViewById(R.id.value_issuer_C);
-        TextView stView = dialogView.findViewById(R.id.value_issuer_ST);
-        TextView lView = dialogView.findViewById(R.id.value_issuer_L);
-
-        if (s.get("CN") != null) {
-            cnView.setText(s.get("CN"));
-            cnView.setVisibility(View.VISIBLE);
-        } else {
-            cnView.setVisibility(View.GONE);
-        }
-        if (s.get("O") != null) {
-            oView.setText(s.get("O"));
-            oView.setVisibility(View.VISIBLE);
-        } else {
-            oView.setVisibility(View.GONE);
-        }
-        if (s.get("OU") != null) {
-            ouView.setText(s.get("OU"));
-            ouView.setVisibility(View.VISIBLE);
-        } else {
-            ouView.setVisibility(View.GONE);
-        }
-        if (s.get("C") != null) {
-            cView.setText(s.get("C"));
-            cView.setVisibility(View.VISIBLE);
-        } else {
-            cView.setVisibility(View.GONE);
-        }
-        if (s.get("ST") != null) {
-            stView.setText(s.get("ST"));
-            stView.setVisibility(View.VISIBLE);
-        } else {
-            stView.setVisibility(View.GONE);
-        }
-        if (s.get("L") != null) {
-            lView.setText(s.get("L"));
-            lView.setVisibility(View.VISIBLE);
-        } else {
-            lView.setVisibility(View.GONE);
-        }
+    if (s.get("L") != null) {
+      lView.setText(s.get("L"));
+      lView.setVisibility(View.VISIBLE);
+    } else {
+      lView.setVisibility(View.GONE);
     }
+  }
 
-    private Map<String, String> parsePrincipal(final X500Principal principal) {
-        Map<String, String> result = new HashMap<String, String>();
-        String toParse = principal.getName();
-        String[] pieces = toParse.split(",");
-        String[] tokens = {"CN", "O", "OU", "C", "ST", "L"};
-        for (int i = 0; i < pieces.length; i++) {
-            for (int j = 0; j < tokens.length; j++) {
-                if (pieces[i].startsWith(tokens[j] + "=")) {
-                    result.put(tokens[j], pieces[i].substring(tokens[j].length() + 1));
-                }
-            }
-        }
-        return result;
+  private void showIssuer(final X500Principal issuer, final View dialogView) {
+    Map<String, String> s = parsePrincipal(issuer);
+    TextView cnView = dialogView.findViewById(R.id.value_issuer_CN);
+    TextView oView = dialogView.findViewById(R.id.value_issuer_O);
+    TextView ouView = dialogView.findViewById(R.id.value_issuer_OU);
+    TextView cView = dialogView.findViewById(R.id.value_issuer_C);
+    TextView stView = dialogView.findViewById(R.id.value_issuer_ST);
+    TextView lView = dialogView.findViewById(R.id.value_issuer_L);
+
+    if (s.get("CN") != null) {
+      cnView.setText(s.get("CN"));
+      cnView.setVisibility(View.VISIBLE);
+    } else {
+      cnView.setVisibility(View.GONE);
     }
+    if (s.get("O") != null) {
+      oView.setText(s.get("O"));
+      oView.setVisibility(View.VISIBLE);
+    } else {
+      oView.setVisibility(View.GONE);
+    }
+    if (s.get("OU") != null) {
+      ouView.setText(s.get("OU"));
+      ouView.setVisibility(View.VISIBLE);
+    } else {
+      ouView.setVisibility(View.GONE);
+    }
+    if (s.get("C") != null) {
+      cView.setText(s.get("C"));
+      cView.setVisibility(View.VISIBLE);
+    } else {
+      cView.setVisibility(View.GONE);
+    }
+    if (s.get("ST") != null) {
+      stView.setText(s.get("ST"));
+      stView.setVisibility(View.VISIBLE);
+    } else {
+      stView.setVisibility(View.GONE);
+    }
+    if (s.get("L") != null) {
+      lView.setText(s.get("L"));
+      lView.setVisibility(View.VISIBLE);
+    } else {
+      lView.setVisibility(View.GONE);
+    }
+  }
 
+  private Map<String, String> parsePrincipal(final X500Principal principal) {
+    Map<String, String> result = new HashMap<String, String>();
+    String toParse = principal.getName();
+    String[] pieces = toParse.split(",");
+    String[] tokens = {"CN", "O", "OU", "C", "ST", "L"};
+    for (int i = 0; i < pieces.length; i++) {
+      for (int j = 0; j < tokens.length; j++) {
+        if (pieces[i].startsWith(tokens[j] + "=")) {
+          result.put(tokens[j], pieces[i].substring(tokens[j].length() + 1));
+        }
+      }
+    }
+    return result;
+  }
 }

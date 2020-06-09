@@ -29,118 +29,113 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-
 import androidx.appcompat.widget.AppCompatEditText;
 import com.owncloud.android.R;
-import timber.log.Timber;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import timber.log.Timber;
 
 public class ActionEditText extends AppCompatEditText {
-    private String s;
-    private String optionOneString;
-    private int optionOneColor;
-    private String optionTwoString;
-    private int optionTwoColor;
-    private Rect mTextBounds, mButtonRect;
+  private String s;
+  private String optionOneString;
+  private int optionOneColor;
+  private String optionTwoString;
+  private int optionTwoColor;
+  private Rect mTextBounds, mButtonRect;
 
-    private String badgeClickCallback;
-    private Rect btn_rect;
+  private String badgeClickCallback;
+  private Rect btn_rect;
 
-    public ActionEditText(final Context context, final AttributeSet attrs) {
-        super(context, attrs);
-        getAttrs(attrs);
-        s = optionOneString;
-        mTextBounds = new Rect();
-        mButtonRect = new Rect();
+  public ActionEditText(final Context context, final AttributeSet attrs) {
+    super(context, attrs);
+    getAttrs(attrs);
+    s = optionOneString;
+    mTextBounds = new Rect();
+    mButtonRect = new Rect();
+  }
+
+  public ActionEditText(final Context context, final AttributeSet attrs,
+                        final int defStyle) {
+    super(context, attrs, defStyle);
+    getAttrs(attrs);
+    s = optionOneString;
+    mTextBounds = new Rect();
+    mButtonRect = new Rect();
+  }
+
+  @Override
+  protected void onDraw(final Canvas canvas) {
+    super.onDraw(canvas);
+
+    Paint p = getPaint();
+
+    p.getTextBounds(s, 0, s.length(), mTextBounds);
+
+    getDrawingRect(mButtonRect);
+    mButtonRect.top += 10;
+    mButtonRect.bottom -= 10;
+    mButtonRect.left = getWidth() - mTextBounds.width() - 18;
+    mButtonRect.right = getWidth() - 10;
+    btn_rect = mButtonRect;
+
+    if (s.equals(optionOneString)) {
+      p.setColor(optionOneColor);
+    } else {
+      p.setColor(optionTwoColor);
     }
+    canvas.drawRect(mButtonRect, p);
+    p.setColor(Color.GRAY);
 
-    public ActionEditText(final Context context, final AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
-        getAttrs(attrs);
-        s = optionOneString;
-        mTextBounds = new Rect();
-        mButtonRect = new Rect();
-    }
+    canvas.drawText(s, mButtonRect.left + 3,
+                    mButtonRect.bottom - (mTextBounds.height() / 2), p);
 
-    @Override
-    protected void onDraw(final Canvas canvas) {
-        super.onDraw(canvas);
+    invalidate();
+  }
 
-        Paint p = getPaint();
-
-        p.getTextBounds(s, 0, s.length(), mTextBounds);
-
-        getDrawingRect(mButtonRect);
-        mButtonRect.top += 10;
-        mButtonRect.bottom -= 10;
-        mButtonRect.left = getWidth() - mTextBounds.width() - 18;
-        mButtonRect.right = getWidth() - 10;
-        btn_rect = mButtonRect;
-
-        if (s.equals(optionOneString)) {
-            p.setColor(optionOneColor);
+  @Override
+  public boolean onTouchEvent(final MotionEvent event) {
+    int touchX = (int)event.getX();
+    int touchY = (int)event.getY();
+    boolean r = super.onTouchEvent(event);
+    if (event.getAction() == MotionEvent.ACTION_UP) {
+      if (btn_rect.contains(touchX, touchY)) {
+        if (s.equals(optionTwoString)) {
+          s = optionOneString;
         } else {
-            p.setColor(optionTwoColor);
+          s = optionTwoString;
         }
-        canvas.drawRect(mButtonRect, p);
-        p.setColor(Color.GRAY);
+        if (badgeClickCallback != null) {
+          @SuppressWarnings("rawtypes") Class[] paramtypes = new Class[2];
+          paramtypes[0] = android.view.View.class;
+          paramtypes[1] = String.class;
+          Method method;
+          try {
 
-        canvas.drawText(s, mButtonRect.left + 3, mButtonRect.bottom
-                        - (mTextBounds.height() / 2), p);
+            method = getContext().getClass().getMethod(badgeClickCallback,
+                                                       paramtypes);
+            method.invoke(getContext(), this, s);
 
-        invalidate();
-    }
+          } catch (NoSuchMethodException | IllegalArgumentException |
+                   IllegalAccessException | InvocationTargetException e) {
+            Timber.e(e);
+          }
 
-    @Override
-    public boolean onTouchEvent(final MotionEvent event) {
-        int touchX = (int) event.getX();
-        int touchY = (int) event.getY();
-        boolean r = super.onTouchEvent(event);
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (btn_rect.contains(touchX, touchY)) {
-                if (s.equals(optionTwoString)) {
-                    s = optionOneString;
-                } else {
-                    s = optionTwoString;
-                }
-                if (badgeClickCallback != null) {
-                    @SuppressWarnings("rawtypes")
-                    Class[] paramtypes = new Class[2];
-                    paramtypes[0] = android.view.View.class;
-                    paramtypes[1] = String.class;
-                    Method method;
-                    try {
-
-                        method = getContext().getClass().getMethod(
-                                     badgeClickCallback, paramtypes);
-                        method.invoke(getContext(), this, s);
-
-                    } catch (NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                        Timber.e(e);
-                    }
-
-                    invalidate();
-                }
-            }
+          invalidate();
         }
-        return r;
+      }
     }
+    return r;
+  }
 
-    private void getAttrs(final AttributeSet attr) {
-        TypedArray a = getContext().obtainStyledAttributes(attr,
-                       R.styleable.ActionEditText);
-        optionOneString = a
-                          .getString(R.styleable.ActionEditText_optionOneString);
-        optionTwoString = a
-                          .getString(R.styleable.ActionEditText_optionTwoString);
-        optionOneColor = a.getColor(R.styleable.ActionEditText_optionOneColor,
-                                    0x00ff00);
-        optionTwoColor = a.getColor(R.styleable.ActionEditText_optionTwoColor,
-                                    0xff0000);
-        badgeClickCallback = a
-                             .getString(R.styleable.ActionEditText_onBadgeClick);
-    }
-
+  private void getAttrs(final AttributeSet attr) {
+    TypedArray a =
+        getContext().obtainStyledAttributes(attr, R.styleable.ActionEditText);
+    optionOneString = a.getString(R.styleable.ActionEditText_optionOneString);
+    optionTwoString = a.getString(R.styleable.ActionEditText_optionTwoString);
+    optionOneColor =
+        a.getColor(R.styleable.ActionEditText_optionOneColor, 0x00ff00);
+    optionTwoColor =
+        a.getColor(R.styleable.ActionEditText_optionTwoColor, 0xff0000);
+    badgeClickCallback = a.getString(R.styleable.ActionEditText_onBadgeClick);
+  }
 }

@@ -24,7 +24,6 @@ package com.owncloud.android.ui.dialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -37,77 +36,80 @@ import com.owncloud.android.R;
  */
 public class ConflictsResolveDialog extends DialogFragment {
 
-    public enum Decision {
-        CANCEL,
-        KEEP_BOTH,
-        OVERWRITE,
-        SERVER
-    }
+  public enum Decision { CANCEL, KEEP_BOTH, OVERWRITE, SERVER }
 
-    private OnConflictDecisionMadeListener mListener;
+  private OnConflictDecisionMadeListener mListener;
 
-    public static ConflictsResolveDialog newInstance(final String path, final OnConflictDecisionMadeListener listener) {
-        ConflictsResolveDialog f = new ConflictsResolveDialog();
-        Bundle args = new Bundle();
-        args.putString("remotepath", path);
-        f.setArguments(args);
-        f.mListener = listener;
-        return f;
-    }
+  public static ConflictsResolveDialog
+  newInstance(final String path,
+              final OnConflictDecisionMadeListener listener) {
+    ConflictsResolveDialog f = new ConflictsResolveDialog();
+    Bundle args = new Bundle();
+    args.putString("remotepath", path);
+    f.setArguments(args);
+    f.mListener = listener;
+    return f;
+  }
 
-    @Override
-    public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
-               .setIcon(R.drawable.ic_warning)
-               .setTitle(R.string.conflict_title)
-               .setMessage(getString(R.string.conflict_message))
-               .setPositiveButton(R.string.conflict_use_local_version,
-        (dialog, which) -> {
-            if (mListener != null) {
-                mListener.conflictDecisionMade(Decision.OVERWRITE);
-            }
-        })
+  @Override
+  public Dialog onCreateDialog(final Bundle savedInstanceState) {
+    return new AlertDialog.Builder(getActivity())
+        .setIcon(R.drawable.ic_warning)
+        .setTitle(R.string.conflict_title)
+        .setMessage(getString(R.string.conflict_message))
+        .setPositiveButton(R.string.conflict_use_local_version,
+                           (dialog, which) -> {
+                             if (mListener != null) {
+                               mListener.conflictDecisionMade(
+                                   Decision.OVERWRITE);
+                             }
+                           })
         .setNeutralButton(R.string.conflict_keep_both,
-        (dialog, which) -> {
-            if (mListener != null) {
-                mListener.conflictDecisionMade(Decision.KEEP_BOTH);
-            }
-        })
+                          (dialog, which) -> {
+                            if (mListener != null) {
+                              mListener.conflictDecisionMade(
+                                  Decision.KEEP_BOTH);
+                            }
+                          })
         .setNegativeButton(R.string.conflict_use_server_version,
-        (dialog, which) -> {
-            if (mListener != null) {
-                mListener.conflictDecisionMade(Decision.SERVER);
-            }
-        })
+                           (dialog, which) -> {
+                             if (mListener != null) {
+                               mListener.conflictDecisionMade(Decision.SERVER);
+                             }
+                           })
         .create();
-    }
+  }
 
-    public void showDialog(final AppCompatActivity activity) {
-        Fragment prev = activity.getSupportFragmentManager().findFragmentByTag("dialog");
-        FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        this.show(ft, "dialog");
+  public void showDialog(final AppCompatActivity activity) {
+    Fragment prev =
+        activity.getSupportFragmentManager().findFragmentByTag("dialog");
+    FragmentTransaction ft =
+        activity.getSupportFragmentManager().beginTransaction();
+    if (prev != null) {
+      ft.remove(prev);
     }
+    ft.addToBackStack(null);
 
-    public void dismissDialog(final AppCompatActivity activity) {
-        Fragment prev = activity.getSupportFragmentManager().findFragmentByTag(getTag());
-        if (prev != null) {
-            FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-            ft.remove(prev);
-            ft.commit();
-        }
-    }
+    this.show(ft, "dialog");
+  }
 
-    @Override
-    public void onCancel(final DialogInterface dialog) {
-        mListener.conflictDecisionMade(Decision.CANCEL);
+  public void dismissDialog(final AppCompatActivity activity) {
+    Fragment prev =
+        activity.getSupportFragmentManager().findFragmentByTag(getTag());
+    if (prev != null) {
+      FragmentTransaction ft =
+          activity.getSupportFragmentManager().beginTransaction();
+      ft.remove(prev);
+      ft.commit();
     }
+  }
 
-    public interface OnConflictDecisionMadeListener {
-        void conflictDecisionMade(Decision decision);
-    }
+  @Override
+  public void onCancel(final DialogInterface dialog) {
+    mListener.conflictDecisionMade(Decision.CANCEL);
+  }
+
+  public interface OnConflictDecisionMadeListener {
+    void conflictDecisionMade(Decision decision);
+  }
 }

@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
@@ -53,96 +52,98 @@ import com.owncloud.android.utils.PreferenceUtils;
 public class RenameFileDialogFragment
     extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private static final String ARG_TARGET_FILE = "TARGET_FILE";
+  private static final String ARG_TARGET_FILE = "TARGET_FILE";
 
-    /**
-     * Public factory method to create new RenameFileDialogFragment instances.
-     *
-     * @param file            File to rename.
-     * @return Dialog ready to show.
-     */
-    public static RenameFileDialogFragment newInstance(final OCFile file) {
-        RenameFileDialogFragment frag = new RenameFileDialogFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_TARGET_FILE, file);
-        frag.setArguments(args);
-        return frag;
+  /**
+   * Public factory method to create new RenameFileDialogFragment instances.
+   *
+   * @param file            File to rename.
+   * @return Dialog ready to show.
+   */
+  public static RenameFileDialogFragment newInstance(final OCFile file) {
+    RenameFileDialogFragment frag = new RenameFileDialogFragment();
+    Bundle args = new Bundle();
+    args.putParcelable(ARG_TARGET_FILE, file);
+    frag.setArguments(args);
+    return frag;
+  }
 
+  private OCFile mTargetFile;
+
+  @Override
+  public Dialog onCreateDialog(final Bundle savedInstanceState) {
+    mTargetFile = getArguments().getParcelable(ARG_TARGET_FILE);
+
+    // Inflate the layout for the dialog
+    LayoutInflater inflater = getActivity().getLayoutInflater();
+    View v = inflater.inflate(R.layout.edit_box_dialog, null);
+
+    // Allow or disallow touches with other visible windows
+    v.setFilterTouchesWhenObscured(
+        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
+            getContext()));
+
+    // Setup layout
+    String currentName = mTargetFile.getFileName();
+    EditText inputText = v.findViewById(R.id.user_input);
+    inputText.setText(currentName);
+    int selectionStart = 0;
+    int extensionStart =
+        mTargetFile.isFolder() ? -1 : currentName.lastIndexOf(".");
+    int selectionEnd =
+        (extensionStart >= 0) ? extensionStart : currentName.length();
+    if (selectionStart >= 0 && selectionEnd >= 0) {
+      inputText.setSelection(Math.min(selectionStart, selectionEnd),
+                             Math.max(selectionStart, selectionEnd));
     }
+    inputText.requestFocus();
 
-    private OCFile mTargetFile;
-
-    @Override
-    public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        mTargetFile = getArguments().getParcelable(ARG_TARGET_FILE);
-
-        // Inflate the layout for the dialog
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.edit_box_dialog, null);
-
-        // Allow or disallow touches with other visible windows
-        v.setFilterTouchesWhenObscured(
-            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
-        );
-
-        // Setup layout
-        String currentName = mTargetFile.getFileName();
-        EditText inputText = v.findViewById(R.id.user_input);
-        inputText.setText(currentName);
-        int selectionStart = 0;
-        int extensionStart = mTargetFile.isFolder() ? -1 : currentName.lastIndexOf(".");
-        int selectionEnd = (extensionStart >= 0) ? extensionStart : currentName.length();
-        if (selectionStart >= 0 && selectionEnd >= 0) {
-            inputText.setSelection(
-                Math.min(selectionStart, selectionEnd),
-                Math.max(selectionStart, selectionEnd));
-        }
-        inputText.requestFocus();
-
-        // Build the dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(v)
+    // Build the dialog
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    builder.setView(v)
         .setPositiveButton(android.R.string.ok, this)
         .setNegativeButton(android.R.string.cancel, this)
         .setTitle(R.string.rename_dialog_title);
-        Dialog d = builder.create();
-        d.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        return d;
+    Dialog d = builder.create();
+    d.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    return d;
+  }
+
+  @Override
+  public void onClick(final DialogInterface dialog, final int which) {
+    if (which == AlertDialog.BUTTON_POSITIVE) {
+      String newFileName =
+          ((TextView)(getDialog().findViewById(R.id.user_input)))
+              .getText()
+              .toString()
+              .trim();
+
+      if (newFileName.length() <= 0) {
+        showSnackMessage(R.string.filename_empty);
+        return;
+      }
+
+      if (!FileUtils.isValidName(newFileName)) {
+        showSnackMessage(R.string.filename_forbidden_charaters_from_server);
+        return;
+      }
+
+      ((ComponentsGetter)getActivity())
+          .getFileOperationsHelper()
+          .renameFile(mTargetFile, newFileName);
     }
+  }
 
-    @Override
-    public void onClick(final DialogInterface dialog, final int which) {
-        if (which == AlertDialog.BUTTON_POSITIVE) {
-            String newFileName =
-                ((TextView) (getDialog().findViewById(R.id.user_input)))
-                .getText().toString().trim();
-
-            if (newFileName.length() <= 0) {
-                showSnackMessage(R.string.filename_empty);
-                return;
-            }
-
-            if (!FileUtils.isValidName(newFileName)) {
-                showSnackMessage(R.string.filename_forbidden_charaters_from_server);
-                return;
-            }
-
-            ((ComponentsGetter) getActivity()).getFileOperationsHelper().
-            renameFile(mTargetFile, newFileName);
-        }
-    }
-
-    /**
-     * Show a temporary message in a Snackbar bound to the content view of the parent Activity
-     *
-     * @param messageResource       Message to show.
-     */
-    private void showSnackMessage(final int messageResource) {
-        Snackbar snackbar = Snackbar.make(
-                                getActivity().findViewById(android.R.id.content),
-                                messageResource,
-                                Snackbar.LENGTH_LONG
-                            );
-        snackbar.show();
-    }
+  /**
+   * Show a temporary message in a Snackbar bound to the content view of the
+   * parent Activity
+   *
+   * @param messageResource       Message to show.
+   */
+  private void showSnackMessage(final int messageResource) {
+    Snackbar snackbar =
+        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                      messageResource, Snackbar.LENGTH_LONG);
+    snackbar.show();
+  }
 }

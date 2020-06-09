@@ -26,107 +26,114 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
-
 import androidx.annotation.NonNull;
 import com.owncloud.android.utils.BitmapUtils;
-
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * A Drawable object that draws text (1 character) on top of a circular/filled background.
+ * A Drawable object that draws text (1 character) on top of a circular/filled
+ * background.
  */
 public class DefaultAvatarTextDrawable extends Drawable {
-    /**
-     * the text to be rendered.
-     */
-    private String mText;
+  /**
+   * the text to be rendered.
+   */
+  private String mText;
 
-    /**
-     * the text paint to be rendered.
-     */
-    private Paint mTextPaint;
+  /**
+   * the text paint to be rendered.
+   */
+  private Paint mTextPaint;
 
-    /**
-     * the background to be rendered.
-     */
-    private Paint mBackground;
+  /**
+   * the background to be rendered.
+   */
+  private Paint mBackground;
 
-    /**
-     * the radius of the circular background to be rendered.
-     */
-    private float mRadius;
+  /**
+   * the radius of the circular background to be rendered.
+   */
+  private float mRadius;
 
-    /**
-     * Create a DefaultAvatarTextDrawable with the given radius.
-     *
-     * @param text   the text to be rendered
-     * @param r      rgb red value
-     * @param g      rgb green value
-     * @param b      rgb blue value
-     * @param radius circle radius
-     */
-    public DefaultAvatarTextDrawable(final String text, final int r, final int g, final int b, final float radius) {
-        mRadius = radius;
-        mText = text;
+  /**
+   * Create a DefaultAvatarTextDrawable with the given radius.
+   *
+   * @param text   the text to be rendered
+   * @param r      rgb red value
+   * @param g      rgb green value
+   * @param b      rgb blue value
+   * @param radius circle radius
+   */
+  public DefaultAvatarTextDrawable(final String text, final int r, final int g,
+                                   final int b, final float radius) {
+    mRadius = radius;
+    mText = text;
 
-        mBackground = new Paint();
-        mBackground.setStyle(Paint.Style.FILL);
-        mBackground.setAntiAlias(true);
-        mBackground.setColor(Color.rgb(r, g, b));
+    mBackground = new Paint();
+    mBackground.setStyle(Paint.Style.FILL);
+    mBackground.setAntiAlias(true);
+    mBackground.setColor(Color.rgb(r, g, b));
 
-        mTextPaint = new Paint();
-        mTextPaint.setColor(Color.WHITE);
-        mTextPaint.setTextSize(radius);
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
-    }
+    mTextPaint = new Paint();
+    mTextPaint.setColor(Color.WHITE);
+    mTextPaint.setTextSize(radius);
+    mTextPaint.setAntiAlias(true);
+    mTextPaint.setTextAlign(Paint.Align.CENTER);
+  }
 
-    /**
-     * creates an avatar in form of  a DefaultAvatarTextDrawable with the first letter of the account name in a
-     * circle with the
-     * given radius.
-     *
-     * @param accountName the account name
-     * @param radiusInDp  the circle's radius
-     * @return the avatar as a DefaultAvatarTextDrawable
-     * @throws UnsupportedEncodingException if the charset is not supported when calculating the color values
-     * @throws NoSuchAlgorithmException     if the specified algorithm is not available when calculating the color
-     * values
-     */
-    @NonNull
-    public static DefaultAvatarTextDrawable createAvatar(final String accountName, final float radiusInDp) throws
-        UnsupportedEncodingException, NoSuchAlgorithmException {
-        int[] rgb = BitmapUtils.calculateAvatarBackgroundRGB(accountName);
-        DefaultAvatarTextDrawable avatar = new DefaultAvatarTextDrawable(
-            accountName.substring(0, 1).toUpperCase(), rgb[0], rgb[1], rgb[2], radiusInDp);
-        return avatar;
-    }
+  /**
+   * creates an avatar in form of  a DefaultAvatarTextDrawable with the first
+   * letter of the account name in a circle with the given radius.
+   *
+   * @param accountName the account name
+   * @param radiusInDp  the circle's radius
+   * @return the avatar as a DefaultAvatarTextDrawable
+   * @throws UnsupportedEncodingException if the charset is not supported when
+   *     calculating the color values
+   * @throws NoSuchAlgorithmException     if the specified algorithm is not
+   *     available when calculating the color
+   * values
+   */
+  @NonNull
+  public static DefaultAvatarTextDrawable createAvatar(final String accountName,
+                                                       final float radiusInDp)
+      throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    int[] rgb = BitmapUtils.calculateAvatarBackgroundRGB(accountName);
+    DefaultAvatarTextDrawable avatar =
+        new DefaultAvatarTextDrawable(accountName.substring(0, 1).toUpperCase(),
+                                      rgb[0], rgb[1], rgb[2], radiusInDp);
+    return avatar;
+  }
 
-    /**
-     * Draw in its bounds (set via setBounds) respecting optional effects such as alpha (set via setAlpha) and color
-     * filter (set via setColorFilter) a circular background with a user's first character.
-     *
-     * @param canvas The canvas to draw into
-     */
-    @Override
-    public void draw(final Canvas canvas) {
-        canvas.drawCircle(mRadius, mRadius, mRadius, mBackground);
-        canvas.drawText(mText, mRadius, mRadius - ((mTextPaint.descent() + mTextPaint.ascent()) / 2), mTextPaint);
-    }
+  /**
+   * Draw in its bounds (set via setBounds) respecting optional effects such as
+   * alpha (set via setAlpha) and color filter (set via setColorFilter) a
+   * circular background with a user's first character.
+   *
+   * @param canvas The canvas to draw into
+   */
+  @Override
+  public void draw(final Canvas canvas) {
+    canvas.drawCircle(mRadius, mRadius, mRadius, mBackground);
+    canvas.drawText(mText, mRadius,
+                    mRadius -
+                        ((mTextPaint.descent() + mTextPaint.ascent()) / 2),
+                    mTextPaint);
+  }
 
-    @Override
-    public void setAlpha(final int alpha) {
-        mTextPaint.setAlpha(alpha);
-    }
+  @Override
+  public void setAlpha(final int alpha) {
+    mTextPaint.setAlpha(alpha);
+  }
 
-    @Override
-    public void setColorFilter(final ColorFilter cf) {
-        mTextPaint.setColorFilter(cf);
-    }
+  @Override
+  public void setColorFilter(final ColorFilter cf) {
+    mTextPaint.setColorFilter(cf);
+  }
 
-    @Override
-    public int getOpacity() {
-        return PixelFormat.TRANSLUCENT;
-    }
+  @Override
+  public int getOpacity() {
+    return PixelFormat.TRANSLUCENT;
+  }
 }

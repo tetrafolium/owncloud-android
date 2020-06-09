@@ -26,12 +26,10 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.widget.DatePicker;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.OCFile;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -41,162 +39,166 @@ import java.util.Date;
  * Dialog requesting a date after today.
  */
 public class ExpirationDatePickerDialogFragment
-    extends DialogFragment
-    implements DatePickerDialog.OnDateSetListener {
+    extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
-    /**
-     * Tag for FragmentsManager
-     */
-    public static final String DATE_PICKER_DIALOG = "DATE_PICKER_DIALOG";
+  /**
+   * Tag for FragmentsManager
+   */
+  public static final String DATE_PICKER_DIALOG = "DATE_PICKER_DIALOG";
 
-    /**
-     * Parameter constant for {@link OCFile} instance to set the expiration date
-     */
-    private static final String ARG_FILE = "FILE";
+  /**
+   * Parameter constant for {@link OCFile} instance to set the expiration date
+   */
+  private static final String ARG_FILE = "FILE";
 
-    /**
-     * Parameter constant for date chosen initially
-     */
-    private static final String ARG_CHOSEN_DATE_IN_MILLIS = "CHOSEN_DATE_IN_MILLIS";
+  /**
+   * Parameter constant for date chosen initially
+   */
+  private static final String ARG_CHOSEN_DATE_IN_MILLIS =
+      "CHOSEN_DATE_IN_MILLIS";
 
-    /**
-     * Parameter constant for date chosen initially
-     */
-    private static final String ARG_MAX_DATE_IN_MILLIS = "MAX_DATE_IN_MILLIS";
+  /**
+   * Parameter constant for date chosen initially
+   */
+  private static final String ARG_MAX_DATE_IN_MILLIS = "MAX_DATE_IN_MILLIS";
 
-    private DatePickerFragmentListener datePickerListener;
+  private DatePickerFragmentListener datePickerListener;
 
-    /**
-     * Factory method to create new instances
-     *
-     * @param chosenDateInMillis    Date chosen when the dialog appears, in milliseconds elapsed
-     *                              since Jan 1, 1970. Needs to be after tomorrow, or tomorrow will be used
-     *                              instead.
-     * @param maxDateInMillis       Maximum date selectable, in milliseconds elapsed since Jan 1, 1970.
-     *                              Only will be set if greater or equals than chosenDateInMillis and tomorrow.
-     * @return New dialog instance
-     */
-    public static ExpirationDatePickerDialogFragment newInstance(final long chosenDateInMillis,
-            final long maxDateInMillis
-                                                                ) {
-        Bundle arguments = new Bundle();
-        arguments.putLong(ARG_CHOSEN_DATE_IN_MILLIS, chosenDateInMillis);
-        arguments.putLong(ARG_MAX_DATE_IN_MILLIS, maxDateInMillis);
+  /**
+   * Factory method to create new instances
+   *
+   * @param chosenDateInMillis    Date chosen when the dialog appears, in
+   *     milliseconds elapsed
+   *                              since Jan 1, 1970. Needs to be after tomorrow,
+   * or tomorrow will be used instead.
+   * @param maxDateInMillis       Maximum date selectable, in milliseconds
+   *     elapsed since Jan 1, 1970.
+   *                              Only will be set if greater or equals than
+   * chosenDateInMillis and tomorrow.
+   * @return New dialog instance
+   */
+  public static ExpirationDatePickerDialogFragment
+  newInstance(final long chosenDateInMillis, final long maxDateInMillis) {
+    Bundle arguments = new Bundle();
+    arguments.putLong(ARG_CHOSEN_DATE_IN_MILLIS, chosenDateInMillis);
+    arguments.putLong(ARG_MAX_DATE_IN_MILLIS, maxDateInMillis);
 
-        ExpirationDatePickerDialogFragment dialog = new ExpirationDatePickerDialogFragment();
-        dialog.setArguments(arguments);
-        return dialog;
+    ExpirationDatePickerDialogFragment dialog =
+        new ExpirationDatePickerDialogFragment();
+    dialog.setArguments(arguments);
+    return dialog;
+  }
+
+  public static DateFormat getDateFormat() {
+    return SimpleDateFormat.getDateInstance();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @return A new dialog to let the user choose an expiration date that will be
+   *     bound to a share link.
+   */
+  @Override
+  @NonNull
+  public Dialog onCreateDialog(final Bundle savedInstanceState) {
+
+    // Chosen date received as an argument must be later than tomorrow ; default
+    // to tomorrow in other case
+    final Calendar chosenDate = Calendar.getInstance();
+    long tomorrowInMillis =
+        chosenDate.getTimeInMillis() + DateUtils.DAY_IN_MILLIS;
+    long chosenDateInMillis = getArguments().getLong(ARG_CHOSEN_DATE_IN_MILLIS);
+    long maxDateInMillis = getArguments().getLong(ARG_MAX_DATE_IN_MILLIS);
+
+    if (chosenDateInMillis < tomorrowInMillis) {
+      chosenDateInMillis = tomorrowInMillis;
     }
+    chosenDate.setTimeInMillis(chosenDateInMillis);
 
-    public static DateFormat getDateFormat() {
-        return SimpleDateFormat.getDateInstance();
+    // Create a new instance of DatePickerDialog
+    DatePickerDialog dialog = new DatePickerDialog(
+        getActivity(), this, chosenDate.get(Calendar.YEAR),
+        chosenDate.get(Calendar.MONTH), chosenDate.get(Calendar.DAY_OF_MONTH));
+
+    dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                     getString(R.string.share_cancel_public_link_button),
+                     new DialogInterface.OnClickListener() {
+                       public void onClick(final DialogInterface dialog,
+                                           final int which) {
+                         if (which == DialogInterface.BUTTON_NEGATIVE) {
+                           // Do Stuff
+                           notifyDatePickerListener(null);
+                         }
+                       }
+                     });
+
+    // Prevent days in the past may be chosen
+    DatePicker picker = dialog.getDatePicker();
+    if (maxDateInMillis >= chosenDateInMillis) {
+      // the extra second (+1000) is required to prevent a bug of DatePicker
+      // that shows an extra header with the selected date if maxDateInMillis ==
+      // chosenDateInMillis
+      picker.setMaxDate(maxDateInMillis + 1000);
     }
+    picker.setMinDate(tomorrowInMillis - 1000);
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return A new dialog to let the user choose an expiration date that will be bound to a share link.
-     */
-    @Override
-    @NonNull
-    public Dialog onCreateDialog(final Bundle savedInstanceState) {
+    // Enforce spinners view; ignored by MD-based theme in Android >=5, but
+    // calendar is REALLY buggy in Android < 5, so let's be sure it never
+    // appears (in tablets both spinners and calendar are shown by default)
+    picker.setCalendarViewShown(false);
 
-        // Chosen date received as an argument must be later than tomorrow ; default to tomorrow in other case
-        final Calendar chosenDate = Calendar.getInstance();
-        long tomorrowInMillis = chosenDate.getTimeInMillis() + DateUtils.DAY_IN_MILLIS;
-        long chosenDateInMillis = getArguments().getLong(ARG_CHOSEN_DATE_IN_MILLIS);
-        long maxDateInMillis = getArguments().getLong(ARG_MAX_DATE_IN_MILLIS);
+    return dialog;
+  }
 
-        if (chosenDateInMillis < tomorrowInMillis) {
-            chosenDateInMillis = tomorrowInMillis;
-        }
-        chosenDate.setTimeInMillis(chosenDateInMillis);
+  /**
+   * Called when the user choses an expiration date.
+   *
+   * @param view              View instance where the date was chosen
+   * @param year              Year of the date chosen.
+   * @param monthOfYear       Month of the date chosen [0, 11]
+   * @param dayOfMonth        Day of the date chosen
+   */
+  @Override
+  public void onDateSet(final DatePicker view, final int year,
+                        final int monthOfYear, final int dayOfMonth) {
 
-        // Create a new instance of DatePickerDialog
-        DatePickerDialog dialog = new DatePickerDialog(
-            getActivity(),
-            this,
-            chosenDate.get(Calendar.YEAR),
-            chosenDate.get(Calendar.MONTH),
-            chosenDate.get(Calendar.DAY_OF_MONTH)
-        );
+    Calendar chosenDate = Calendar.getInstance();
+    chosenDate.set(Calendar.YEAR, year);
+    chosenDate.set(Calendar.MONTH, monthOfYear);
+    chosenDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+    long chosenDateInMillis = chosenDate.getTimeInMillis();
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         getString(R.string.share_cancel_public_link_button),
-        new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, final int which) {
-                if (which == DialogInterface.BUTTON_NEGATIVE) {
-                    // Do Stuff
-                    notifyDatePickerListener(null);
-                }
-            }
-        });
+    String formattedDate = getDateFormat().format(new Date(chosenDateInMillis));
 
-        // Prevent days in the past may be chosen
-        DatePicker picker = dialog.getDatePicker();
-        if (maxDateInMillis >= chosenDateInMillis) {
-            // the extra second (+1000) is required to prevent a bug of DatePicker that shows
-            // an extra header with the selected date if maxDateInMillis == chosenDateInMillis
-            picker.setMaxDate(maxDateInMillis + 1000);
-        }
-        picker.setMinDate(tomorrowInMillis - 1000);
+    // Call the listener and pass the date back to it
+    notifyDatePickerListener(formattedDate);
+  }
 
-        // Enforce spinners view; ignored by MD-based theme in Android >=5, but calendar is REALLY buggy
-        // in Android < 5, so let's be sure it never appears (in tablets both spinners and calendar are
-        // shown by default)
-        picker.setCalendarViewShown(false);
+  public interface DatePickerFragmentListener {
 
-        return dialog;
+    void onDateSet(String date);
+
+    void onCancelDatePicker();
+  }
+
+  public void setDatePickerListener(final DatePickerFragmentListener listener) {
+    this.datePickerListener = listener;
+  }
+
+  /**
+   * Notify if date has been selected or not
+   *
+   * @param date
+   */
+  protected void notifyDatePickerListener(final String date) {
+    if (this.datePickerListener != null) {
+
+      if (date != null) {
+        this.datePickerListener.onDateSet(date);
+      } else {
+        this.datePickerListener.onCancelDatePicker();
+      }
     }
-
-    /**
-     * Called when the user choses an expiration date.
-     *
-     * @param view              View instance where the date was chosen
-     * @param year              Year of the date chosen.
-     * @param monthOfYear       Month of the date chosen [0, 11]
-     * @param dayOfMonth        Day of the date chosen
-     */
-    @Override
-    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-
-        Calendar chosenDate = Calendar.getInstance();
-        chosenDate.set(Calendar.YEAR, year);
-        chosenDate.set(Calendar.MONTH, monthOfYear);
-        chosenDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        long chosenDateInMillis = chosenDate.getTimeInMillis();
-
-        String formattedDate = getDateFormat().format(new Date(chosenDateInMillis));
-
-        // Call the listener and pass the date back to it
-        notifyDatePickerListener(formattedDate);
-    }
-
-    public interface DatePickerFragmentListener {
-
-        void onDateSet(String date);
-
-        void onCancelDatePicker();
-    }
-
-    public void setDatePickerListener(final DatePickerFragmentListener listener) {
-        this.datePickerListener = listener;
-    }
-
-    /**
-     * Notify if date has been selected or not
-     *
-     * @param date
-     */
-    protected void notifyDatePickerListener(final String date) {
-        if (this.datePickerListener != null) {
-
-            if (date != null) {
-                this.datePickerListener.onDateSet(date);
-            } else {
-                this.datePickerListener.onCancelDatePicker();
-            }
-        }
-    }
-
+  }
 }

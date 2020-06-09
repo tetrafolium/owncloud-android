@@ -22,7 +22,6 @@ package com.owncloud.android.operations;
 
 import android.accounts.Account;
 import android.webkit.MimeTypeMap;
-
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.network.OnDatatransferProgressListener;
@@ -31,169 +30,175 @@ import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.resources.files.DownloadRemoteFileOperation;
 import com.owncloud.android.utils.FileStorageUtils;
-import timber.log.Timber;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import timber.log.Timber;
 
 /**
- * Remote mDownloadOperation performing the download of a file to an ownCloud server
+ * Remote mDownloadOperation performing the download of a file to an ownCloud
+ * server
  */
 public class DownloadFileOperation extends RemoteOperation {
 
-    private Account mAccount;
-    private OCFile mFile;
-    private Set<OnDatatransferProgressListener> mDataTransferListeners = new HashSet<>();
-    private long mModificationTimestamp = 0;
-    private String mEtag = "";
-    private final AtomicBoolean mCancellationRequested = new AtomicBoolean(false);
+  private Account mAccount;
+  private OCFile mFile;
+  private Set<OnDatatransferProgressListener> mDataTransferListeners =
+      new HashSet<>();
+  private long mModificationTimestamp = 0;
+  private String mEtag = "";
+  private final AtomicBoolean mCancellationRequested = new AtomicBoolean(false);
 
-    private DownloadRemoteFileOperation mDownloadOperation;
+  private DownloadRemoteFileOperation mDownloadOperation;
 
-    public DownloadFileOperation(final Account account, final OCFile file) {
-        if (account == null) {
-            throw new IllegalArgumentException("Illegal null account in DownloadFileOperation "
-                                               + "creation");
-        }
-        if (file == null) {
-            throw new IllegalArgumentException("Illegal null file in DownloadFileOperation "
-                                               + "creation");
-        }
-
-        mAccount = account;
-        mFile = file;
-
+  public DownloadFileOperation(final Account account, final OCFile file) {
+    if (account == null) {
+      throw new IllegalArgumentException(
+          "Illegal null account in DownloadFileOperation "
+          + "creation");
+    }
+    if (file == null) {
+      throw new IllegalArgumentException(
+          "Illegal null file in DownloadFileOperation "
+          + "creation");
     }
 
-    public Account getAccount() {
-        return mAccount;
+    mAccount = account;
+    mFile = file;
+  }
+
+  public Account getAccount() { return mAccount; }
+
+  public OCFile getFile() { return mFile; }
+
+  public String getSavePath() {
+    String path = mFile.getStoragePath(); // re-downloads should be done over
+                                          // the original file
+    if (path != null && path.length() > 0) {
+      return path;
+    }
+    return FileStorageUtils.getDefaultSavePathFor(mAccount.name, mFile);
+  }
+
+  public String getTmpPath() {
+    return FileStorageUtils.getTemporalPath(mAccount.name) +
+        mFile.getRemotePath();
+  }
+
+  public String getTmpFolder() {
+    return FileStorageUtils.getTemporalPath(mAccount.name);
+  }
+
+  public String getRemotePath() { return mFile.getRemotePath(); }
+
+  public String getMimeType() {
+    String mimeType = mFile.getMimetype();
+    if (mimeType == null || mimeType.length() <= 0) {
+      try {
+        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+            mFile.getRemotePath().substring(
+                mFile.getRemotePath().lastIndexOf('.') + 1));
+      } catch (IndexOutOfBoundsException e) {
+        Timber.e("Trying to find out MIME type of a file without extension: %s",
+                 mFile.getRemotePath());
+      }
+    }
+    if (mimeType == null) {
+      mimeType = "application/octet-stream";
+    }
+    return mimeType;
+  }
+
+  public long getSize() { return mFile.getFileLength(); }
+
+  public long getModificationTimestamp() {
+    return (mModificationTimestamp > 0) ? mModificationTimestamp
+                                        : mFile.getModificationTimestamp();
+  }
+
+  public String getEtag() { return mEtag; }
+
+  @Override
+  protected RemoteOperationResult run(final OwnCloudClient client) {
+    RemoteOperationResult result;
+    File newFile;
+    boolean moved;
+
+    /// download will be performed to a temporal file, then moved to the final
+    /// location
+    File tmpFile = new File(getTmpPath());
+
+    String tmpFolder = getTmpFolder();
+
+    /// perform the download
+    synchronized (mCancellationRequested) {
+      if (mCancellationRequested.get()) {
+        return new RemoteOperationResult(new OperationCancelledException());
+      }
     }
 
-    public OCFile getFile() {
-        return mFile;
+    mDownloadOperation =
+        new DownloadRemoteFileOperation(mFile.getRemotePath(), tmpFolder);
+    Iterator<OnDatatransferProgressListener> listener =
+        mDataTransferListeners.iterator();
+    while (listener.hasNext()) {
+      mDownloadOperation.addDatatransferProgressListener(listener.next());
     }
+    result = mDownloadOperation.execute(client);
 
-    public String getSavePath() {
-        String path = mFile.getStoragePath();  // re-downloads should be done over the original file
-        if (path != null && path.length() > 0) {
-            return path;
-        }
-        return FileStorageUtils.getDefaultSavePathFor(mAccount.name, mFile);
+    if (result.isSuccess()) {
+      mModificationTimestamp = mDownloadOperation.getModificationTimestamp();
+      mEtag = mDownloadOperation.getEtag();
+      if (FileStorageUtils.getUsableSpace() < tmpFile.length()) {
+        Timber.w("Not enough space to copy %s", tmpFile.getAbsolutePath());
+      }
+      newFile = new File(getSavePath());
+      Timber.d("Save path: %s", newFile.getAbsolutePath());
+      File parent = newFile.getParentFile();
+      boolean created = parent.mkdirs();
+      Timber.d("Creation of parent folder " + parent.getAbsolutePath() +
+               " succeeded: " + created);
+      Timber.d("Parent folder " + parent.getAbsolutePath() +
+               " exists: " + parent.exists());
+      Timber.d("Parent folder " + parent.getAbsolutePath() +
+               " is directory: " + parent.isDirectory());
+      moved = tmpFile.renameTo(newFile);
+      Timber.d("New file " + newFile.getAbsolutePath() +
+               " exists: " + newFile.exists());
+      Timber.d("New file " + newFile.getAbsolutePath() +
+               " is directory: " + newFile.isDirectory());
+      if (!moved) {
+        result = new RemoteOperationResult<>(
+            RemoteOperationResult.ResultCode.LOCAL_STORAGE_NOT_MOVED);
+      }
     }
+    Timber.i("Download of " + mFile.getRemotePath() + " to " + getSavePath() +
+             ": " + result.getLogMessage());
 
-    public String getTmpPath() {
-        return FileStorageUtils.getTemporalPath(mAccount.name) + mFile.getRemotePath();
+    return result;
+  }
+
+  public void cancel() {
+    mCancellationRequested.set(
+        true); // atomic set; there is no need of synchronizing it
+    if (mDownloadOperation != null) {
+      mDownloadOperation.cancel();
     }
+  }
 
-    public String getTmpFolder() {
-        return FileStorageUtils.getTemporalPath(mAccount.name);
+  public void addDatatransferProgressListener(
+      final OnDatatransferProgressListener listener) {
+    synchronized (mDataTransferListeners) {
+      mDataTransferListeners.add(listener);
     }
+  }
 
-    public String getRemotePath() {
-        return mFile.getRemotePath();
+  public void removeDatatransferProgressListener(
+      final OnDatatransferProgressListener listener) {
+    synchronized (mDataTransferListeners) {
+      mDataTransferListeners.remove(listener);
     }
-
-    public String getMimeType() {
-        String mimeType = mFile.getMimetype();
-        if (mimeType == null || mimeType.length() <= 0) {
-            try {
-                mimeType = MimeTypeMap.getSingleton()
-                           .getMimeTypeFromExtension(
-                               mFile.getRemotePath().substring(
-                                   mFile.getRemotePath().lastIndexOf('.') + 1));
-            } catch (IndexOutOfBoundsException e) {
-                Timber.e("Trying to find out MIME type of a file without extension: %s", mFile.getRemotePath());
-            }
-        }
-        if (mimeType == null) {
-            mimeType = "application/octet-stream";
-        }
-        return mimeType;
-    }
-
-    public long getSize() {
-        return mFile.getFileLength();
-    }
-
-    public long getModificationTimestamp() {
-        return (mModificationTimestamp > 0) ? mModificationTimestamp
-               : mFile.getModificationTimestamp();
-    }
-
-    public String getEtag() {
-        return mEtag;
-    }
-
-    @Override
-    protected RemoteOperationResult run(final OwnCloudClient client) {
-        RemoteOperationResult result;
-        File newFile;
-        boolean moved;
-
-        /// download will be performed to a temporal file, then moved to the final location
-        File tmpFile = new File(getTmpPath());
-
-        String tmpFolder = getTmpFolder();
-
-        /// perform the download
-        synchronized (mCancellationRequested) {
-            if (mCancellationRequested.get()) {
-                return new RemoteOperationResult(new OperationCancelledException());
-            }
-        }
-
-        mDownloadOperation = new DownloadRemoteFileOperation(mFile.getRemotePath(), tmpFolder);
-        Iterator<OnDatatransferProgressListener> listener = mDataTransferListeners.iterator();
-        while (listener.hasNext()) {
-            mDownloadOperation.addDatatransferProgressListener(listener.next());
-        }
-        result = mDownloadOperation.execute(client);
-
-        if (result.isSuccess()) {
-            mModificationTimestamp = mDownloadOperation.getModificationTimestamp();
-            mEtag = mDownloadOperation.getEtag();
-            if (FileStorageUtils.getUsableSpace() < tmpFile.length()) {
-                Timber.w("Not enough space to copy %s", tmpFile.getAbsolutePath());
-            }
-            newFile = new File(getSavePath());
-            Timber.d("Save path: %s", newFile.getAbsolutePath());
-            File parent = newFile.getParentFile();
-            boolean created = parent.mkdirs();
-            Timber.d("Creation of parent folder " + parent.getAbsolutePath() + " succeeded: " + created);
-            Timber.d("Parent folder " + parent.getAbsolutePath() + " exists: " + parent.exists());
-            Timber.d("Parent folder " + parent.getAbsolutePath() + " is directory: " + parent.isDirectory());
-            moved = tmpFile.renameTo(newFile);
-            Timber.d("New file " + newFile.getAbsolutePath() + " exists: " + newFile.exists());
-            Timber.d("New file " + newFile.getAbsolutePath() + " is directory: " + newFile.isDirectory());
-            if (!moved) {
-                result = new RemoteOperationResult<>(
-                    RemoteOperationResult.ResultCode.LOCAL_STORAGE_NOT_MOVED);
-            }
-        }
-        Timber.i("Download of " + mFile.getRemotePath() + " to " + getSavePath() + ": " + result.getLogMessage());
-
-        return result;
-    }
-
-    public void cancel() {
-        mCancellationRequested.set(true);   // atomic set; there is no need of synchronizing it
-        if (mDownloadOperation != null) {
-            mDownloadOperation.cancel();
-        }
-    }
-
-    public void addDatatransferProgressListener(final OnDatatransferProgressListener listener) {
-        synchronized (mDataTransferListeners) {
-            mDataTransferListeners.add(listener);
-        }
-    }
-
-    public void removeDatatransferProgressListener(final OnDatatransferProgressListener listener) {
-        synchronized (mDataTransferListeners) {
-            mDataTransferListeners.remove(listener);
-        }
-    }
+  }
 }

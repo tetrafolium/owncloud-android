@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -47,99 +46,105 @@ import com.owncloud.android.utils.PreferenceUtils;
  * <p>
  * Triggers the folder creation when name is confirmed.
  */
-public class CreateFolderDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class CreateFolderDialogFragment
+    extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private static final String ARG_PARENT_FOLDER = "PARENT_FOLDER";
+  private static final String ARG_PARENT_FOLDER = "PARENT_FOLDER";
 
-    public static final String CREATE_FOLDER_FRAGMENT = "CREATE_FOLDER_FRAGMENT";
+  public static final String CREATE_FOLDER_FRAGMENT = "CREATE_FOLDER_FRAGMENT";
 
-    /**
-     * Public factory method to create new CreateFolderDialogFragment instances.
-     *
-     * @param parentFolder Folder to create
-     * @return Dialog ready to show.
-     */
-    public static CreateFolderDialogFragment newInstance(final OCFile parentFolder) {
-        CreateFolderDialogFragment frag = new CreateFolderDialogFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PARENT_FOLDER, parentFolder);
-        frag.setArguments(args);
-        return frag;
-    }
+  /**
+   * Public factory method to create new CreateFolderDialogFragment instances.
+   *
+   * @param parentFolder Folder to create
+   * @return Dialog ready to show.
+   */
+  public static CreateFolderDialogFragment
+  newInstance(final OCFile parentFolder) {
+    CreateFolderDialogFragment frag = new CreateFolderDialogFragment();
+    Bundle args = new Bundle();
+    args.putParcelable(ARG_PARENT_FOLDER, parentFolder);
+    frag.setArguments(args);
+    return frag;
+  }
 
-    private OCFile mParentFolder;
+  private OCFile mParentFolder;
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        mParentFolder = requireArguments().getParcelable(ARG_PARENT_FOLDER);
+  @NonNull
+  @Override
+  public Dialog onCreateDialog(final Bundle savedInstanceState) {
+    mParentFolder = requireArguments().getParcelable(ARG_PARENT_FOLDER);
 
-        // Inflate the layout for the dialog
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        @SuppressLint("InflateParams")
-        View v = inflater.inflate(R.layout.edit_box_dialog, null);
+    // Inflate the layout for the dialog
+    LayoutInflater inflater = requireActivity().getLayoutInflater();
+    @SuppressLint("InflateParams")
+    View v = inflater.inflate(R.layout.edit_box_dialog, null);
 
-        // Allow or disallow touches with other visible windows
-        v.setFilterTouchesWhenObscured(
-            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
-        );
+    // Allow or disallow touches with other visible windows
+    v.setFilterTouchesWhenObscured(
+        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
+            getContext()));
 
-        CoordinatorLayout coordinatorLayout = requireActivity().findViewById(R.id.coordinator_layout);
+    CoordinatorLayout coordinatorLayout =
+        requireActivity().findViewById(R.id.coordinator_layout);
 
-        coordinatorLayout.setFilterTouchesWhenObscured(
-            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
-        );
+    coordinatorLayout.setFilterTouchesWhenObscured(
+        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
+            getContext()));
 
-        // Setup layout
-        EditText inputText = v.findViewById(R.id.user_input);
-        inputText.setText("");
-        inputText.requestFocus();
+    // Setup layout
+    EditText inputText = v.findViewById(R.id.user_input);
+    inputText.setText("");
+    inputText.requestFocus();
 
-        // Build the dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setView(v)
+    // Build the dialog
+    AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+    builder.setView(v)
         .setPositiveButton(android.R.string.ok, this)
         .setNegativeButton(android.R.string.cancel, this)
         .setTitle(R.string.uploader_info_dirname);
-        Dialog d = builder.create();
-        d.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        return d;
+    Dialog d = builder.create();
+    d.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    return d;
+  }
+
+  @Override
+  public void onClick(final DialogInterface dialog, final int which) {
+    if (which == AlertDialog.BUTTON_POSITIVE) {
+      String newFolderName =
+          ((TextView)(requireDialog().findViewById(R.id.user_input)))
+              .getText()
+              .toString()
+              .trim();
+
+      if (newFolderName.length() <= 0) {
+        showSnackMessage(R.string.filename_empty);
+        return;
+      }
+
+      if (!FileUtils.isValidName(newFolderName)) {
+        showSnackMessage(R.string.filename_forbidden_charaters_from_server);
+        return;
+      }
+
+      String path = mParentFolder.getRemotePath();
+      path += newFolderName + OCFile.PATH_SEPARATOR;
+      ((ComponentsGetter)requireActivity())
+          .getFileOperationsHelper()
+          .createFolder(path, false);
     }
+  }
 
-    @Override
-    public void onClick(final DialogInterface dialog, final int which) {
-        if (which == AlertDialog.BUTTON_POSITIVE) {
-            String newFolderName =
-                ((TextView) (requireDialog().findViewById(R.id.user_input))).getText().toString().trim();
-
-            if (newFolderName.length() <= 0) {
-                showSnackMessage(R.string.filename_empty);
-                return;
-            }
-
-            if (!FileUtils.isValidName(newFolderName)) {
-                showSnackMessage(R.string.filename_forbidden_charaters_from_server);
-                return;
-            }
-
-            String path = mParentFolder.getRemotePath();
-            path += newFolderName + OCFile.PATH_SEPARATOR;
-            ((ComponentsGetter) requireActivity()).getFileOperationsHelper().createFolder(path, false);
-        }
-    }
-
-    /**
-     * Show a temporary message in a Snackbar bound to the content view of the parent Activity
-     *
-     * @param messageResource Message to show.
-     */
-    private void showSnackMessage(final int messageResource) {
-        Snackbar snackbar = Snackbar.make(
-                                requireActivity().findViewById(R.id.coordinator_layout),
-                                messageResource,
-                                Snackbar.LENGTH_LONG
-                            );
-        snackbar.show();
-    }
-
+  /**
+   * Show a temporary message in a Snackbar bound to the content view of the
+   * parent Activity
+   *
+   * @param messageResource Message to show.
+   */
+  private void showSnackMessage(final int messageResource) {
+    Snackbar snackbar =
+        Snackbar.make(requireActivity().findViewById(R.id.coordinator_layout),
+                      messageResource, Snackbar.LENGTH_LONG);
+    snackbar.show();
+  }
 }

@@ -27,7 +27,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.owncloud.android.R;
@@ -41,263 +40,275 @@ import timber.log.Timber;
 /**
  * This Fragment is used to monitor the progress of a file downloading.
  */
-public class FileDownloadFragment extends FileFragment implements OnClickListener {
+public class FileDownloadFragment
+    extends FileFragment implements OnClickListener {
 
-    public static final String EXTRA_FILE = "FILE";
-    public static final String EXTRA_ACCOUNT = "ACCOUNT";
-    private static final String EXTRA_ERROR = "ERROR";
+  public static final String EXTRA_FILE = "FILE";
+  public static final String EXTRA_ACCOUNT = "ACCOUNT";
+  private static final String EXTRA_ERROR = "ERROR";
 
-    private static final String ARG_FILE = "FILE";
-    private static final String ARG_IGNORE_FIRST = "IGNORE_FIRST";
-    private static final String ARG_ACCOUNT = "ACCOUNT";
+  private static final String ARG_FILE = "FILE";
+  private static final String ARG_IGNORE_FIRST = "IGNORE_FIRST";
+  private static final String ARG_ACCOUNT = "ACCOUNT";
 
-    private Account mAccount;
+  private Account mAccount;
 
-    public TransferProgressController mProgressController;
+  public TransferProgressController mProgressController;
 
-    private boolean mIgnoreFirstSavedState;
-    private boolean mError;
-    private ProgressBar mProgressBar;
+  private boolean mIgnoreFirstSavedState;
+  private boolean mError;
+  private ProgressBar mProgressBar;
 
-    /**
-     * Public factory method to create a new fragment that shows the progress of a file download.
-     *
-     * Android strongly recommends keep the empty constructor of fragments as the only public constructor, and
-     * use {@link #setArguments(Bundle)} to set the needed arguments.
-     *
-     * This method hides to client objects the need of doing the construction in two steps.
-     *
-     * When 'file' is null creates a dummy layout (useful when a file wasn't tapped before).
-     *
-     * @param file                      An {@link OCFile} to show in the fragment
-     * @param account                   An OC account; needed to start downloads
-     * @param ignoreFirstSavedState     Flag to work around an unexpected behaviour of {@link FragmentStatePagerAdapter}
-     *                                  TODO better solution
-     */
-    public static Fragment newInstance(final OCFile file, final Account account, final boolean ignoreFirstSavedState) {
-        FileDownloadFragment frag = new FileDownloadFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_FILE, file);
-        args.putParcelable(ARG_ACCOUNT, account);
-        args.putBoolean(ARG_IGNORE_FIRST, ignoreFirstSavedState);
-        frag.setArguments(args);
-        return frag;
-    }
+  /**
+   * Public factory method to create a new fragment that shows the progress of a
+   * file download.
+   *
+   * Android strongly recommends keep the empty constructor of fragments as the
+   * only public constructor, and use {@link #setArguments(Bundle)} to set the
+   * needed arguments.
+   *
+   * This method hides to client objects the need of doing the construction in
+   * two steps.
+   *
+   * When 'file' is null creates a dummy layout (useful when a file wasn't
+   * tapped before).
+   *
+   * @param file                      An {@link OCFile} to show in the fragment
+   * @param account                   An OC account; needed to start downloads
+   * @param ignoreFirstSavedState     Flag to work around an unexpected
+   *     behaviour of {@link FragmentStatePagerAdapter}
+   *                                  TODO better solution
+   */
+  public static Fragment newInstance(final OCFile file, final Account account,
+                                     final boolean ignoreFirstSavedState) {
+    FileDownloadFragment frag = new FileDownloadFragment();
+    Bundle args = new Bundle();
+    args.putParcelable(ARG_FILE, file);
+    args.putParcelable(ARG_ACCOUNT, account);
+    args.putBoolean(ARG_IGNORE_FIRST, ignoreFirstSavedState);
+    frag.setArguments(args);
+    return frag;
+  }
 
-    /**
-     * Creates an empty details fragment.
-     *
-     * It's necessary to keep a public constructor without parameters; the system uses it when tries to
-     * reinstantiate a fragment automatically.
-     */
-    public FileDownloadFragment() {
-        super();
-        mAccount = null;
-        mProgressController = null;
+  /**
+   * Creates an empty details fragment.
+   *
+   * It's necessary to keep a public constructor without parameters; the system
+   * uses it when tries to reinstantiate a fragment automatically.
+   */
+  public FileDownloadFragment() {
+    super();
+    mAccount = null;
+    mProgressController = null;
+    mIgnoreFirstSavedState = false;
+    mError = false;
+  }
+
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Bundle args = getArguments();
+    setFile((OCFile)args.getParcelable(ARG_FILE));
+    // TODO better in super, but needs to check ALL the class extending
+    // FileFragment; not right now
+
+    mIgnoreFirstSavedState = args.getBoolean(ARG_IGNORE_FIRST);
+    mAccount = args.getParcelable(ARG_ACCOUNT);
+  }
+
+  @Override
+  public View onCreateView(final LayoutInflater inflater,
+                           final ViewGroup container,
+                           final Bundle savedInstanceState) {
+    super.onCreateView(inflater, container, savedInstanceState);
+
+    if (savedInstanceState != null) {
+      if (!mIgnoreFirstSavedState) {
+        setFile((OCFile)savedInstanceState.getParcelable(
+            FileDownloadFragment.EXTRA_FILE));
+        mAccount = savedInstanceState.getParcelable(
+            FileDownloadFragment.EXTRA_ACCOUNT);
+        mError =
+            savedInstanceState.getBoolean(FileDownloadFragment.EXTRA_ERROR);
+      } else {
         mIgnoreFirstSavedState = false;
-        mError = false;
+      }
     }
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        setFile((OCFile) args.getParcelable(ARG_FILE));
-        // TODO better in super, but needs to check ALL the class extending FileFragment; not right now
+    View rootView =
+        inflater.inflate(R.layout.file_download_fragment, container, false);
 
-        mIgnoreFirstSavedState = args.getBoolean(ARG_IGNORE_FIRST);
-        mAccount = args.getParcelable(ARG_ACCOUNT);
+    mProgressBar = rootView.findViewById(R.id.progressBar);
+
+    (rootView.findViewById(R.id.cancelBtn)).setOnClickListener(this);
+
+    rootView.setFilterTouchesWhenObscured(
+        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(
+            getContext()));
+
+    if (mError) {
+      setButtonsForRemote(rootView);
+    } else {
+      setButtonsForTransferring(rootView);
     }
 
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    return rootView;
+  }
 
-        if (savedInstanceState != null) {
-            if (!mIgnoreFirstSavedState) {
-                setFile((OCFile) savedInstanceState.getParcelable(FileDownloadFragment.EXTRA_FILE));
-                mAccount = savedInstanceState.getParcelable(FileDownloadFragment.EXTRA_ACCOUNT);
-                mError = savedInstanceState.getBoolean(FileDownloadFragment.EXTRA_ERROR);
-            } else {
-                mIgnoreFirstSavedState = false;
-            }
-        }
+  @Override
+  public void onActivityCreated(final Bundle savedState) {
+    super.onActivityCreated(savedState);
+    mProgressController = new TransferProgressController(mContainerActivity);
+    mProgressController.setProgressBar(mProgressBar);
+  }
 
-        View rootView = inflater.inflate(R.layout.file_download_fragment, container, false);
+  @Override
+  public void onSaveInstanceState(final Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putParcelable(FileDownloadFragment.EXTRA_FILE, getFile());
+    outState.putParcelable(FileDownloadFragment.EXTRA_ACCOUNT, mAccount);
+    outState.putBoolean(FileDownloadFragment.EXTRA_ERROR, mError);
+  }
 
-        mProgressBar = rootView.findViewById(R.id.progressBar);
+  @Override
+  public void onStart() {
+    super.onStart();
+    listenForTransferProgress();
+  }
 
-        (rootView.findViewById(R.id.cancelBtn)).setOnClickListener(this);
+  @Override
+  public void onStop() {
+    leaveTransferProgress();
+    super.onStop();
+  }
 
-        rootView.setFilterTouchesWhenObscured(
-            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(getContext())
-        );
-
-        if (mError) {
-            setButtonsForRemote(rootView);
-        } else {
-            setButtonsForTransferring(rootView);
-        }
-
-        return rootView;
+  @Override
+  public void onClick(final View v) {
+    switch (v.getId()) {
+    case R.id.cancelBtn: {
+      mContainerActivity.getFileOperationsHelper().cancelTransference(
+          getFile());
+      getActivity().finish();
+      break;
     }
-
-    @Override
-    public void onActivityCreated(final Bundle savedState) {
-        super.onActivityCreated(savedState);
-        mProgressController = new TransferProgressController(mContainerActivity);
-        mProgressController.setProgressBar(mProgressBar);
+    default:
+      Timber.e("Incorrect view clicked!");
     }
+  }
 
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(FileDownloadFragment.EXTRA_FILE, getFile());
-        outState.putParcelable(FileDownloadFragment.EXTRA_ACCOUNT, mAccount);
-        outState.putBoolean(FileDownloadFragment.EXTRA_ERROR, mError);
+  /**
+   * Enables buttons for a file being downloaded
+   */
+  private void setButtonsForTransferring(final View rootView) {
+    if (rootView != null) {
+      rootView.findViewById(R.id.cancelBtn).setVisibility(View.VISIBLE);
+
+      // show the progress bar for the transfer
+      rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+      TextView progressText = rootView.findViewById(R.id.progressText);
+      progressText.setText(R.string.downloader_download_in_progress_ticker);
+      progressText.setVisibility(View.VISIBLE);
+
+      // hides the error icon
+      rootView.findViewById(R.id.errorText).setVisibility(View.GONE);
+      rootView.findViewById(R.id.error_image).setVisibility(View.GONE);
     }
+  }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        listenForTransferProgress();
+  /**
+   * Enables or disables buttons for a file locally available
+   */
+  private void setButtonsForDown(final View rootView) {
+    if (rootView != null) {
+      rootView.findViewById(R.id.cancelBtn).setVisibility(View.GONE);
+
+      // hides the progress bar
+      rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+
+      // updates the text message
+      TextView progressText = rootView.findViewById(R.id.progressText);
+      progressText.setText(R.string.common_loading);
+      progressText.setVisibility(View.VISIBLE);
+
+      // hides the error icon
+      rootView.findViewById(R.id.errorText).setVisibility(View.GONE);
+      rootView.findViewById(R.id.error_image).setVisibility(View.GONE);
     }
+  }
 
-    @Override
-    public void onStop() {
-        leaveTransferProgress();
-        super.onStop();
+  /**
+   * Enables or disables buttons for a file not locally available
+   * <p/>
+   * Currently, this is only used when a download was failed
+   */
+  private void setButtonsForRemote(final View rootView) {
+    if (rootView != null) {
+      rootView.findViewById(R.id.cancelBtn).setVisibility(View.GONE);
+
+      // hides the progress bar and message
+      rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+      rootView.findViewById(R.id.progressText).setVisibility(View.GONE);
+
+      // shows the error icon and message
+      rootView.findViewById(R.id.errorText).setVisibility(View.VISIBLE);
+      rootView.findViewById(R.id.error_image).setVisibility(View.VISIBLE);
     }
+  }
 
-    @Override
-    public void onClick(final View v) {
-        switch (v.getId()) {
-        case R.id.cancelBtn: {
-            mContainerActivity.getFileOperationsHelper().cancelTransference(getFile());
-            getActivity().finish();
-            break;
-        }
-        default:
-            Timber.e("Incorrect view clicked!");
-        }
+  @Override
+  public void onTransferServiceConnected() {
+    listenForTransferProgress();
+  }
+
+  @Override
+  public void onFileMetadataChanged(final OCFile updatedFile) {
+    if (updatedFile != null) {
+      setFile(updatedFile);
     }
+    // view does not need any update
+  }
 
-    /**
-     * Enables buttons for a file being downloaded
-     */
-    private void setButtonsForTransferring(final View rootView) {
-        if (rootView != null) {
-            rootView.findViewById(R.id.cancelBtn).setVisibility(View.VISIBLE);
-
-            // show the progress bar for the transfer
-            rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            TextView progressText = rootView.findViewById(R.id.progressText);
-            progressText.setText(R.string.downloader_download_in_progress_ticker);
-            progressText.setVisibility(View.VISIBLE);
-
-            // hides the error icon
-            rootView.findViewById(R.id.errorText).setVisibility(View.GONE);
-            rootView.findViewById(R.id.error_image).setVisibility(View.GONE);
-        }
+  @Override
+  public void onFileMetadataChanged() {
+    FileDataStorageManager storageManager =
+        mContainerActivity.getStorageManager();
+    if (storageManager != null) {
+      setFile(storageManager.getFileByPath(getFile().getRemotePath()));
     }
+    // view does not need any update
+  }
 
-    /**
-     * Enables or disables buttons for a file locally available
-     */
-    private void setButtonsForDown(final View rootView) {
-        if (rootView != null) {
-            rootView.findViewById(R.id.cancelBtn).setVisibility(View.GONE);
+  @Override
+  public void onFileContentChanged() {
+    // view does not need any update, parent activity will replace this fragment
+  }
 
-            // hides the progress bar
-            rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+  @Override
+  public void updateViewForSyncInProgress() {
+    setButtonsForTransferring(getView());
+  }
 
-            // updates the text message
-            TextView progressText = rootView.findViewById(R.id.progressText);
-            progressText.setText(R.string.common_loading);
-            progressText.setVisibility(View.VISIBLE);
-
-            // hides the error icon
-            rootView.findViewById(R.id.errorText).setVisibility(View.GONE);
-            rootView.findViewById(R.id.error_image).setVisibility(View.GONE);
-        }
+  @Override
+  public void updateViewForSyncOff() {
+    if (getFile().isDown()) {
+      setButtonsForDown(getView());
+    } else {
+      setButtonsForRemote(getView());
     }
+  }
 
-    /**
-     * Enables or disables buttons for a file not locally available
-     * <p/>
-     * Currently, this is only used when a download was failed
-     */
-    private void setButtonsForRemote(final View rootView) {
-        if (rootView != null) {
-            rootView.findViewById(R.id.cancelBtn).setVisibility(View.GONE);
-
-            // hides the progress bar and message
-            rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
-            rootView.findViewById(R.id.progressText).setVisibility(View.GONE);
-
-            // shows the error icon and message
-            rootView.findViewById(R.id.errorText).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.error_image).setVisibility(View.VISIBLE);
-        }
+  private void listenForTransferProgress() {
+    if (mProgressController != null) {
+      mProgressController.startListeningProgressFor(getFile(), mAccount);
+      setButtonsForTransferring(getView());
     }
+  }
 
-    @Override
-    public void onTransferServiceConnected() {
-        listenForTransferProgress();
+  private void leaveTransferProgress() {
+    if (mProgressController != null) {
+      mProgressController.stopListeningProgressFor(getFile(), mAccount);
     }
+  }
 
-    @Override
-    public void onFileMetadataChanged(final OCFile updatedFile) {
-        if (updatedFile != null) {
-            setFile(updatedFile);
-        }
-        // view does not need any update
-    }
-
-    @Override
-    public void onFileMetadataChanged() {
-        FileDataStorageManager storageManager = mContainerActivity.getStorageManager();
-        if (storageManager != null) {
-            setFile(storageManager.getFileByPath(getFile().getRemotePath()));
-        }
-        // view does not need any update
-    }
-
-    @Override
-    public void onFileContentChanged() {
-        // view does not need any update, parent activity will replace this fragment
-    }
-
-    @Override
-    public void updateViewForSyncInProgress() {
-        setButtonsForTransferring(getView());
-    }
-
-    @Override
-    public void updateViewForSyncOff() {
-        if (getFile().isDown()) {
-            setButtonsForDown(getView());
-        } else {
-            setButtonsForRemote(getView());
-        }
-    }
-
-    private void listenForTransferProgress() {
-        if (mProgressController != null) {
-            mProgressController.startListeningProgressFor(getFile(), mAccount);
-            setButtonsForTransferring(getView());
-        }
-    }
-
-    private void leaveTransferProgress() {
-        if (mProgressController != null) {
-            mProgressController.stopListeningProgressFor(getFile(), mAccount);
-        }
-    }
-
-    public void setError(final boolean error) {
-        mError = error;
-    }
-
+  public void setError(final boolean error) { mError = error; }
 }

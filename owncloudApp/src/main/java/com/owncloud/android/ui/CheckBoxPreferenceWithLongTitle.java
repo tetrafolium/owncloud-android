@@ -27,24 +27,27 @@ import android.widget.TextView;
 
 public class CheckBoxPreferenceWithLongTitle extends CheckBoxPreference {
 
-    public CheckBoxPreferenceWithLongTitle(final Context context) {
-        super(context);
-    }
+  public CheckBoxPreferenceWithLongTitle(final Context context) {
+    super(context);
+  }
 
-    public CheckBoxPreferenceWithLongTitle(final Context context, final AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public CheckBoxPreferenceWithLongTitle(final Context context,
+                                         final AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    public CheckBoxPreferenceWithLongTitle(final Context context, final AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
-    }
+  public CheckBoxPreferenceWithLongTitle(final Context context,
+                                         final AttributeSet attrs,
+                                         final int defStyle) {
+    super(context, attrs, defStyle);
+  }
 
-    @Override
-    protected void onBindView(final View view) {
-        super.onBindView(view);
-        TextView titleView = view.findViewById(android.R.id.title);
-        titleView.setSingleLine(false);
-        titleView.setMaxLines(3);
-        titleView.setEllipsize(null);
-    }
+  @Override
+  protected void onBindView(final View view) {
+    super.onBindView(view);
+    TextView titleView = view.findViewById(android.R.id.title);
+    titleView.setSingleLine(false);
+    titleView.setMaxLines(3);
+    titleView.setEllipsize(null);
+  }
 }

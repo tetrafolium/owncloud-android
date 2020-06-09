@@ -29,7 +29,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.owncloud.android.R;
 import com.owncloud.android.utils.DisplayUtils;
@@ -40,73 +39,76 @@ import com.owncloud.android.utils.PreferenceUtils;
  */
 public class PrivacyPolicyActivity extends ToolbarActivity {
 
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_privacy_policy);
+    setContentView(R.layout.activity_privacy_policy);
 
-        setupToolbar();
+    setupToolbar();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        setTitle(getText(R.string.actionbar_privacy_policy));
+    setTitle(getText(R.string.actionbar_privacy_policy));
 
-        // Display the progress in a progress bar, like the browser app does.
-        final ProgressBar mProgressBar = findViewById(R.id.syncProgressBar);
+    // Display the progress in a progress bar, like the browser app does.
+    final ProgressBar mProgressBar = findViewById(R.id.syncProgressBar);
 
-        // Allow or disallow touches with other visible windows
-        LinearLayout activityPrivacyPolicyLayout = findViewById(R.id.activityPrivacyPolicyLayout);
-        activityPrivacyPolicyLayout.setFilterTouchesWhenObscured(
-            PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
-        );
+    // Allow or disallow touches with other visible windows
+    LinearLayout activityPrivacyPolicyLayout =
+        findViewById(R.id.activityPrivacyPolicyLayout);
+    activityPrivacyPolicyLayout.setFilterTouchesWhenObscured(
+        PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this));
 
-        WebView webview = findViewById(R.id.privacyPolicyWebview);
-        webview.getSettings().setJavaScriptEnabled(true);
+    WebView webview = findViewById(R.id.privacyPolicyWebview);
+    webview.getSettings().setJavaScriptEnabled(true);
 
-        // next two settings grant that non-responsive webs are zoomed out when loaded
-        webview.getSettings().setUseWideViewPort(true);
-        webview.getSettings().setLoadWithOverviewMode(true);
+    // next two settings grant that non-responsive webs are zoomed out when
+    // loaded
+    webview.getSettings().setUseWideViewPort(true);
+    webview.getSettings().setLoadWithOverviewMode(true);
 
-        //Enable zoom but hide display zoom controls
-        webview.getSettings().setBuiltInZoomControls(true);
-        webview.getSettings().setDisplayZoomControls(false);
+    // Enable zoom but hide display zoom controls
+    webview.getSettings().setBuiltInZoomControls(true);
+    webview.getSettings().setDisplayZoomControls(false);
 
-        webview.setWebChromeClient(new WebChromeClient() {
-            public void onProgressChanged(final WebView view, final int progress) {
-                mProgressBar.setProgress(progress); //Set the web page loading progress
+    webview.setWebChromeClient(new WebChromeClient() {
+      public void onProgressChanged(final WebView view, final int progress) {
+        mProgressBar.setProgress(progress); // Set the web page loading progress
 
-                if (progress == 100) {
-                    mProgressBar.setVisibility(View.GONE);
-                }
-            }
-        });
-        webview.setWebViewClient(new WebViewClient() {
-            public void onReceivedError(final WebView view, final int errorCode, final String description, final String failingUrl) {
-
-                Snackbar snackbar = Snackbar.make(
-                                        findViewById(android.R.id.content),
-                                        getString(R.string.privacy_policy_error) + description,
-                                        Snackbar.LENGTH_LONG
-                                    );
-                snackbar.show();
-            }
-        });
-
-        String urlPrivacyPolicy = getResources().getString(R.string.url_privacy_policy);
-        webview.loadUrl(urlPrivacyPolicy);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        boolean retval = true;
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            finish();
-            break;
-        default:
-            retval = super.onOptionsItemSelected(item);
+        if (progress == 100) {
+          mProgressBar.setVisibility(View.GONE);
         }
-        return retval;
+      }
+    });
+    webview.setWebViewClient(new WebViewClient() {
+      public void onReceivedError(final WebView view, final int errorCode,
+                                  final String description,
+                                  final String failingUrl) {
+
+        Snackbar snackbar = Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(R.string.privacy_policy_error) + description,
+            Snackbar.LENGTH_LONG);
+        snackbar.show();
+      }
+    });
+
+    String urlPrivacyPolicy =
+        getResources().getString(R.string.url_privacy_policy);
+    webview.loadUrl(urlPrivacyPolicy);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(final MenuItem item) {
+    boolean retval = true;
+    switch (item.getItemId()) {
+    case android.R.id.home:
+      finish();
+      break;
+    default:
+      retval = super.onOptionsItemSelected(item);
     }
+    return retval;
+  }
 }

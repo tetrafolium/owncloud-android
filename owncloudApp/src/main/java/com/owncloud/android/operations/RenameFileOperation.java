@@ -28,165 +28,168 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCo
 import com.owncloud.android.lib.resources.files.RenameRemoteFileOperation;
 import com.owncloud.android.operations.common.SyncOperation;
 import com.owncloud.android.utils.FileStorageUtils;
-import timber.log.Timber;
-
 import java.io.File;
 import java.io.IOException;
+import timber.log.Timber;
 
 /**
- * Remote operation performing the rename of a remote file (or folder?) in the ownCloud server.
+ * Remote operation performing the rename of a remote file (or folder?) in the
+ * ownCloud server.
  */
 public class RenameFileOperation extends SyncOperation {
 
-    private OCFile mFile;
-    private String mRemotePath;
-    private String mNewName;
-    private String mNewRemotePath;
+  private OCFile mFile;
+  private String mRemotePath;
+  private String mNewName;
+  private String mNewRemotePath;
 
-    /**
-     * Constructor
-     *
-     * @param remotePath RemotePath of the OCFile instance describing the remote file or
-     *                   folder to rename
-     * @param newName    New name to set as the name of file.
-     */
-    public RenameFileOperation(final String remotePath, final String newName) {
-        mRemotePath = remotePath;
-        mNewName = newName;
-        mNewRemotePath = null;
-    }
+  /**
+   * Constructor
+   *
+   * @param remotePath RemotePath of the OCFile instance describing the remote
+   *     file or
+   *                   folder to rename
+   * @param newName    New name to set as the name of file.
+   */
+  public RenameFileOperation(final String remotePath, final String newName) {
+    mRemotePath = remotePath;
+    mNewName = newName;
+    mNewRemotePath = null;
+  }
 
-    public OCFile getFile() {
-        return mFile;
-    }
+  public OCFile getFile() { return mFile; }
 
-    /**
-     * Performs the rename operation.
-     *
-     * @param client Client object to communicate with the remote ownCloud server.
-     */
-    @Override
-    protected RemoteOperationResult run(final OwnCloudClient client) {
-        RemoteOperationResult result = null;
+  /**
+   * Performs the rename operation.
+   *
+   * @param client Client object to communicate with the remote ownCloud server.
+   */
+  @Override
+  protected RemoteOperationResult run(final OwnCloudClient client) {
+    RemoteOperationResult result = null;
 
-        mFile = getStorageManager().getFileByPath(mRemotePath);
+    mFile = getStorageManager().getFileByPath(mRemotePath);
 
-        // check if the new name is valid in the local file system
-        try {
-            if (!isValidNewName()) {
-                return new RemoteOperationResult(ResultCode.INVALID_LOCAL_FILE_NAME);
-            }
-            String parent = (new File(mFile.getRemotePath())).getParent();
-            parent = (parent.endsWith(OCFile.PATH_SEPARATOR)) ? parent : parent
-                     + OCFile.PATH_SEPARATOR;
-            mNewRemotePath = parent + mNewName;
-            if (mFile.isFolder()) {
-                mNewRemotePath += OCFile.PATH_SEPARATOR;
-            }
+    // check if the new name is valid in the local file system
+    try {
+      if (!isValidNewName()) {
+        return new RemoteOperationResult(ResultCode.INVALID_LOCAL_FILE_NAME);
+      }
+      String parent = (new File(mFile.getRemotePath())).getParent();
+      parent = (parent.endsWith(OCFile.PATH_SEPARATOR))
+                   ? parent
+                   : parent + OCFile.PATH_SEPARATOR;
+      mNewRemotePath = parent + mNewName;
+      if (mFile.isFolder()) {
+        mNewRemotePath += OCFile.PATH_SEPARATOR;
+      }
 
-            // check local overwrite
-            if (getStorageManager().getFileByPath(mNewRemotePath) != null) {
-                return new RemoteOperationResult(ResultCode.INVALID_OVERWRITE);
-            }
+      // check local overwrite
+      if (getStorageManager().getFileByPath(mNewRemotePath) != null) {
+        return new RemoteOperationResult(ResultCode.INVALID_OVERWRITE);
+      }
 
-            RenameRemoteFileOperation operation = new RenameRemoteFileOperation(mFile.getFileName(),
-                    mFile.getRemotePath(),
-                    mNewName, mFile.isFolder());
-            result = operation.execute(client);
+      RenameRemoteFileOperation operation = new RenameRemoteFileOperation(
+          mFile.getFileName(), mFile.getRemotePath(), mNewName,
+          mFile.isFolder());
+      result = operation.execute(client);
 
-            if (result.isSuccess()) {
-                if (mFile.isFolder()) {
-                    saveLocalDirectory(parent);
+      if (result.isSuccess()) {
+        if (mFile.isFolder()) {
+          saveLocalDirectory(parent);
 
-                } else {
-                    saveLocalFile();
-                }
-            }
-
-        } catch (IOException e) {
-            Timber.e(e, "Rename " + mFile.getRemotePath() + " to " + ((mNewRemotePath == null) ? mNewName
-                     : mNewRemotePath) + " failed");
+        } else {
+          saveLocalFile();
         }
+      }
 
-        return result;
+    } catch (IOException e) {
+      Timber.e(e, "Rename " + mFile.getRemotePath() + " to " +
+                      ((mNewRemotePath == null) ? mNewName : mNewRemotePath) +
+                      " failed");
     }
 
-    private void saveLocalDirectory(final String parent) {
-        getStorageManager().moveLocalFile(mFile, mNewRemotePath, parent);
-        mFile.setFileName(mNewName);
+    return result;
+  }
+
+  private void saveLocalDirectory(final String parent) {
+    getStorageManager().moveLocalFile(mFile, mNewRemotePath, parent);
+    mFile.setFileName(mNewName);
+  }
+
+  private void saveLocalFile() {
+    mFile.setFileName(mNewName);
+
+    if (mFile.isDown()) {
+      // rename the local copy of the file
+      String oldPath = mFile.getStoragePath();
+      File f = new File(oldPath);
+      String parentStoragePath = f.getParent();
+      if (!parentStoragePath.endsWith(File.separator)) {
+        parentStoragePath += File.separator;
+      }
+      if (f.renameTo(new File(parentStoragePath + mNewName))) {
+        String newPath = parentStoragePath + mNewName;
+        mFile.setStoragePath(newPath);
+
+        // notify MediaScanner about removed file
+        getStorageManager().deleteFileInMediaScan(oldPath);
+        // notify to scan about new file
+        getStorageManager().triggerMediaScan(newPath);
+      }
+      // else - NOTHING: the link to the local file is kept although the local
+      // name can't be updated
+      // TODO - study conditions when this could be a problem
     }
 
-    private void saveLocalFile() {
-        mFile.setFileName(mNewName);
+    getStorageManager().saveFile(mFile);
+  }
 
-        if (mFile.isDown()) {
-            // rename the local copy of the file
-            String oldPath = mFile.getStoragePath();
-            File f = new File(oldPath);
-            String parentStoragePath = f.getParent();
-            if (!parentStoragePath.endsWith(File.separator)) {
-                parentStoragePath += File.separator;
-            }
-            if (f.renameTo(new File(parentStoragePath + mNewName))) {
-                String newPath = parentStoragePath + mNewName;
-                mFile.setStoragePath(newPath);
-
-                // notify MediaScanner about removed file
-                getStorageManager().deleteFileInMediaScan(oldPath);
-                // notify to scan about new file
-                getStorageManager().triggerMediaScan(newPath);
-            }
-            // else - NOTHING: the link to the local file is kept although the local name
-            // can't be updated
-            // TODO - study conditions when this could be a problem
-        }
-
-        getStorageManager().saveFile(mFile);
+  /**
+   * Checks if the new name to set is valid in the file system
+   * <p>
+   * The only way to be sure is trying to create a file with that name. It's
+   * made in the temporal directory for downloads, out of any account, and then
+   * removed. <p> IMPORTANT: The test must be made in the same file system where
+   * files are download. The internal storage could be formatted with a
+   * different file system. <p>
+   * TODO move this method, and maybe FileDownload.get***Path(), to a class with
+   * utilities specific for the interactions with the file system
+   *
+   * @return 'True' if a temporal file named with the name to set could be
+   * created in the file system where local files are stored.
+   * @throws IOException When the temporal folder can not be created.
+   */
+  private boolean isValidNewName() throws IOException {
+    // check tricky names
+    if (mNewName == null || mNewName.length() <= 0 ||
+        mNewName.contains(File.separator)) {
+      return false;
     }
-
-    /**
-     * Checks if the new name to set is valid in the file system
-     * <p>
-     * The only way to be sure is trying to create a file with that name. It's made in the
-     * temporal directory for downloads, out of any account, and then removed.
-     * <p>
-     * IMPORTANT: The test must be made in the same file system where files are download.
-     * The internal storage could be formatted with a different file system.
-     * <p>
-     * TODO move this method, and maybe FileDownload.get***Path(), to a class with utilities
-     * specific for the interactions with the file system
-     *
-     * @return 'True' if a temporal file named with the name to set could be
-     * created in the file system where local files are stored.
-     * @throws IOException When the temporal folder can not be created.
-     */
-    private boolean isValidNewName() throws IOException {
-        // check tricky names
-        if (mNewName == null || mNewName.length() <= 0 || mNewName.contains(File.separator)) {
-            return false;
-        }
-        // create a test file
-        String tmpFolderName = FileStorageUtils.getTemporalPath("");
-        File testFile = new File(tmpFolderName + mNewName);
-        File tmpFolder = testFile.getParentFile();
-        tmpFolder.mkdirs();
-        if (!tmpFolder.isDirectory()) {
-            throw new IOException("Unexpected error: temporal directory could not be created");
-        }
-        try {
-            testFile.createNewFile();   // return value is ignored; it could be 'false' because
-            // the file already existed, that doesn't invalidate the name
-        } catch (IOException e) {
-            Timber.i("Test for validity of name " + mNewName + " in the file system failed");
-            return false;
-        }
-        boolean result = (testFile.exists() && testFile.isFile());
-
-        // cleaning ; result is ignored, since there is not much we could do in case of failure,
-        // but repeat and repeat...
-        testFile.delete();
-
-        return result;
+    // create a test file
+    String tmpFolderName = FileStorageUtils.getTemporalPath("");
+    File testFile = new File(tmpFolderName + mNewName);
+    File tmpFolder = testFile.getParentFile();
+    tmpFolder.mkdirs();
+    if (!tmpFolder.isDirectory()) {
+      throw new IOException(
+          "Unexpected error: temporal directory could not be created");
     }
+    try {
+      testFile.createNewFile(); // return value is ignored; it could be 'false'
+                                // because
+      // the file already existed, that doesn't invalidate the name
+    } catch (IOException e) {
+      Timber.i("Test for validity of name " + mNewName +
+               " in the file system failed");
+      return false;
+    }
+    boolean result = (testFile.exists() && testFile.isFile());
 
+    // cleaning ; result is ignored, since there is not much we could do in case
+    // of failure, but repeat and repeat...
+    testFile.delete();
+
+    return result;
+  }
 }

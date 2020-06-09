@@ -21,19 +21,18 @@
 package com.owncloud.android.files.services;
 
 import android.util.Pair;
-
 import com.owncloud.android.datamodel.OCFile;
-import timber.log.Timber;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import timber.log.Timber;
 
 /**
- *  Helper structure to keep the trees of folders containing any file downloading or synchronizing.
+ *  Helper structure to keep the trees of folders containing any file
+ * downloading or synchronizing.
  *
  *  A map provides the indexation based in hashing.
  *
@@ -41,202 +40,192 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class IndexedForest<V> {
 
-    private ConcurrentMap<String, Node<V>> mMap = new ConcurrentHashMap<String, Node<V>>();
+  private ConcurrentMap<String, Node<V>> mMap =
+      new ConcurrentHashMap<String, Node<V>>();
 
-    private class Node<V> {
-        String mKey = null;
-        Node<V> mParent = null;
-        Set<Node<V>> mChildren = new HashSet<Node<V>>();    // TODO be careful with hash()
-        V mPayload = null;
+  private class Node<V> {
+    String mKey = null;
+    Node<V> mParent = null;
+    Set<Node<V>> mChildren =
+        new HashSet<Node<V>>(); // TODO be careful with hash()
+    V mPayload = null;
 
-        // payload is optional
-        public Node(final String key, final V payload) {
-            if (key == null) {
-                throw new IllegalArgumentException("Argument key MUST NOT be null");
-            }
-            mKey = key;
-            mPayload = payload;
-        }
-
-        public Node<V> getParent() {
-            return mParent;
-        }
-
-        public Set<Node<V>> getChildren() {
-            return mChildren;
-        }
-
-        public String getKey() {
-            return mKey;
-        }
-
-        public V getPayload() {
-            return mPayload;
-        }
-
-        public void addChild(final Node<V> child) {
-            mChildren.add(child);
-            child.setParent(this);
-        }
-
-        private void setParent(final Node<V> parent) {
-            mParent = parent;
-        }
-
-        public boolean hasChildren() {
-            return mChildren.size() > 0;
-        }
-
-        public void removeChild(final Node<V> removed) {
-            mChildren.remove(removed);
-        }
-
-        public void clearPayload() {
-            mPayload = null;
-        }
+    // payload is optional
+    public Node(final String key, final V payload) {
+      if (key == null) {
+        throw new IllegalArgumentException("Argument key MUST NOT be null");
+      }
+      mKey = key;
+      mPayload = payload;
     }
 
-    public /* synchronized */ Pair<String, String> putIfAbsent(final String accountName, final String remotePath, final V value) {
-        String targetKey = buildKey(accountName, remotePath);
+    public Node<V> getParent() { return mParent; }
 
-        Node<V> valuedNode = new Node(targetKey, value);
-        Node<V> previousValue = mMap.putIfAbsent(
-                                    targetKey,
-                                    valuedNode
-                                );
-        if (previousValue != null) {
-            // remotePath already known; not replaced
-            return null;
+    public Set<Node<V>> getChildren() { return mChildren; }
 
+    public String getKey() { return mKey; }
+
+    public V getPayload() { return mPayload; }
+
+    public void addChild(final Node<V> child) {
+      mChildren.add(child);
+      child.setParent(this);
+    }
+
+    private void setParent(final Node<V> parent) { mParent = parent; }
+
+    public boolean hasChildren() { return mChildren.size() > 0; }
+
+    public void removeChild(final Node<V> removed) {
+      mChildren.remove(removed);
+    }
+
+    public void clearPayload() { mPayload = null; }
+  }
+
+  public /* synchronized */ Pair<String, String>
+  putIfAbsent(final String accountName, final String remotePath,
+              final V value) {
+    String targetKey = buildKey(accountName, remotePath);
+
+    Node<V> valuedNode = new Node(targetKey, value);
+    Node<V> previousValue = mMap.putIfAbsent(targetKey, valuedNode);
+    if (previousValue != null) {
+      // remotePath already known; not replaced
+      return null;
+
+    } else {
+      // value really added
+      String currentPath = remotePath, parentPath = null, parentKey = null;
+      Node<V> currentNode = valuedNode, parentNode = null;
+      boolean linked = false;
+      while (!OCFile.ROOT_PATH.equals(currentPath) && !linked) {
+        parentPath = new File(currentPath).getParent();
+        if (!parentPath.endsWith(OCFile.PATH_SEPARATOR)) {
+          parentPath += OCFile.PATH_SEPARATOR;
+        }
+        parentKey = buildKey(accountName, parentPath);
+        parentNode = mMap.get(parentKey);
+        if (parentNode == null) {
+          parentNode = new Node(parentKey, null);
+          parentNode.addChild(currentNode);
+          mMap.put(parentKey, parentNode);
         } else {
-            // value really added
-            String currentPath = remotePath, parentPath = null, parentKey = null;
-            Node<V> currentNode = valuedNode, parentNode = null;
-            boolean linked = false;
-            while (!OCFile.ROOT_PATH.equals(currentPath) && !linked) {
-                parentPath = new File(currentPath).getParent();
-                if (!parentPath.endsWith(OCFile.PATH_SEPARATOR)) {
-                    parentPath += OCFile.PATH_SEPARATOR;
-                }
-                parentKey = buildKey(accountName, parentPath);
-                parentNode = mMap.get(parentKey);
-                if (parentNode == null) {
-                    parentNode = new Node(parentKey, null);
-                    parentNode.addChild(currentNode);
-                    mMap.put(parentKey, parentNode);
-                } else {
-                    parentNode.addChild(currentNode);
-                    linked = true;
-                }
-                currentPath = parentPath;
-                currentNode = parentNode;
-            }
-
-            String linkedTo = OCFile.ROOT_PATH;
-            if (linked) {
-                linkedTo = parentNode.getKey().substring(accountName.length());
-            }
-
-            return new Pair<String, String>(targetKey, linkedTo);
+          parentNode.addChild(currentNode);
+          linked = true;
         }
+        currentPath = parentPath;
+        currentNode = parentNode;
+      }
+
+      String linkedTo = OCFile.ROOT_PATH;
+      if (linked) {
+        linkedTo = parentNode.getKey().substring(accountName.length());
+      }
+
+      return new Pair<String, String>(targetKey, linkedTo);
     }
+  }
 
-    public Pair<V, String> removePayload(final String accountName, final String remotePath) {
-        String targetKey = buildKey(accountName, remotePath);
-        Node<V> target = mMap.get(targetKey);
-        if (target != null) {
-            target.clearPayload();
-            if (!target.hasChildren()) {
-                return remove(accountName, remotePath);
-            }
-        }
-        return new Pair<V, String>(null, null);
+  public Pair<V, String> removePayload(final String accountName,
+                                       final String remotePath) {
+    String targetKey = buildKey(accountName, remotePath);
+    Node<V> target = mMap.get(targetKey);
+    if (target != null) {
+      target.clearPayload();
+      if (!target.hasChildren()) {
+        return remove(accountName, remotePath);
+      }
     }
+    return new Pair<V, String>(null, null);
+  }
 
-    public /* synchronized */ Pair<V, String> remove(final String accountName, final String remotePath) {
-        String targetKey = buildKey(accountName, remotePath);
-        Node<V> firstRemoved = mMap.remove(targetKey);
-        String unlinkedFrom = null;
+  public /* synchronized */ Pair<V, String> remove(final String accountName,
+                                                   final String remotePath) {
+    String targetKey = buildKey(accountName, remotePath);
+    Node<V> firstRemoved = mMap.remove(targetKey);
+    String unlinkedFrom = null;
 
-        if (firstRemoved != null) {
-            /// remove children
-            removeDescendants(firstRemoved);
+    if (firstRemoved != null) {
+      /// remove children
+      removeDescendants(firstRemoved);
 
-            /// remove ancestors if only here due to firstRemoved
-            Node<V> removed = firstRemoved;
-            Node<V> parent = removed.getParent();
-            boolean unlinked = false;
-            while (parent != null) {
-                parent.removeChild(removed);
-                if (!parent.hasChildren()) {
-                    removed = mMap.remove(parent.getKey());
-                    parent = removed.getParent();
-                } else {
-                    break;
-                }
-            }
-
-            if (parent != null) {
-                unlinkedFrom = parent.getKey().substring(accountName.length());
-            }
-
-            return new Pair<V, String>(firstRemoved.getPayload(), unlinkedFrom);
-        }
-
-        return new Pair<V, String>(null, null);
-    }
-
-    private void removeDescendants(final Node<V> removed) {
-        Iterator<Node<V>> childrenIt = removed.getChildren().iterator();
-        Node<V> child = null;
-        while (childrenIt.hasNext()) {
-            child = childrenIt.next();
-            mMap.remove(child.getKey());
-            removeDescendants(child);
-        }
-    }
-
-    public boolean contains(final String accountName, final String remotePath) {
-        String targetKey = buildKey(accountName, remotePath);
-        return mMap.containsKey(targetKey);
-    }
-
-    public /* synchronized */ V get(final String key) {
-        Node<V> node = mMap.get(key);
-        if (node != null) {
-            return node.getPayload();
+      /// remove ancestors if only here due to firstRemoved
+      Node<V> removed = firstRemoved;
+      Node<V> parent = removed.getParent();
+      boolean unlinked = false;
+      while (parent != null) {
+        parent.removeChild(removed);
+        if (!parent.hasChildren()) {
+          removed = mMap.remove(parent.getKey());
+          parent = removed.getParent();
         } else {
-            return null;
+          break;
         }
+      }
+
+      if (parent != null) {
+        unlinkedFrom = parent.getKey().substring(accountName.length());
+      }
+
+      return new Pair<V, String>(firstRemoved.getPayload(), unlinkedFrom);
     }
 
-    public V get(final String accountName, final String remotePath) {
-        String key = buildKey(accountName, remotePath);
-        return get(key);
-    }
+    return new Pair<V, String>(null, null);
+  }
 
-    /**
-     * Remove the elements that contains account as a part of its key
-     * @param accountName
-     */
-    public void remove(final String accountName) {
-        Iterator<String> it = mMap.keySet().iterator();
-        while (it.hasNext()) {
-            String key = it.next();
-            Timber.d("Number of pending downloads= %s", mMap.size());
-            if (key.startsWith(accountName)) {
-                mMap.remove(key);
-            }
-        }
+  private void removeDescendants(final Node<V> removed) {
+    Iterator<Node<V>> childrenIt = removed.getChildren().iterator();
+    Node<V> child = null;
+    while (childrenIt.hasNext()) {
+      child = childrenIt.next();
+      mMap.remove(child.getKey());
+      removeDescendants(child);
     }
+  }
 
-    /**
-     * Builds a key to index files
-     *
-     * @param accountName   Local name of the ownCloud account where the file to download is stored.
-     * @param remotePath    Path of the file in the server.
-     */
-    public String buildKey(final String accountName, final String remotePath) {
-        return accountName + remotePath;
+  public boolean contains(final String accountName, final String remotePath) {
+    String targetKey = buildKey(accountName, remotePath);
+    return mMap.containsKey(targetKey);
+  }
+
+  public /* synchronized */ V get(final String key) {
+    Node<V> node = mMap.get(key);
+    if (node != null) {
+      return node.getPayload();
+    } else {
+      return null;
     }
+  }
+
+  public V get(final String accountName, final String remotePath) {
+    String key = buildKey(accountName, remotePath);
+    return get(key);
+  }
+
+  /**
+   * Remove the elements that contains account as a part of its key
+   * @param accountName
+   */
+  public void remove(final String accountName) {
+    Iterator<String> it = mMap.keySet().iterator();
+    while (it.hasNext()) {
+      String key = it.next();
+      Timber.d("Number of pending downloads= %s", mMap.size());
+      if (key.startsWith(accountName)) {
+        mMap.remove(key);
+      }
+    }
+  }
+
+  /**
+   * Builds a key to index files
+   *
+   * @param accountName   Local name of the ownCloud account where the file to
+   *     download is stored.
+   * @param remotePath    Path of the file in the server.
+   */
+  public String buildKey(final String accountName, final String remotePath) {
+    return accountName + remotePath;
+  }
 }

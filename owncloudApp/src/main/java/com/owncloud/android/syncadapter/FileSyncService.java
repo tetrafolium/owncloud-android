@@ -27,33 +27,33 @@ import android.os.IBinder;
 /**
  * Background service for synchronizing remote files with their local state.
  *
- * Serves as a connector to an instance of {@link FileSyncAdapter}, as required by standard Android APIs.
+ * Serves as a connector to an instance of {@link FileSyncAdapter}, as required
+ * by standard Android APIs.
  */
 public class FileSyncService extends Service {
 
-    // Storage for an instance of the sync adapter
-    private static FileSyncAdapter sSyncAdapter = null;
-    // Object to use as a thread-safe lock
-    private static final Object sSyncAdapterLock = new Object();
+  // Storage for an instance of the sync adapter
+  private static FileSyncAdapter sSyncAdapter = null;
+  // Object to use as a thread-safe lock
+  private static final Object sSyncAdapterLock = new Object();
 
-    /*
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate() {
-        synchronized (sSyncAdapterLock) {
-            if (sSyncAdapter == null) {
-                sSyncAdapter = new FileSyncAdapter(getApplicationContext(), true);
-            }
-        }
+  /*
+   * {@inheritDoc}
+   */
+  @Override
+  public void onCreate() {
+    synchronized (sSyncAdapterLock) {
+      if (sSyncAdapter == null) {
+        sSyncAdapter = new FileSyncAdapter(getApplicationContext(), true);
+      }
     }
+  }
 
-    /*
-     * {@inheritDoc}
-     */
-    @Override
-    public IBinder onBind(final Intent intent) {
-        return sSyncAdapter.getSyncAdapterBinder();
-    }
-
+  /*
+   * {@inheritDoc}
+   */
+  @Override
+  public IBinder onBind(final Intent intent) {
+    return sSyncAdapter.getSyncAdapterBinder();
+  }
 }

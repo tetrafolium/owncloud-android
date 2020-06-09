@@ -35,7 +35,7 @@ import com.owncloud.android.datamodel.OCFile;
 public abstract class ToolbarActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
@@ -51,14 +51,14 @@ public abstract class ToolbarActivity extends BaseActivity {
     /**
      * Updates title bar and home buttons (state and icon).
      */
-    protected void updateActionBarTitleAndHomeButton(OCFile chosenFile) {
+    protected void updateActionBarTitleAndHomeButton(final OCFile chosenFile) {
         String title = getString(R.string.default_display_name_for_root_folder);    // default
         boolean inRoot;
 
         // choose the appropriate title
         inRoot = (
-                     chosenFile == null ||
-                     (chosenFile.isFolder() && chosenFile.getParentId() == FileDataStorageManager.ROOT_PARENT_ID)
+                     chosenFile == null
+                     || (chosenFile.isFolder() && chosenFile.getParentId() == FileDataStorageManager.ROOT_PARENT_ID)
                  );
         if (!inRoot) {
             title = chosenFile.getFileName();
@@ -70,7 +70,7 @@ public abstract class ToolbarActivity extends BaseActivity {
     /**
      * Updates title bar and home buttons (state and icon).
      */
-    protected void updateActionBarTitleAndHomeButtonByString(String title) {
+    protected void updateActionBarTitleAndHomeButtonByString(final String title) {
         String titleToSet = getString(R.string.app_name);    // default
 
         if (title != null) {
@@ -101,9 +101,9 @@ public abstract class ToolbarActivity extends BaseActivity {
      * @param file file to be checked if it is the root folder
      * @return <code>true</code> if it is <code>null</code> or the root folder, else returns <code>false</code>
      */
-    public boolean isRoot(OCFile file) {
-        return file == null ||
-               (file.isFolder() && file.getParentId() == FileDataStorageManager.ROOT_PARENT_ID);
+    public boolean isRoot(final OCFile file) {
+        return file == null
+               || (file.isFolder() && file.getParentId() == FileDataStorageManager.ROOT_PARENT_ID);
     }
 
 }

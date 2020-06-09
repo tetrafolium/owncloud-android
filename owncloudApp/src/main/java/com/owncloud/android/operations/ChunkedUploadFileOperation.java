@@ -39,15 +39,15 @@ public class ChunkedUploadFileOperation extends UploadFileOperation {
 
     private String mTransferId;
 
-    public ChunkedUploadFileOperation(Account account, OCFile file, OCUpload upload, boolean forceOverwrite,
-                                      int localBehaviour, Context context) {
+    public ChunkedUploadFileOperation(final Account account, final OCFile file, final OCUpload upload, final boolean forceOverwrite,
+                                      final int localBehaviour, final Context context) {
         super(account, file, upload, forceOverwrite, localBehaviour, context);
         mTransferId = upload.getTransferId();
     }
 
     @Override
-    protected RemoteOperationResult uploadRemoteFile(OwnCloudClient client, File temporalFile, File originalFile,
-            String expectedPath, File expectedFile, String timeStamp) {
+    protected RemoteOperationResult uploadRemoteFile(final OwnCloudClient client, final File temporalFile, final File originalFile,
+            final String expectedPath, final File expectedFile, final String timeStamp) {
         try {
             RemoteOperationResult result;
 
@@ -90,12 +90,12 @@ public class ChunkedUploadFileOperation extends UploadFileOperation {
         }
     }
 
-    private RemoteOperationResult createChunksFolder(String remoteChunksFolder) {
+    private RemoteOperationResult createChunksFolder(final String remoteChunksFolder) {
         SyncOperation syncOperation = new CreateChunksFolderOperation(remoteChunksFolder);
         return syncOperation.execute(getClient(), getStorageManager());
     }
 
-    private RemoteOperationResult moveChunksFileToFinalDestination(String fileLastModifTimestamp, long fileLength) {
+    private RemoteOperationResult moveChunksFileToFinalDestination(final String fileLastModifTimestamp, final long fileLength) {
         SyncOperation syncOperation = new MoveChunksFileOperation(
             String.valueOf(mTransferId + FileUtils.PATH_SEPARATOR + FileUtils.FINAL_CHUNKS_FILE),
             mFile.getRemotePath(),

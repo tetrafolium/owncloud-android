@@ -74,7 +74,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
      * @param ignoreFirstSavedState     Flag to work around an unexpected behaviour of {@link FragmentStatePagerAdapter}
      *                                  TODO better solution
      */
-    public static Fragment newInstance(OCFile file, Account account, boolean ignoreFirstSavedState) {
+    public static Fragment newInstance(final OCFile file, final Account account, final boolean ignoreFirstSavedState) {
         FileDownloadFragment frag = new FileDownloadFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_FILE, file);
@@ -99,7 +99,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         setFile((OCFile) args.getParcelable(ARG_FILE));
@@ -110,8 +110,8 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -144,14 +144,14 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     }
 
     @Override
-    public void onActivityCreated(Bundle savedState) {
+    public void onActivityCreated(final Bundle savedState) {
         super.onActivityCreated(savedState);
         mProgressController = new TransferProgressController(mContainerActivity);
         mProgressController.setProgressBar(mProgressBar);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(FileDownloadFragment.EXTRA_FILE, getFile());
         outState.putParcelable(FileDownloadFragment.EXTRA_ACCOUNT, mAccount);
@@ -171,7 +171,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
         case R.id.cancelBtn: {
             mContainerActivity.getFileOperationsHelper().cancelTransference(getFile());
@@ -186,7 +186,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     /**
      * Enables buttons for a file being downloaded
      */
-    private void setButtonsForTransferring(View rootView) {
+    private void setButtonsForTransferring(final View rootView) {
         if (rootView != null) {
             rootView.findViewById(R.id.cancelBtn).setVisibility(View.VISIBLE);
 
@@ -205,7 +205,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     /**
      * Enables or disables buttons for a file locally available
      */
-    private void setButtonsForDown(View rootView) {
+    private void setButtonsForDown(final View rootView) {
         if (rootView != null) {
             rootView.findViewById(R.id.cancelBtn).setVisibility(View.GONE);
 
@@ -228,7 +228,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
      * <p/>
      * Currently, this is only used when a download was failed
      */
-    private void setButtonsForRemote(View rootView) {
+    private void setButtonsForRemote(final View rootView) {
         if (rootView != null) {
             rootView.findViewById(R.id.cancelBtn).setVisibility(View.GONE);
 
@@ -248,7 +248,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
     }
 
     @Override
-    public void onFileMetadataChanged(OCFile updatedFile) {
+    public void onFileMetadataChanged(final OCFile updatedFile) {
         if (updatedFile != null) {
             setFile(updatedFile);
         }
@@ -296,7 +296,7 @@ public class FileDownloadFragment extends FileFragment implements OnClickListene
         }
     }
 
-    public void setError(boolean error) {
+    public void setError(final boolean error) {
         mError = error;
     }
 

@@ -53,15 +53,15 @@ import java.util.List;
  */
 public class ShareLinkToDialog extends DialogFragment {
 
-    private final static String ARG_INTENT = ShareLinkToDialog.class.getSimpleName() +
-            ".ARG_INTENT";
-    private final static String ARG_PACKAGES_TO_EXCLUDE = ShareLinkToDialog.class.getSimpleName() +
-            ".ARG_PACKAGES_TO_EXCLUDE";
+    private final static String ARG_INTENT = ShareLinkToDialog.class.getSimpleName()
+            + ".ARG_INTENT";
+    private final static String ARG_PACKAGES_TO_EXCLUDE = ShareLinkToDialog.class.getSimpleName()
+            + ".ARG_PACKAGES_TO_EXCLUDE";
 
     private ActivityAdapter mAdapter;
     private Intent mIntent;
 
-    public static ShareLinkToDialog newInstance(Intent intent, String[] packagesToExclude) {
+    public static ShareLinkToDialog newInstance(final Intent intent, final String[] packagesToExclude) {
         ShareLinkToDialog f = new ShareLinkToDialog();
         Bundle args = new Bundle();
         args.putParcelable(ARG_INTENT, intent);
@@ -76,11 +76,11 @@ public class ShareLinkToDialog extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         mIntent = getArguments().getParcelable(ARG_INTENT);
         String[] packagesToExclude = getArguments().getStringArray(ARG_PACKAGES_TO_EXCLUDE);
-        List<String> packagesToExcludeList = Arrays.asList(packagesToExclude != null ?
-                                             packagesToExclude : new String[0]);
+        List<String> packagesToExcludeList = Arrays.asList(packagesToExclude != null
+                                             ? packagesToExclude : new String[0]);
 
         PackageManager pm = getActivity().getPackageManager();
         List<ResolveInfo> activities = pm.queryIntentActivities(mIntent,
@@ -125,7 +125,7 @@ public class ShareLinkToDialog extends DialogFragment {
                .setTitle(titleId)
         .setAdapter(mAdapter, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(final DialogInterface dialog, final int which) {
                 // Add the information of the chosen activity to the intent to send
                 ResolveInfo chosen = mAdapter.getItem(which);
                 ActivityInfo actInfo = chosen.activityInfo;
@@ -145,13 +145,13 @@ public class ShareLinkToDialog extends DialogFragment {
 
         private PackageManager mPackageManager;
 
-        ActivityAdapter(Context context, PackageManager pm, List<ResolveInfo> apps) {
+        ActivityAdapter(final Context context, final PackageManager pm, final List<ResolveInfo> apps) {
             super(context, R.layout.activity_row, apps);
             this.mPackageManager = pm;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             if (convertView == null) {
                 convertView = newView(parent);
             }
@@ -159,12 +159,12 @@ public class ShareLinkToDialog extends DialogFragment {
             return convertView;
         }
 
-        private View newView(ViewGroup parent) {
+        private View newView(final ViewGroup parent) {
             return (((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).
                     inflate(R.layout.activity_row, parent, false));
         }
 
-        private void bindView(int position, View row) {
+        private void bindView(final int position, final View row) {
             TextView label = row.findViewById(R.id.title);
             label.setText(getItem(position).loadLabel(mPackageManager));
             ImageView icon = row.findViewById(R.id.icon);

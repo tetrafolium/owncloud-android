@@ -179,7 +179,7 @@ public class FileDownloader extends Service
      * This ensures the service will keep on working although the caller activity goes away.
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         Timber.d("Starting command with id %s", startId);
 
         boolean isAvailableOfflineFile = intent.getBooleanExtra(KEY_IS_AVAILABLE_OFFLINE_FILE, false);
@@ -195,8 +195,8 @@ public class FileDownloader extends Service
             startForeground(1, mNotificationBuilder.build());
         }
 
-        if (!intent.hasExtra(KEY_ACCOUNT) ||
-                !intent.hasExtra(KEY_FILE)
+        if (!intent.hasExtra(KEY_ACCOUNT)
+                || !intent.hasExtra(KEY_FILE)
            ) {
             Timber.e("Not enough information provided in intent");
             return START_NOT_STICKY;
@@ -239,7 +239,7 @@ public class FileDownloader extends Service
      * Implemented to perform cancellation, pause and resume of existing downloads.
      */
     @Override
-    public IBinder onBind(Intent arg0) {
+    public IBinder onBind(final Intent arg0) {
         return mBinder;
     }
 
@@ -247,16 +247,16 @@ public class FileDownloader extends Service
      * Called when ALL the bound clients were onbound.
      */
     @Override
-    public boolean onUnbind(Intent intent) {
+    public boolean onUnbind(final Intent intent) {
         ((FileDownloaderBinder) mBinder).clearListeners();
         return false;   // not accepting rebinding (default behaviour)
     }
 
     @Override
-    public void onAccountsUpdated(Account[] accounts) {
+    public void onAccountsUpdated(final Account[] accounts) {
         //review the current download and cancel it if its account doesn't exist
-        if (mCurrentDownload != null &&
-                !AccountUtils.exists(mCurrentDownload.getAccount().name, getApplicationContext())) {
+        if (mCurrentDownload != null
+                && !AccountUtils.exists(mCurrentDownload.getAccount().name, getApplicationContext())) {
             mCurrentDownload.cancel();
         }
         // The rest of downloads are cancelled when they try to start
@@ -283,16 +283,16 @@ public class FileDownloader extends Service
          * @param account ownCloud account where the remote file is stored.
          * @param file    A file in the queue of pending downloads
          */
-        public void cancel(Account account, OCFile file) {
+        public void cancel(final Account account, final OCFile file) {
             Pair<DownloadFileOperation, String> removeResult =
                 mPendingDownloads.remove(account.name, file.getRemotePath());
             DownloadFileOperation download = removeResult.first;
             if (download != null) {
                 download.cancel();
             } else {
-                if (mCurrentDownload != null && mCurrentAccount != null &&
-                        mCurrentDownload.getRemotePath().startsWith(file.getRemotePath()) &&
-                        account.name.equals(mCurrentAccount.name)) {
+                if (mCurrentDownload != null && mCurrentAccount != null
+                        && mCurrentDownload.getRemotePath().startsWith(file.getRemotePath())
+                        && account.name.equals(mCurrentAccount.name)) {
                     mCurrentDownload.cancel();
                 }
             }
@@ -303,7 +303,7 @@ public class FileDownloader extends Service
          *
          * @param account   ownCloud account.
          */
-        public void cancel(Account account) {
+        public void cancel(final Account account) {
             Timber.d("Account= %s", account.name);
 
             if (mCurrentDownload != null) {
@@ -330,7 +330,7 @@ public class FileDownloader extends Service
          * @param account ownCloud account where the remote file is stored.
          * @param file    A file that could be in the queue of downloads.
          */
-        public boolean isDownloading(Account account, OCFile file) {
+        public boolean isDownloading(final Account account, final OCFile file) {
             if (account == null || file == null) {
                 return false;
             }
@@ -345,7 +345,7 @@ public class FileDownloader extends Service
          * @param file     {@link OCFile} of interest for listener.
          */
         public void addDatatransferProgressListener(
-            OnDatatransferProgressListener listener, Account account, OCFile file
+            final OnDatatransferProgressListener listener, final Account account, final OCFile file
         ) {
             if (account == null || file == null || listener == null) {
                 return;
@@ -361,7 +361,7 @@ public class FileDownloader extends Service
          * @param file          {@link OCFile} of interest for listener.
          */
         public void removeDatatransferProgressListener(
-            OnDatatransferProgressListener listener, Account account, OCFile file
+            final OnDatatransferProgressListener listener, final Account account, final OCFile file
         ) {
             if (account == null || file == null || listener == null) {
                 return;
@@ -373,8 +373,8 @@ public class FileDownloader extends Service
         }
 
         @Override
-        public void onTransferProgress(long progressRate, long totalTransferredSoFar,
-                                       long totalToTransfer, String fileName) {
+        public void onTransferProgress(final long progressRate, final long totalTransferredSoFar,
+                                       final long totalToTransfer, final String fileName) {
             WeakReference<OnDatatransferProgressListener> boundListenerRef =
                 mBoundListeners.get(mCurrentDownload.getFile().getFileId());
             if (boundListenerRef != null && boundListenerRef.get() != null) {
@@ -398,7 +398,7 @@ public class FileDownloader extends Service
         // possible memory leak
         FileDownloader mService;
 
-        public ServiceHandler(Looper looper, FileDownloader service) {
+        public ServiceHandler(final Looper looper, final FileDownloader service) {
             super(looper);
             if (service == null) {
                 throw new IllegalArgumentException("Received invalid NULL in parameter 'service'");
@@ -407,7 +407,7 @@ public class FileDownloader extends Service
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             @SuppressWarnings("unchecked")
             AbstractList<String> requestedDownloads = (AbstractList<String>) msg.obj;
             if (msg.obj != null) {
@@ -426,7 +426,7 @@ public class FileDownloader extends Service
      *
      * @param downloadKey Key to access the download to perform, contained in mPendingDownloads
      */
-    private void downloadFile(String downloadKey) {
+    private void downloadFile(final String downloadKey) {
 
         mCurrentDownload = mPendingDownloads.get(downloadKey);
 
@@ -445,8 +445,8 @@ public class FileDownloader extends Service
 
             try {
                 /// prepare client object to send the request to the ownCloud server
-                if (mCurrentAccount == null ||
-                        !mCurrentAccount.equals(mCurrentDownload.getAccount())) {
+                if (mCurrentAccount == null
+                        || !mCurrentAccount.equals(mCurrentDownload.getAccount())) {
                     mCurrentAccount = mCurrentDownload.getAccount();
                     mStorageManager = new FileDataStorageManager(
                         this, mCurrentAccount,
@@ -500,7 +500,7 @@ public class FileDownloader extends Service
                         Timber.v("Exception in download, network is OK, no retry scheduled for %1s in %2s", mCurrentDownload.getRemotePath(), mCurrentAccount.name);
                     }
                 } else {
-                    Timber.v("Success OR fail without exception for %1s in %2s", mCurrentDownload.getRemotePath(),mCurrentAccount.name);
+                    Timber.v("Success OR fail without exception for %1s in %2s", mCurrentDownload.getRemotePath(), mCurrentAccount.name);
                 }
 
                 /// notify result
@@ -540,7 +540,7 @@ public class FileDownloader extends Service
      *
      * @param download Download operation starting.
      */
-    private void notifyDownloadStart(DownloadFileOperation download) {
+    private void notifyDownloadStart(final DownloadFileOperation download) {
 
         /// create status notification with a progress bar
         mLastPercent = 0;
@@ -578,8 +578,8 @@ public class FileDownloader extends Service
      * Callback method to update the progress bar in the status notification.
      */
     @Override
-    public void onTransferProgress(long progressRate, long totalTransferredSoFar,
-                                   long totalToTransfer, String filePath) {
+    public void onTransferProgress(final long progressRate, final long totalTransferredSoFar,
+                                   final long totalToTransfer, final String filePath) {
         int percent = (int) (100.0 * ((double) totalTransferredSoFar) / ((double) totalToTransfer));
         if (percent != mLastPercent) {
             mNotificationBuilder.setProgress(100, percent, totalToTransfer < 0);
@@ -597,16 +597,16 @@ public class FileDownloader extends Service
      * @param downloadResult Result of the download operation.
      * @param download       Finished download operation
      */
-    private void notifyDownloadResult(DownloadFileOperation download,
-                                      RemoteOperationResult downloadResult) {
+    private void notifyDownloadResult(final DownloadFileOperation download,
+                                      final RemoteOperationResult downloadResult) {
         mNotificationManager.cancel(R.string.downloader_download_in_progress_ticker);
         if (!downloadResult.isCancelled()) {
-            int tickerId = (downloadResult.isSuccess()) ? R.string.downloader_download_succeeded_ticker :
-                           R.string.downloader_download_failed_ticker;
+            int tickerId = (downloadResult.isSuccess()) ? R.string.downloader_download_succeeded_ticker
+                           : R.string.downloader_download_failed_ticker;
 
             boolean needsToUpdateCredentials = (ResultCode.UNAUTHORIZED.equals(downloadResult.getCode()));
-            tickerId = (needsToUpdateCredentials) ?
-                       R.string.downloader_download_failed_credentials_error : tickerId;
+            tickerId = (needsToUpdateCredentials)
+                       ? R.string.downloader_download_failed_credentials_error : tickerId;
 
             mNotificationBuilder
             .setTicker(getString(tickerId))
@@ -666,9 +666,9 @@ public class FileDownloader extends Service
      * @param unlinkedFromRemotePath Path in the downloads tree where the download was unlinked from
      */
     private void sendBroadcastDownloadFinished(
-        DownloadFileOperation download,
-        RemoteOperationResult downloadResult,
-        String unlinkedFromRemotePath) {
+        final DownloadFileOperation download,
+        final RemoteOperationResult downloadResult,
+        final String unlinkedFromRemotePath) {
 
         Intent end = new Intent(getDownloadFinishMessage());
         end.putExtra(Extras.EXTRA_DOWNLOAD_RESULT, downloadResult.isSuccess());
@@ -687,8 +687,8 @@ public class FileDownloader extends Service
      * @param download           Added download operation
      * @param linkedToRemotePath Path in the downloads tree where the download was linked to
      */
-    private void sendBroadcastNewDownload(DownloadFileOperation download,
-                                          String linkedToRemotePath) {
+    private void sendBroadcastNewDownload(final DownloadFileOperation download,
+                                          final String linkedToRemotePath) {
         Intent added = new Intent(getDownloadAddedMessage());
         added.putExtra(Extras.EXTRA_ACCOUNT_NAME, download.getAccount().name);
         added.putExtra(Extras.EXTRA_REMOTE_PATH, download.getRemotePath());
@@ -702,7 +702,7 @@ public class FileDownloader extends Service
      *
      * @param account       Downloads account to remove
      */
-    private void cancelDownloadsForAccount(Account account) {
+    private void cancelDownloadsForAccount(final Account account) {
         // Cancel pending downloads
         mPendingDownloads.remove(account.name);
     }

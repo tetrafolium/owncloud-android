@@ -46,7 +46,7 @@ import java.util.Locale;
 public class CameraUploadsSyncJobService extends JobService {
 
     @Override
-    public boolean onStartJob(JobParameters jobParameters) {
+    public boolean onStartJob(final JobParameters jobParameters) {
 
         Timber.d("Starting job to sync camera folder");
 
@@ -67,18 +67,18 @@ public class CameraUploadsSyncJobService extends JobService {
         private String mCameraUploadsSourcePath;
         private int mCameraUploadsBehaviorAfterUpload;
 
-        public CameraUploadsSyncJobTask(JobService mCameraUploadsSyncJobService) {
+        public CameraUploadsSyncJobTask(final JobService mCameraUploadsSyncJobService) {
             this.mCameraUploadsSyncJobService = mCameraUploadsSyncJobService;
         }
 
         @Override
-        protected JobParameters doInBackground(JobParameters... jobParams) {
+        protected JobParameters doInBackground(final JobParameters... jobParams) {
             // Cancel periodic job if feature is disabled
             CameraUploadsConfiguration cameraUploadsConfiguration = PreferenceManager.
                     getCameraUploadsConfiguration(mCameraUploadsSyncJobService);
 
-            if (!cameraUploadsConfiguration.isEnabledForPictures() &&
-                    !cameraUploadsConfiguration.isEnabledForVideos()) {
+            if (!cameraUploadsConfiguration.isEnabledForPictures()
+                    && !cameraUploadsConfiguration.isEnabledForVideos()) {
                 cancelPeriodicJob(jobParams[0].getJobId());
 
                 return jobParams[0];
@@ -101,7 +101,7 @@ public class CameraUploadsSyncJobService extends JobService {
         }
 
         @Override
-        protected void onPostExecute(JobParameters jobParameters) {
+        protected void onPostExecute(final JobParameters jobParameters) {
             mCameraUploadsSyncJobService.jobFinished(jobParameters, false);
         }
 
@@ -131,7 +131,7 @@ public class CameraUploadsSyncJobService extends JobService {
             Timber.d("All files synced, finishing job");
         }
 
-        private File[] orderFilesByCreationTimestamp(File[] localFiles) {
+        private File[] orderFilesByCreationTimestamp(final File[] localFiles) {
             Arrays.sort(localFiles, (file1, file2) -> Long.compare(file1.lastModified(), file2.lastModified()));
 
             return localFiles;
@@ -143,7 +143,7 @@ public class CameraUploadsSyncJobService extends JobService {
          *
          * @param localFile image or video to upload to the server
          */
-        private synchronized void handleFile(File localFile) {
+        private synchronized void handleFile(final File localFile) {
 
             String fileName = localFile.getName();
 
@@ -168,8 +168,8 @@ public class CameraUploadsSyncJobService extends JobService {
 
             String remotePath = (isImage ? mCameraUploadsPicturesPath : mCameraUploadsVideosPath) + fileName;
 
-            int createdBy = isImage ? UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_PICTURE :
-                            UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_VIDEO;
+            int createdBy = isImage ? UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_PICTURE
+                            : UploadFileOperation.CREATED_AS_CAMERA_UPLOAD_VIDEO;
 
             String localPath = mCameraUploadsSourcePath + File.separator + fileName;
 
@@ -183,17 +183,17 @@ public class CameraUploadsSyncJobService extends JobService {
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
             if (isImage && localFile.lastModified() <= mOCCameraUploadSync.getPicturesLastSync()) {
-                Timber.i("Image " + localPath + " created before period to check, ignoring " +
-                         simpleDateFormat.format(new Date(localFile.lastModified())) + " <= " +
-                         simpleDateFormat.format(new Date(mOCCameraUploadSync.getPicturesLastSync()))
+                Timber.i("Image " + localPath + " created before period to check, ignoring "
+                         + simpleDateFormat.format(new Date(localFile.lastModified())) + " <= "
+                         + simpleDateFormat.format(new Date(mOCCameraUploadSync.getPicturesLastSync()))
                         );
                 return;
             }
 
             if (isVideo && localFile.lastModified() <= mOCCameraUploadSync.getVideosLastSync()) {
-                Timber.i("Video " + localPath + " created before period to check, ignoring " +
-                         simpleDateFormat.format(new Date(localFile.lastModified())) + " <= " +
-                         simpleDateFormat.format(new Date(mOCCameraUploadSync.getVideosLastSync()))
+                Timber.i("Video " + localPath + " created before period to check, ignoring "
+                         + simpleDateFormat.format(new Date(localFile.lastModified())) + " <= "
+                         + simpleDateFormat.format(new Date(mOCCameraUploadSync.getVideosLastSync()))
                         );
                 return;
             }
@@ -223,7 +223,7 @@ public class CameraUploadsSyncJobService extends JobService {
          * @param isImage true if file is an image, false otherwise
          * @param isVideo true if file is a video, false otherwise
          */
-        private void updateTimestamps(boolean isImage, boolean isVideo, long fileTimestamp) {
+        private void updateTimestamps(final boolean isImage, final boolean isVideo, final long fileTimestamp) {
 
             long picturesTimestamp = mOCCameraUploadSync.getPicturesLastSync();
             long videosTimestamp = mOCCameraUploadSync.getVideosLastSync();
@@ -255,7 +255,7 @@ public class CameraUploadsSyncJobService extends JobService {
          *
          * @param jobId id of the job to cancel
          */
-        private void cancelPeriodicJob(int jobId) {
+        private void cancelPeriodicJob(final int jobId) {
 
             JobScheduler jobScheduler = (JobScheduler) mCameraUploadsSyncJobService.getSystemService(
                                             Context.JOB_SCHEDULER_SERVICE);
@@ -270,7 +270,7 @@ public class CameraUploadsSyncJobService extends JobService {
     /*
      * Called by the system if the job is cancelled before being finished
      */
-    public boolean onStopJob(JobParameters jobParameters) {
+    public boolean onStopJob(final JobParameters jobParameters) {
 
         Timber.d("Job was cancelled before finishing.");
 

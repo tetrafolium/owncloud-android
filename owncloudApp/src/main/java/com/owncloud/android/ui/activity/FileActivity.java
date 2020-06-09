@@ -123,7 +123,7 @@ public class FileActivity extends DrawerActivity
      * is requested to create a new one.
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
         mFileOperationsHelper = new FileOperationsHelper(this);
@@ -210,7 +210,7 @@ public class FileActivity extends DrawerActivity
      * {@inheritDoc}
      */
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(FileActivity.EXTRA_FILE, mFile);
         outState.putBoolean(FileActivity.EXTRA_FROM_NOTIFICATION, mFromNotification);
@@ -236,7 +236,7 @@ public class FileActivity extends DrawerActivity
      *
      * @param file Main {@link OCFile} to be handled by the activity.
      */
-    public void setFile(OCFile file) {
+    public void setFile(final OCFile file) {
         mFile = file;
     }
 
@@ -272,7 +272,7 @@ public class FileActivity extends DrawerActivity
      * @param result    Result of the removal.
      */
     @Override
-    public void onRemoteOperationFinish(RemoteOperation operation, RemoteOperationResult result) {
+    public void onRemoteOperationFinish(final RemoteOperation operation, final RemoteOperationResult result) {
         Timber.d("Received result of operation in FileActivity - common behaviour for all the FileActivities");
 
         mFileOperationsHelper.setOpIdWaitingFor(Long.MAX_VALUE);
@@ -280,8 +280,8 @@ public class FileActivity extends DrawerActivity
         dismissLoadingDialog();
 
         if (!result.isSuccess() && (
-                    result.getCode() == ResultCode.UNAUTHORIZED ||
-                    (result.isException() && result.getException() instanceof AuthenticatorException)
+                    result.getCode() == ResultCode.UNAUTHORIZED
+                    || (result.isException() && result.getException() instanceof AuthenticatorException)
                 )) {
 
             requestCredentialsUpdate();
@@ -296,8 +296,8 @@ public class FileActivity extends DrawerActivity
 
             showUntrustedCertDialog(result);
 
-        } else if (operation == null ||
-                   operation instanceof SynchronizeFolderOperation
+        } else if (operation == null
+                   || operation instanceof SynchronizeFolderOperation
                   ) {
             if (result.isSuccess()) {
                 updateFileFromDB();
@@ -316,7 +316,7 @@ public class FileActivity extends DrawerActivity
         }
     }
 
-    protected void showRequestAccountChangeNotice(String errorMessage, boolean mustChange) {
+    protected void showRequestAccountChangeNotice(final String errorMessage, final boolean mustChange) {
         if (mustChange) {
             new AlertDialog.Builder(this)
             .setTitle(R.string.auth_failure_snackbar_action)
@@ -358,7 +358,7 @@ public class FileActivity extends DrawerActivity
      * @param account Stored OC account to request credentials update for. If null, current account will
      *                be used.
      */
-    protected void requestCredentialsUpdate(Account account) {
+    protected void requestCredentialsUpdate(final Account account) {
 
         if (account == null) {
             account = getAccount();
@@ -377,7 +377,7 @@ public class FileActivity extends DrawerActivity
     /**
      * Show untrusted cert dialog
      */
-    public void showUntrustedCertDialog(RemoteOperationResult result) {
+    public void showUntrustedCertDialog(final RemoteOperationResult result) {
         // Show a dialog with the certificate info
         FragmentManager fm = getSupportFragmentManager();
         SslUntrustedCertDialog dialog = (SslUntrustedCertDialog) fm.findFragmentByTag(DIALOG_UNTRUSTED_CERT);
@@ -389,8 +389,8 @@ public class FileActivity extends DrawerActivity
         }
     }
 
-    private void onSynchronizeFileOperationFinish(SynchronizeFileOperation operation,
-            RemoteOperationResult result) {
+    private void onSynchronizeFileOperationFinish(final SynchronizeFileOperation operation,
+            final RemoteOperationResult result) {
         invalidateOptionsMenu();
         OCFile syncedFile = operation.getLocalFile();
         if (!result.isSuccess()) {
@@ -429,7 +429,7 @@ public class FileActivity extends DrawerActivity
     private class OperationsServiceConnection implements ServiceConnection {
 
         @Override
-        public void onServiceConnected(ComponentName component, IBinder service) {
+        public void onServiceConnected(final ComponentName component, final IBinder service) {
             if (component.equals(new ComponentName(FileActivity.this, OperationsService.class))) {
                 Timber.d("Operations service connected");
                 mOperationsServiceBinder = (OperationsServiceBinder) service;
@@ -440,7 +440,7 @@ public class FileActivity extends DrawerActivity
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName component) {
+        public void onServiceDisconnected(final ComponentName component) {
             if (component.equals(new ComponentName(FileActivity.this, OperationsService.class))) {
                 Timber.d("Operations service disconnected");
                 mOperationsServiceBinder = null;
@@ -467,7 +467,7 @@ public class FileActivity extends DrawerActivity
     }
 
     @Override
-    public void navigateToOption(FileListOption fileListOption) {
+    public void navigateToOption(final FileListOption fileListOption) {
         Intent intent;
         switch (fileListOption) {
         case ALL_FILES:

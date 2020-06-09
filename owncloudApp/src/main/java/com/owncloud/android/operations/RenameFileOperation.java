@@ -50,7 +50,7 @@ public class RenameFileOperation extends SyncOperation {
      *                   folder to rename
      * @param newName    New name to set as the name of file.
      */
-    public RenameFileOperation(String remotePath, String newName) {
+    public RenameFileOperation(final String remotePath, final String newName) {
         mRemotePath = remotePath;
         mNewName = newName;
         mNewRemotePath = null;
@@ -66,7 +66,7 @@ public class RenameFileOperation extends SyncOperation {
      * @param client Client object to communicate with the remote ownCloud server.
      */
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         RemoteOperationResult result = null;
 
         mFile = getStorageManager().getFileByPath(mRemotePath);
@@ -77,8 +77,8 @@ public class RenameFileOperation extends SyncOperation {
                 return new RemoteOperationResult(ResultCode.INVALID_LOCAL_FILE_NAME);
             }
             String parent = (new File(mFile.getRemotePath())).getParent();
-            parent = (parent.endsWith(OCFile.PATH_SEPARATOR)) ? parent : parent +
-                     OCFile.PATH_SEPARATOR;
+            parent = (parent.endsWith(OCFile.PATH_SEPARATOR)) ? parent : parent
+                     + OCFile.PATH_SEPARATOR;
             mNewRemotePath = parent + mNewName;
             if (mFile.isFolder()) {
                 mNewRemotePath += OCFile.PATH_SEPARATOR;
@@ -104,14 +104,14 @@ public class RenameFileOperation extends SyncOperation {
             }
 
         } catch (IOException e) {
-            Timber.e(e, "Rename " + mFile.getRemotePath() + " to " + ((mNewRemotePath == null) ? mNewName :
-                     mNewRemotePath) + " failed");
+            Timber.e(e, "Rename " + mFile.getRemotePath() + " to " + ((mNewRemotePath == null) ? mNewName
+                     : mNewRemotePath) + " failed");
         }
 
         return result;
     }
 
-    private void saveLocalDirectory(String parent) {
+    private void saveLocalDirectory(final String parent) {
         getStorageManager().moveLocalFile(mFile, mNewRemotePath, parent);
         mFile.setFileName(mNewName);
     }

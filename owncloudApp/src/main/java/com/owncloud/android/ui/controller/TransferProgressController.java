@@ -40,7 +40,7 @@ public class TransferProgressController implements OnDatatransferProgressListene
     private ComponentsGetter mComponentsGetter = null;
     private int mLastPercent = 0;
 
-    public TransferProgressController(ComponentsGetter componentsGetter) {
+    public TransferProgressController(final ComponentsGetter componentsGetter) {
         if (componentsGetter == null) {
             throw new IllegalArgumentException("Received NULL componentsGetter");
         }
@@ -54,7 +54,7 @@ public class TransferProgressController implements OnDatatransferProgressListene
      *
      * @param progressBar   Progress bar to update with progress transfer.
      */
-    public void setProgressBar(ProgressBar progressBar) {
+    public void setProgressBar(final ProgressBar progressBar) {
         mProgressBar = progressBar;
         if (mProgressBar != null) {
             reset();
@@ -84,7 +84,7 @@ public class TransferProgressController implements OnDatatransferProgressListene
      * @param account       ownCloud account containing file.
      */
     @UiThread
-    public void startListeningProgressFor(OCFile file, Account account) {
+    public void startListeningProgressFor(final OCFile file, final Account account) {
         FileDownloader.FileDownloaderBinder downloaderBinder = mComponentsGetter.getFileDownloaderBinder();
         FileUploader.FileUploaderBinder uploaderBinder = mComponentsGetter.getFileUploaderBinder();
 
@@ -114,7 +114,7 @@ public class TransferProgressController implements OnDatatransferProgressListene
      * @param account       ownCloud account containing file.
      */
     @UiThread
-    public void stopListeningProgressFor(OCFile file, Account account) {
+    public void stopListeningProgressFor(final OCFile file, final Account account) {
         if (mComponentsGetter.getFileDownloaderBinder() != null) {
             mComponentsGetter.getFileDownloaderBinder().
             removeDatatransferProgressListener(this, account, file);
@@ -139,10 +139,10 @@ public class TransferProgressController implements OnDatatransferProgressListene
      */
     @Override
     public void onTransferProgress(
-        long progressRate,
-        long totalTransferredSoFar,
-        long totalToTransfer,
-        String filename
+        final long progressRate,
+        final long totalTransferredSoFar,
+        final long totalToTransfer,
+        final String filename
     ) {
         if (mProgressBar != null) {
             final int percent = (int) (100.0 * ((double) totalTransferredSoFar) / ((double) totalToTransfer));

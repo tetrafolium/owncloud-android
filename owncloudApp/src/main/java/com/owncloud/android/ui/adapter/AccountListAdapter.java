@@ -48,7 +48,7 @@ public class AccountListAdapter extends ArrayAdapter<AccountListItem> {
     private AccountListAdapterListener mListener;
     private Drawable mTintedCheck;
 
-    public AccountListAdapter(BaseActivity context, List<AccountListItem> values, Drawable tintedCheck) {
+    public AccountListAdapter(final BaseActivity context, final List<AccountListItem> values, final Drawable tintedCheck) {
         super(context, -1, values);
         this.mContext = context;
         this.mValues = values;
@@ -58,7 +58,7 @@ public class AccountListAdapter extends ArrayAdapter<AccountListItem> {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, final ViewGroup parent) {
         AccountViewHolderItem viewHolder;
 
         if (convertView == null) {
@@ -122,7 +122,7 @@ public class AccountListAdapter extends ArrayAdapter<AccountListItem> {
                 /// bind listener to change password
                 viewHolder.passwordButtonItem.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
                         mListener.changePasswordOfAccount(mValues.get(position).getAccount());
                     }
                 });
@@ -130,7 +130,7 @@ public class AccountListAdapter extends ArrayAdapter<AccountListItem> {
                 /// bind listener to remove account
                 viewHolder.removeButtonItem.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
                         mListener.removeAccount(mValues.get(position).getAccount());
                     }
                 });
@@ -144,7 +144,7 @@ public class AccountListAdapter extends ArrayAdapter<AccountListItem> {
                 // bind action listener
                 actionView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
                         mListener.createAccount();
                     }
                 });

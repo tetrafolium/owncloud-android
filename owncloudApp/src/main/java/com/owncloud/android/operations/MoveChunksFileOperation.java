@@ -39,15 +39,15 @@ public class MoveChunksFileOperation extends MoveFileOperation {
      * @param fileLastModifTimestamp Timestamp of last modification of file to move.
      * @param fileLength        Total length of the file to move.
      */
-    public MoveChunksFileOperation(String srcPath, String targetParentPath, String fileLastModifTimestamp,
-                                   long fileLength) {
+    public MoveChunksFileOperation(final String srcPath, final String targetParentPath, final String fileLastModifTimestamp,
+                                   final long fileLength) {
         super(srcPath, targetParentPath);
         mFileLastModifTimestamp = fileLastModifTimestamp;
         mFileLength = fileLength;
     }
 
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
 
         MoveRemoteChunksFileOperation operation = new MoveRemoteChunksFileOperation(
             mSrcPath,

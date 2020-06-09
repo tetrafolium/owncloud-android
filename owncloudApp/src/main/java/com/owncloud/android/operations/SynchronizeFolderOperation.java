@@ -147,13 +147,13 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      *                                  will be synchronized.
      */
     public SynchronizeFolderOperation(
-        Context context,
-        String remotePath,
-        Account account,
-        long currentSyncTime,
-        boolean pushOnly,
-        boolean syncFullAccount,
-        boolean syncContentOfRegularFiles
+        final Context context,
+        final String remotePath,
+        final Account account,
+        final long currentSyncTime,
+        final boolean pushOnly,
+        final boolean syncFullAccount,
+        final boolean syncContentOfRegularFiles
     ) {
         mRemotePath = remotePath;
         mCurrentSyncTime = currentSyncTime;
@@ -197,7 +197,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      * {@inheritDoc}
      */
     @Override
-    protected RemoteOperationResult<ArrayList<RemoteFile>> run(OwnCloudClient client) {
+    protected RemoteOperationResult<ArrayList<RemoteFile>> run(final OwnCloudClient client) {
         final RemoteOperationResult<ArrayList<RemoteFile>> fetchFolderResult;
 
         mFailsInFileSyncsFound = 0;
@@ -253,7 +253,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      * @throws OperationCancelledException
      */
     @NonNull
-    private RemoteOperationResult<ArrayList<RemoteFile>> fetchRemoteFolder(OwnCloudClient client) throws OperationCancelledException {
+    private RemoteOperationResult<ArrayList<RemoteFile>> fetchRemoteFolder(final OwnCloudClient client) throws OperationCancelledException {
         Timber.d("Fetching list of files in  " + mAccount.name + mRemotePath + ", if changed");
 
         if (mCancellationRequested.get()) {
@@ -271,7 +271,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      * @param remoteFolder Properties of the remote copy of the folder
      * @return 'true' if ETag of local and remote folder do not match.
      */
-    private boolean folderChanged(RemoteFile remoteFolder) {
+    private boolean folderChanged(final RemoteFile remoteFolder) {
         return (!mLocalFolder.getTreeEtag().equals(remoteFolder.getEtag()));
     }
 
@@ -282,8 +282,8 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
             storageManager.removeFolder(
                 mLocalFolder,
                 true,
-                (mLocalFolder.isDown() &&
-                 mLocalFolder.getStoragePath().startsWith(currentSavePath)
+                (mLocalFolder.isDown()
+                 && mLocalFolder.getStoragePath().startsWith(currentSavePath)
                 )
             );
         }
@@ -297,7 +297,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      *
      * @param remoteFolderAndFiles Remote folder and children files in folder
      */
-    private void mergeRemoteFolder(ArrayList<RemoteFile> remoteFolderAndFiles)
+    private void mergeRemoteFolder(final ArrayList<RemoteFile> remoteFolderAndFiles)
     throws OperationCancelledException {
         Timber.d("Synchronizing " + mAccount.name + mRemotePath);
 
@@ -353,9 +353,9 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
                 updatedLocalFile.setFileName(remoteFile.getFileName());
                 // remote eTag will not be set unless file CONTENTS are synchronized
                 updatedLocalFile.setEtag(localFile.getEtag());
-                if (!updatedLocalFile.isFolder() &&
-                        remoteFile.isImage() &&
-                        remoteFile.getModificationTimestamp() != localFile.getModificationTimestamp()) {
+                if (!updatedLocalFile.isFolder()
+                        && remoteFile.isImage()
+                        && remoteFile.getModificationTimestamp() != localFile.getModificationTimestamp()) {
                     updatedLocalFile.setNeedsUpdateThumbnail(true);
                 }
             } else {
@@ -411,7 +411,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      * @return 'True' when the received file was not changed in the server side from the
      * last synchronization.
      */
-    private boolean addToSyncContents(OCFile localFile, OCFile remoteFile) {
+    private boolean addToSyncContents(final OCFile localFile, final OCFile remoteFile) {
 
         boolean shouldSyncContents = (mSyncContentOfRegularFiles || localFile.isAvailableOffline());
         boolean serverUnchanged;
@@ -518,7 +518,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      *
      * @param file File to associate a possible 'lost' local file.
      */
-    private void searchForLocalFileInDefaultPath(OCFile file) {
+    private void searchForLocalFileInDefaultPath(final OCFile file) {
         if (file.getStoragePath() == null && !file.isFolder()) {
             File f = new File(FileStorageUtils.getDefaultSavePathFor(mAccount.name, file));
             if (f.exists()) {
@@ -551,7 +551,7 @@ public class SynchronizeFolderOperation extends SyncOperation<ArrayList<RemoteFi
      * @return 'True' if the received file should not be automatically sync'ed due to a previous
      * upload error that requires an user action.
      */
-    private boolean isBlockedForAutomatedSync(OCFile file) {
+    private boolean isBlockedForAutomatedSync(final OCFile file) {
         UploadsStorageManager uploadsStorageManager = new UploadsStorageManager(mContext.getContentResolver());
         OCUpload failedUpload = uploadsStorageManager.getLastUploadFor(file, mAccount.name);
         if (failedUpload != null) {

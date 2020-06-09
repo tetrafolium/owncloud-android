@@ -84,7 +84,7 @@ public class ManageAccountsActivity extends FileActivity
     private Drawable mTintedCheck;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mTintedCheck = ContextCompat.getDrawable(this, R.drawable.ic_current_white);
@@ -114,7 +114,7 @@ public class ManageAccountsActivity extends FileActivity
         // added click listener to switch account
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 switchAccount(position);
             }
         });
@@ -133,7 +133,7 @@ public class ManageAccountsActivity extends FileActivity
      * @param accountList the account array
      * @return set of account names
      */
-    private Set<String> toAccountNameSet(Account[] accountList) {
+    private Set<String> toAccountNameSet(final Account[] accountList) {
         Set<String> actualAccounts = new HashSet<String>(accountList.length);
         for (Account account : accountList) {
             actualAccounts.add(account.name);
@@ -210,7 +210,7 @@ public class ManageAccountsActivity extends FileActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
         case android.R.id.home:
@@ -223,7 +223,7 @@ public class ManageAccountsActivity extends FileActivity
     }
 
     @Override
-    public void removeAccount(Account account) {
+    public void removeAccount(final Account account) {
         mAccountBeingRemoved = account.name;
         RemoveAccountDialogFragment dialog = RemoveAccountDialogFragment.newInstance(
                 account
@@ -232,7 +232,7 @@ public class ManageAccountsActivity extends FileActivity
     }
 
     @Override
-    public void changePasswordOfAccount(Account account) {
+    public void changePasswordOfAccount(final Account account) {
         Intent updateAccountCredentials = new Intent(ManageAccountsActivity.this, LoginActivity.class);
         updateAccountCredentials.putExtra(AuthenticatorConstants.EXTRA_ACCOUNT, account);
         updateAccountCredentials.putExtra(AuthenticatorConstants.EXTRA_ACTION,
@@ -250,7 +250,7 @@ public class ManageAccountsActivity extends FileActivity
                       this,
         new AccountManagerCallback<Bundle>() {
             @Override
-            public void run(AccountManagerFuture<Bundle> future) {
+            public void run(final AccountManagerFuture<Bundle> future) {
                 if (future != null) {
                     try {
                         Bundle result = future.getResult();
@@ -284,7 +284,7 @@ public class ManageAccountsActivity extends FileActivity
      * @param future Result of the removal; future.getResult() is true if account was removed correctly.
      */
     @Override
-    public void run(AccountManagerFuture<Boolean> future) {
+    public void run(final AccountManagerFuture<Boolean> future) {
         if (future != null && future.isDone()) {
             Account account = new Account(mAccountBeingRemoved, MainApp.Companion.getAccountType());
             if (!AccountUtils.exists(account.name, MainApp.Companion.getAppContext())) {
@@ -328,7 +328,7 @@ public class ManageAccountsActivity extends FileActivity
      *
      * @param position A position of the account adapter containing an account.
      */
-    private void switchAccount(int position) {
+    private void switchAccount(final int position) {
         Account clickedAccount = mAccountListAdapter.getItem(position).getAccount();
         if (getAccount().name.equals(clickedAccount.name)) {
             // current account selected, just go back
@@ -401,7 +401,7 @@ public class ManageAccountsActivity extends FileActivity
     private class ManageAccountsServiceConnection implements ServiceConnection {
 
         @Override
-        public void onServiceConnected(ComponentName component, IBinder service) {
+        public void onServiceConnected(final ComponentName component, final IBinder service) {
 
             if (component.equals(new ComponentName(ManageAccountsActivity.this, FileDownloader.class))) {
                 mDownloaderBinder = (FileDownloader.FileDownloaderBinder) service;
@@ -413,7 +413,7 @@ public class ManageAccountsActivity extends FileActivity
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName component) {
+        public void onServiceDisconnected(final ComponentName component) {
             if (component.equals(new ComponentName(ManageAccountsActivity.this, FileDownloader.class))) {
                 Timber.d("Download service suddenly disconnected");
                 mDownloaderBinder = null;

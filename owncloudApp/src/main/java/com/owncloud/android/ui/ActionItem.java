@@ -33,7 +33,7 @@ public class ActionItem {
     public ActionItem() {
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         mTitle = title;
     }
 
@@ -41,7 +41,7 @@ public class ActionItem {
         return mTitle;
     }
 
-    public void setIcon(Drawable icon) {
+    public void setIcon(final Drawable icon) {
         mIcon = icon;
     }
 
@@ -49,7 +49,7 @@ public class ActionItem {
         return mIcon;
     }
 
-    public void setOnClickListener(OnClickListener listener) {
+    public void setOnClickListener(final OnClickListener listener) {
         mClickListener = listener;
     }
 

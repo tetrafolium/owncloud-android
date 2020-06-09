@@ -52,7 +52,7 @@ public class AccountUtils {
      *                      {@link Account} available, if valid (still registered in the system as ownCloud
      *                      account). If none is available and valid, returns null.
      */
-    public static Account getCurrentOwnCloudAccount(Context context) {
+    public static Account getCurrentOwnCloudAccount(final Context context) {
         Account[] ocAccounts = getAccounts(context);
         Account defaultAccount = null;
 
@@ -77,12 +77,12 @@ public class AccountUtils {
         return defaultAccount;
     }
 
-    public static Account[] getAccounts(Context context) {
+    public static Account[] getAccounts(final Context context) {
         AccountManager accountManager = AccountManager.get(context);
         return accountManager.getAccountsByType(MainApp.Companion.getAccountType());
     }
 
-    public static boolean exists(String accountName, Context context) {
+    public static boolean exists(final String accountName, final Context context) {
         Account[] ocAccounts = getAccounts(context);
 
         if (accountName != null) {
@@ -95,8 +95,8 @@ public class AccountUtils {
                 lastAtPos = otherAccount.name.lastIndexOf("@");
                 otherHostAndPort = otherAccount.name.substring(lastAtPos + 1);
                 otherUsername = otherAccount.name.substring(0, lastAtPos);
-                if (otherHostAndPort.equals(hostAndPort) &&
-                        otherUsername.toLowerCase(currentLocale).
+                if (otherHostAndPort.equals(hostAndPort)
+                        && otherUsername.toLowerCase(currentLocale).
                         equals(username.toLowerCase(currentLocale))) {
                     return true;
                 }
@@ -111,7 +111,7 @@ public class AccountUtils {
      * @param accountName the account name
      * @return the user's name
      */
-    public static String getUsernameOfAccount(String accountName) {
+    public static String getUsernameOfAccount(final String accountName) {
         if (accountName != null) {
             return accountName.substring(0, accountName.lastIndexOf("@"));
         } else {
@@ -125,7 +125,7 @@ public class AccountUtils {
      * @param accountName name of account to be returned
      * @return owncloud account named accountName
      */
-    public static Account getOwnCloudAccountByName(Context context, String accountName) {
+    public static Account getOwnCloudAccountByName(final Context context, final String accountName) {
         Account[] ocAccounts = AccountManager.get(context).getAccountsByType(
                                    MainApp.Companion.getAccountType());
         for (Account account : ocAccounts) {
@@ -136,7 +136,7 @@ public class AccountUtils {
         return null;
     }
 
-    public static boolean setCurrentOwnCloudAccount(Context context, String accountName) {
+    public static boolean setCurrentOwnCloudAccount(final Context context, final String accountName) {
         boolean result = false;
         if (accountName != null) {
             boolean found;
@@ -164,7 +164,7 @@ public class AccountUtils {
      *
      * @param   context     Used to access the AccountManager.
      */
-    public static void updateAccountVersion(Context context) {
+    public static void updateAccountVersion(final Context context) {
         Account currentAccount = AccountUtils.getCurrentOwnCloudAccount(context);
         AccountManager accountMgr = AccountManager.get(context);
 
@@ -250,7 +250,7 @@ public class AccountUtils {
      *                      in the system AccountManager
      */
     @Nullable
-    public static OwnCloudVersion getServerVersion(Account account) {
+    public static OwnCloudVersion getServerVersion(final Account account) {
         OwnCloudVersion serverVersion = null;
         if (account != null) {
             // capabilities are now the preferred source for version info

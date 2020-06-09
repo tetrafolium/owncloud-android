@@ -100,10 +100,10 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
      * @param account          ownCloud account where the folder is located.
      * @param context          Application context.
      */
-    public RefreshFolderOperation(OCFile folder,
-                                  boolean ignoreETag,
-                                  Account account,
-                                  Context context) {
+    public RefreshFolderOperation(final OCFile folder,
+                                  final boolean ignoreETag,
+                                  final Account account,
+                                  final Context context) {
         mLocalFolder = folder;
         mAccount = account;
         mContext = context;
@@ -117,7 +117,7 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
      * {@inheritDoc}
      */
     @Override
-    protected RemoteOperationResult<ArrayList<RemoteFile>> run(OwnCloudClient client) {
+    protected RemoteOperationResult<ArrayList<RemoteFile>> run(final OwnCloudClient client) {
         RemoteOperationResult<ArrayList<RemoteFile>> result;
         OwnCloudVersion serverVersion = null;
 
@@ -169,7 +169,7 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
      *
      * @param syncVersionAndProfileEnabled disables/enables sync Version/Profile when syncing root DIR
      */
-    public void syncVersionAndProfileEnabled(boolean syncVersionAndProfileEnabled) {
+    public void syncVersionAndProfileEnabled(final boolean syncVersionAndProfileEnabled) {
         this.syncVersionAndProfileEnabled = syncVersionAndProfileEnabled;
     }
 
@@ -187,7 +187,7 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
         return serverVersion;
     }
 
-    private void updateShareIconsInFiles(OwnCloudClient client) {
+    private void updateShareIconsInFiles(final OwnCloudClient client) {
         RemoteOperationResult<ShareParserResult> result;
 
         // remote request
@@ -203,9 +203,9 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
                     ShareType shareType = ShareType.Companion.fromValue(remoteShare.getShareType().getValue());
                     if (shareType.equals(ShareType.PUBLIC_LINK)) {
                         file.setSharedViaLink(true);
-                    } else if (shareType.equals(ShareType.USER) ||
-                               shareType.equals(ShareType.FEDERATED) ||
-                               shareType.equals(ShareType.GROUP)) {
+                    } else if (shareType.equals(ShareType.USER)
+                               || shareType.equals(ShareType.FEDERATED)
+                               || shareType.equals(ShareType.GROUP)) {
                         file.setSharedWithSharee(true);
                     }
                     getStorageManager().saveFile(file);
@@ -231,8 +231,8 @@ public class RefreshFolderOperation extends SyncOperation<ArrayList<RemoteFile>>
      * @param dirRemotePath Remote path of a folder that was just synchronized
      *                      (with or without success)
      */
-    private void sendLocalBroadcast(String event, String dirRemotePath, OwnCloudVersion serverVersion,
-                                    RemoteOperationResult result) {
+    private void sendLocalBroadcast(final String event, final String dirRemotePath, final OwnCloudVersion serverVersion,
+                                    final RemoteOperationResult result) {
         Timber.d("Send broadcast " + event);
         Intent intent = new Intent(event);
         intent.putExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME, mAccount.name);

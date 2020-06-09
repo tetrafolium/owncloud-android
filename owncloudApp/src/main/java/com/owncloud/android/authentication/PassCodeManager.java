@@ -62,7 +62,7 @@ public class PassCodeManager {
     protected PassCodeManager() {
     }
 
-    public void onActivityStarted(Activity activity) {
+    public void onActivityStarted(final Activity activity) {
 
         if (!sExemptOfPasscodeActivites.contains(activity.getClass()) && passCodeShouldBeRequested()) {
 
@@ -79,7 +79,7 @@ public class PassCodeManager {
         mVisibleActivitiesCounter++;    // keep it AFTER passCodeShouldBeRequested was checked
     }
 
-    public void onActivityStopped(Activity activity) {
+    public void onActivityStopped(final Activity activity) {
         if (mVisibleActivitiesCounter > 0) {
             mVisibleActivitiesCounter--;
         }
@@ -90,12 +90,12 @@ public class PassCodeManager {
         }
     }
 
-    public void onBiometricCancelled(Activity activity) {
+    public void onBiometricCancelled(final Activity activity) {
         // Ask user for passcode
         checkPasscode(activity);
     }
 
-    private void checkPasscode(Activity activity) {
+    private void checkPasscode(final Activity activity) {
         Intent i = new Intent(MainApp.Companion.getAppContext(), PassCodeActivity.class);
         i.setAction(PassCodeActivity.ACTION_CHECK);
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -107,8 +107,8 @@ public class PassCodeManager {
     }
 
     private boolean passCodeShouldBeRequested() {
-        if ((SystemClock.elapsedRealtime() - mTimestamp) > PASS_CODE_TIMEOUT &&
-                mVisibleActivitiesCounter <= 0) {
+        if ((SystemClock.elapsedRealtime() - mTimestamp) > PASS_CODE_TIMEOUT
+                && mVisibleActivitiesCounter <= 0) {
             return isPassCodeEnabled();
         }
         return false;

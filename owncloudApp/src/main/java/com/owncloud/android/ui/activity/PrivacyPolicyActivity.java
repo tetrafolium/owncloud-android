@@ -41,7 +41,7 @@ import com.owncloud.android.utils.PreferenceUtils;
 public class PrivacyPolicyActivity extends ToolbarActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_privacy_policy);
@@ -73,7 +73,7 @@ public class PrivacyPolicyActivity extends ToolbarActivity {
         webview.getSettings().setDisplayZoomControls(false);
 
         webview.setWebChromeClient(new WebChromeClient() {
-            public void onProgressChanged(WebView view, int progress) {
+            public void onProgressChanged(final WebView view, final int progress) {
                 mProgressBar.setProgress(progress); //Set the web page loading progress
 
                 if (progress == 100) {
@@ -82,7 +82,7 @@ public class PrivacyPolicyActivity extends ToolbarActivity {
             }
         });
         webview.setWebViewClient(new WebViewClient() {
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            public void onReceivedError(final WebView view, final int errorCode, final String description, final String failingUrl) {
 
                 Snackbar snackbar = Snackbar.make(
                                         findViewById(android.R.id.content),
@@ -98,7 +98,7 @@ public class PrivacyPolicyActivity extends ToolbarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
         case android.R.id.home:

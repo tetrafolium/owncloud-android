@@ -36,7 +36,7 @@ import timber.log.Timber;
 public class SyncCapabilitiesOperation extends SyncOperation<RemoteCapability> {
 
     @Override
-    protected RemoteOperationResult<RemoteCapability> run(OwnCloudClient client) {
+    protected RemoteOperationResult<RemoteCapability> run(final OwnCloudClient client) {
         RemoteCapability capabilities = null;
         OwnCloudVersion serverVersion = null;
 

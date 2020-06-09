@@ -59,7 +59,7 @@ public class CreateFolderDialogFragment extends DialogFragment implements Dialog
      * @param parentFolder Folder to create
      * @return Dialog ready to show.
      */
-    public static CreateFolderDialogFragment newInstance(OCFile parentFolder) {
+    public static CreateFolderDialogFragment newInstance(final OCFile parentFolder) {
         CreateFolderDialogFragment frag = new CreateFolderDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARENT_FOLDER, parentFolder);
@@ -71,7 +71,7 @@ public class CreateFolderDialogFragment extends DialogFragment implements Dialog
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         mParentFolder = requireArguments().getParcelable(ARG_PARENT_FOLDER);
 
         // Inflate the layout for the dialog
@@ -107,7 +107,7 @@ public class CreateFolderDialogFragment extends DialogFragment implements Dialog
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public void onClick(final DialogInterface dialog, final int which) {
         if (which == AlertDialog.BUTTON_POSITIVE) {
             String newFolderName =
                 ((TextView) (requireDialog().findViewById(R.id.user_input))).getText().toString().trim();
@@ -133,7 +133,7 @@ public class CreateFolderDialogFragment extends DialogFragment implements Dialog
      *
      * @param messageResource Message to show.
      */
-    private void showSnackMessage(int messageResource) {
+    private void showSnackMessage(final int messageResource) {
         Snackbar snackbar = Snackbar.make(
                                 requireActivity().findViewById(R.id.coordinator_layout),
                                 messageResource,

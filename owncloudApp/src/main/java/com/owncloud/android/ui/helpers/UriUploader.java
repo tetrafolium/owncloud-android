@@ -68,13 +68,13 @@ public class UriUploader {
     }
 
     public UriUploader(
-        FileActivity activity,
-        ArrayList<Uri> uris,
-        String uploadPath,
-        Account account,
-        int behaviour,
-        boolean showWaitingDialog,
-        CopyAndUploadContentUrisTask.OnCopyTmpFilesTaskListener copyTmpTaskListener
+        final FileActivity activity,
+        final ArrayList<Uri> uris,
+        final String uploadPath,
+        final Account account,
+        final int behaviour,
+        final boolean showWaitingDialog,
+        final CopyAndUploadContentUrisTask.OnCopyTmpFilesTaskListener copyTmpTaskListener
     ) {
         mActivity = activity;
         mUrisToUpload = uris;
@@ -145,7 +145,7 @@ public class UriUploader {
      * @param localPath     Absolute path in the local file system to the file to upload.
      * @param remotePath    Absolute path in the current OC account to set to the uploaded file.
      */
-    private void requestUpload(String localPath, String remotePath) {
+    private void requestUpload(final String localPath, final String remotePath) {
         TransferRequester requester = new TransferRequester();
         requester.uploadNewFile(
             mActivity,
@@ -164,7 +164,7 @@ public class UriUploader {
      * @param sourceUris        Array of content:// URIs to the files to upload
      * @param remotePaths       Array of absolute paths to set to the uploaded files
      */
-    private void copyThenUpload(Uri[] sourceUris, String[] remotePaths) {
+    private void copyThenUpload(final Uri[] sourceUris, final String[] remotePaths) {
         if (mShowWaitingDialog) {
             mActivity.showLoadingDialog(R.string.wait_for_tmp_copy_from_private_storage);
         }

@@ -80,7 +80,7 @@ public class ThumbnailsCacheManager {
     public static class InitDiskCacheTask extends AsyncTask<File, Void, Void> {
 
         @Override
-        protected Void doInBackground(File... params) {
+        protected Void doInBackground(final File... params) {
             synchronized (mThumbnailsDiskCacheLock) {
                 mThumbnailCacheStarting = true;
 
@@ -89,8 +89,8 @@ public class ThumbnailsCacheManager {
                         // Check if media is mounted or storage is built-in, if so,
                         // try and use external cache dir; otherwise use internal cache dir
                         final String cachePath =
-                            MainApp.Companion.getAppContext().getExternalCacheDir().getPath() +
-                            File.separator + CACHE_FOLDER;
+                            MainApp.Companion.getAppContext().getExternalCacheDir().getPath()
+                            + File.separator + CACHE_FOLDER;
                         Timber.d("create dir: %s", cachePath);
                         final File diskCacheDir = new File(cachePath);
                         mThumbnailCache = new DiskLruImageCache(
@@ -111,7 +111,7 @@ public class ThumbnailsCacheManager {
         }
     }
 
-    private static void addBitmapToCache(String key, Bitmap bitmap) {
+    private static void addBitmapToCache(final String key, final Bitmap bitmap) {
         synchronized (mThumbnailsDiskCacheLock) {
             if (mThumbnailCache != null) {
                 mThumbnailCache.put(key, bitmap);
@@ -119,7 +119,7 @@ public class ThumbnailsCacheManager {
         }
     }
 
-    private static void removeBitmapFromCache(String key) {
+    private static void removeBitmapFromCache(final String key) {
         synchronized (mThumbnailsDiskCacheLock) {
             if (mThumbnailCache != null) {
                 mThumbnailCache.removeKey(key);
@@ -127,7 +127,7 @@ public class ThumbnailsCacheManager {
         }
     }
 
-    public static Bitmap getBitmapFromDiskCache(String key) {
+    public static Bitmap getBitmapFromDiskCache(final String key) {
         synchronized (mThumbnailsDiskCacheLock) {
             // Wait while disk cache is started from background thread
             while (mThumbnailCacheStarting) {
@@ -150,8 +150,8 @@ public class ThumbnailsCacheManager {
         private Object mFile;
         private FileDataStorageManager mStorageManager;
 
-        public ThumbnailGenerationTask(ImageView imageView, FileDataStorageManager storageManager,
-                                       Account account) {
+        public ThumbnailGenerationTask(final ImageView imageView, final FileDataStorageManager storageManager,
+                                       final Account account) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
             mImageViewReference = new WeakReference<>(imageView);
             if (storageManager == null) {
@@ -161,13 +161,13 @@ public class ThumbnailsCacheManager {
             mAccount = account;
         }
 
-        public ThumbnailGenerationTask(ImageView imageView) {
+        public ThumbnailGenerationTask(final ImageView imageView) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
             mImageViewReference = new WeakReference<>(imageView);
         }
 
         @Override
-        protected Bitmap doInBackground(Object... params) {
+        protected Bitmap doInBackground(final Object... params) {
             Bitmap thumbnail = null;
 
             try {
@@ -200,7 +200,7 @@ public class ThumbnailsCacheManager {
             return thumbnail;
         }
 
-        protected void onPostExecute(Bitmap bitmap) {
+        protected void onPostExecute(final Bitmap bitmap) {
             if (bitmap != null) {
                 final ImageView imageView = mImageViewReference.get();
                 final ThumbnailGenerationTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
@@ -227,7 +227,7 @@ public class ThumbnailsCacheManager {
          * @param px:       thumbnail dp
          * @return Bitmap
          */
-        private Bitmap addThumbnailToCache(String imageKey, Bitmap bitmap, String path, int px) {
+        private Bitmap addThumbnailToCache(final String imageKey, final Bitmap bitmap, final String path, final int px) {
 
             Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, px, px);
 
@@ -287,9 +287,9 @@ public class ThumbnailsCacheManager {
                     if (mClient != null && serverOCVersion != null) {
                         GetMethod get;
                         try {
-                            String uri = mClient.getBaseUri() + "" +
-                                         "/index.php/apps/files/api/v1/thumbnail/" +
-                                         px + "/" + px + Uri.encode(file.getRemotePath(), "/");
+                            String uri = mClient.getBaseUri() + ""
+                                         + "/index.php/apps/files/api/v1/thumbnail/"
+                                         + px + "/" + px + Uri.encode(file.getRemotePath(), "/");
                             Timber.d("URI: %s", uri);
                             get = new GetMethod(new URL(uri));
                             int status = mClient.executeHttpMethod(get);
@@ -321,7 +321,7 @@ public class ThumbnailsCacheManager {
 
         }
 
-        private Bitmap handlePNG(Bitmap bitmap, int px) {
+        private Bitmap handlePNG(final Bitmap bitmap, final int px) {
             Bitmap resultBitmap = Bitmap.createBitmap(px,
                                   px,
                                   Bitmap.Config.ARGB_8888);
@@ -389,7 +389,7 @@ public class ThumbnailsCacheManager {
          *                        the server. When 'false', server is not accessed, the fallback avatar is
          *                        generated instead. USE WITH CARE, probably to be removed in the future.
          */
-        public GetAvatarTask(ImageView imageView, Account account, float displayRadius, boolean fetchFromServer) {
+        public GetAvatarTask(final ImageView imageView, final Account account, final float displayRadius, final boolean fetchFromServer) {
             if (account == null) {
                 throw new IllegalArgumentException("Received NULL account");
             }
@@ -410,7 +410,7 @@ public class ThumbnailsCacheManager {
          *                        the server. When 'false', server is not accessed, the fallback avatar is
          *                        generated instead. USE WITH CARE, probably to be removed in the future.
          */
-        public GetAvatarTask(MenuItem menuItem, Account account, float displayRadius, boolean fetchFromServer) {
+        public GetAvatarTask(final MenuItem menuItem, final Account account, final float displayRadius, final boolean fetchFromServer) {
             if (account == null) {
                 throw new IllegalArgumentException("Received NULL account");
             }
@@ -422,7 +422,7 @@ public class ThumbnailsCacheManager {
         }
 
         @Override
-        protected Drawable doInBackground(Object... params) {
+        protected Drawable doInBackground(final Object... params) {
             Drawable thumbnail = null;
 
             try {
@@ -446,7 +446,7 @@ public class ThumbnailsCacheManager {
         }
 
         @Override
-        protected void onPostExecute(Drawable avatar) {
+        protected void onPostExecute(final Drawable avatar) {
             if (mImageViewReference != null) {
                 ImageView imageView = mImageViewReference.get();
                 if (imageView != null) {
@@ -510,8 +510,8 @@ public class ThumbnailsCacheManager {
                     if (mClient != null && serverOCVersion != null) {
                         GetMethod get;
                         try {
-                            String uri = mClient.getBaseUri() + "" +
-                                         "/index.php/avatar/" + AccountUtils.getUsernameOfAccount(mUsername) + "/" + px;
+                            String uri = mClient.getBaseUri() + ""
+                                         + "/index.php/avatar/" + AccountUtils.getUsernameOfAccount(mUsername) + "/" + px;
                             Timber.d("URI: %s", uri);
                             get = new GetMethod(new URL(uri));
                             int status = mClient.executeHttpMethod(get);
@@ -554,7 +554,7 @@ public class ThumbnailsCacheManager {
 
     }
 
-    public static String addAvatarToCache(String accountName, byte[] avatarData, int dimension) {
+    public static String addAvatarToCache(final String accountName, final byte[] avatarData, final int dimension) {
         final String imageKey = "a_" + accountName;
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(avatarData, 0, avatarData.length);
@@ -566,12 +566,12 @@ public class ThumbnailsCacheManager {
         return imageKey;
     }
 
-    public static void removeAvatarFromCache(String accountName) {
+    public static void removeAvatarFromCache(final String accountName) {
         final String imageKey = "a_" + accountName;
         removeBitmapFromCache(imageKey);
     }
 
-    public static boolean cancelPotentialThumbnailWork(Object file, ImageView imageView) {
+    public static boolean cancelPotentialThumbnailWork(final Object file, final ImageView imageView) {
         final ThumbnailGenerationTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
         if (bitmapWorkerTask != null) {
@@ -590,7 +590,7 @@ public class ThumbnailsCacheManager {
         return true;
     }
 
-    private static ThumbnailGenerationTask getBitmapWorkerTask(ImageView imageView) {
+    private static ThumbnailGenerationTask getBitmapWorkerTask(final ImageView imageView) {
         if (imageView != null) {
             final Drawable drawable = imageView.getDrawable();
             if (drawable instanceof AsyncThumbnailDrawable) {
@@ -605,7 +605,7 @@ public class ThumbnailsCacheManager {
         private final WeakReference<ThumbnailGenerationTask> bitmapWorkerTaskReference;
 
         public AsyncThumbnailDrawable(
-            Resources res, Bitmap bitmap, ThumbnailGenerationTask bitmapWorkerTask
+            final Resources res, final Bitmap bitmap, final ThumbnailGenerationTask bitmapWorkerTask
         ) {
 
             super(res, bitmap);

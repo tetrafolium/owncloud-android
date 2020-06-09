@@ -55,10 +55,10 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
     private FileDataStorageManager mStorageManager;
     private LayoutInflater mInflater;
 
-    public ReceiveExternalFilesAdapter(Context context,
-                                       List<OCFile> files,
-                                       FileDataStorageManager storageManager,
-                                       Account account
+    public ReceiveExternalFilesAdapter(final Context context,
+                                       final List<OCFile> files,
+                                       final FileDataStorageManager storageManager,
+                                       final Account account
                                       ) {
         mFiles = files;
         mAccount = account;
@@ -74,7 +74,7 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
     }
 
     @Override
-    public Object getItem(int position) {
+    public Object getItem(final int position) {
         if (mFiles == null || position < 0 || position >= mFiles.size()) {
             return null;
         } else {
@@ -83,7 +83,7 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         if (mFiles == null || position < 0 || position >= mFiles.size()) {
             return -1;
         } else {
@@ -92,7 +92,7 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, final ViewGroup parent) {
         View vi = convertView;
         if (convertView == null) {
             vi = mInflater.inflate(R.layout.uploader_list_item_layout, parent, false);
@@ -155,7 +155,7 @@ public class ReceiveExternalFilesAdapter extends BaseAdapter implements ListAdap
         return vi;
     }
 
-    public void setSortOrder(Integer order, boolean isAscending) {
+    public void setSortOrder(final Integer order, final boolean isAscending) {
         PreferenceManager.setSortOrder(order, mContext, FileStorageUtils.FILE_DISPLAY_SORT);
         PreferenceManager.setSortAscending(isAscending, mContext, FileStorageUtils.FILE_DISPLAY_SORT);
         FileStorageUtils.mSortOrderFileDisp = order;

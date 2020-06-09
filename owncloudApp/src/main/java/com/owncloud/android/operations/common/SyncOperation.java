@@ -55,14 +55,14 @@ public abstract class SyncOperation<T> extends RemoteOperation<T> {
      * @param context           Android context for the component calling the method.
      * @return Result of the operation.
      */
-    public RemoteOperationResult<T> execute(FileDataStorageManager storageManager, Context context) {
+    public RemoteOperationResult<T> execute(final FileDataStorageManager storageManager, final Context context) {
         if (storageManager == null) {
-            throw new IllegalArgumentException("Trying to execute a sync operation with a " +
-                                               "NULL storage manager");
+            throw new IllegalArgumentException("Trying to execute a sync operation with a "
+                                               + "NULL storage manager");
         }
         if (storageManager.getAccount() == null) {
-            throw new IllegalArgumentException("Trying to execute a sync operation with a " +
-                                               "storage manager for a NULL account");
+            throw new IllegalArgumentException("Trying to execute a sync operation with a "
+                                               + "storage manager for a NULL account");
         }
         mStorageManager = storageManager;
         return super.execute(mStorageManager.getAccount(), context);
@@ -77,11 +77,11 @@ public abstract class SyncOperation<T> extends RemoteOperation<T> {
      * @param storageManager    Instance of local repository to sync with remote.
      * @return Result of the operation.
      */
-    public RemoteOperationResult<T> execute(OwnCloudClient client,
-                                            FileDataStorageManager storageManager) {
+    public RemoteOperationResult<T> execute(final OwnCloudClient client,
+                                            final FileDataStorageManager storageManager) {
         if (storageManager == null) {
-            throw new IllegalArgumentException("Trying to execute a sync operation with a " +
-                                               "NULL storage manager");
+            throw new IllegalArgumentException("Trying to execute a sync operation with a "
+                                               + "NULL storage manager");
         }
         mStorageManager = storageManager;
         return super.execute(client);
@@ -100,15 +100,15 @@ public abstract class SyncOperation<T> extends RemoteOperation<T> {
      *                          objects must be called.
      * @return Thread were the remote operation is executed.
      */
-    public Thread execute(FileDataStorageManager storageManager, Context context,
-                          OnRemoteOperationListener listener, Handler listenerHandler) {
+    public Thread execute(final FileDataStorageManager storageManager, final Context context,
+                          final OnRemoteOperationListener listener, final Handler listenerHandler) {
         if (storageManager == null) {
-            throw new IllegalArgumentException("Trying to execute a sync operation " +
-                                               "with a NULL storage manager");
+            throw new IllegalArgumentException("Trying to execute a sync operation "
+                                               + "with a NULL storage manager");
         }
         if (storageManager.getAccount() == null) {
-            throw new IllegalArgumentException("Trying to execute a sync operation with a" +
-                                               " storage manager for a NULL account");
+            throw new IllegalArgumentException("Trying to execute a sync operation with a"
+                                               + " storage manager for a NULL account");
         }
         mStorageManager = storageManager;
         return super.execute(mStorageManager.getAccount(), context, listener, listenerHandler);
@@ -125,11 +125,11 @@ public abstract class SyncOperation<T> extends RemoteOperation<T> {
      *                          the listener objects must be called.
      * @return Thread were the remote operation is executed.
      */
-    public Thread execute(OwnCloudClient client, FileDataStorageManager storageManager,
-                          OnRemoteOperationListener listener, Handler listenerHandler) {
+    public Thread execute(final OwnCloudClient client, final FileDataStorageManager storageManager,
+                          final OnRemoteOperationListener listener, final Handler listenerHandler) {
         if (storageManager == null) {
-            throw new IllegalArgumentException("Trying to execute a sync operation " +
-                                               "with a NULL storage manager");
+            throw new IllegalArgumentException("Trying to execute a sync operation "
+                                               + "with a NULL storage manager");
         }
         mStorageManager = storageManager;
         return super.execute(client, listener, listenerHandler);

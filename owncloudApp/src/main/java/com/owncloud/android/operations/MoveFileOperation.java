@@ -43,7 +43,7 @@ public class MoveFileOperation extends SyncOperation {
      * @param srcPath           Remote path of the {@link OCFile} to move.
      * @param targetParentPath  Path to the folder where the file will be moved into.
      */
-    public MoveFileOperation(String srcPath, String targetParentPath) {
+    public MoveFileOperation(final String srcPath, final String targetParentPath) {
         mSrcPath = srcPath;
         mTargetParentPath = targetParentPath;
         if (!mTargetParentPath.endsWith(OCFile.PATH_SEPARATOR)) {
@@ -59,7 +59,7 @@ public class MoveFileOperation extends SyncOperation {
      * @param   client      Client object to communicate with the remote ownCloud server.
      */
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         RemoteOperationResult result;
 
         /// 1. check move validity

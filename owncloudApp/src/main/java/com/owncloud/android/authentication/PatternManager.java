@@ -58,7 +58,7 @@ public class PatternManager {
     private PatternManager() {
     }
 
-    public void onActivityStarted(Activity activity) {
+    public void onActivityStarted(final Activity activity) {
         if (!sExemptOfPatternActivites.contains(activity.getClass()) && patternShouldBeRequested()) {
 
             // Do not ask for pattern if biometric is enabled
@@ -76,7 +76,7 @@ public class PatternManager {
         timeStamp = SystemClock.elapsedRealtime();
     }
 
-    public void onActivityStopped(Activity activity) {
+    public void onActivityStopped(final Activity activity) {
         if (mVisibleActivitiesCounter > 0) {
             mVisibleActivitiesCounter--;
         }
@@ -87,12 +87,12 @@ public class PatternManager {
         }
     }
 
-    public void onBiometricCancelled(Activity activity) {
+    public void onBiometricCancelled(final Activity activity) {
         // Ask user for pattern
         checkPattern(activity);
     }
 
-    private void checkPattern(Activity activity) {
+    private void checkPattern(final Activity activity) {
         Intent i = new Intent(MainApp.Companion.getAppContext(), PatternLockActivity.class);
         i.setAction(PatternLockActivity.ACTION_CHECK);
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -101,8 +101,8 @@ public class PatternManager {
 
     private boolean patternShouldBeRequested() {
         int PATTERN_TIMEOUT = 1000;
-        if ((SystemClock.elapsedRealtime() - timeStamp) > PATTERN_TIMEOUT &&
-                mVisibleActivitiesCounter <= 0
+        if ((SystemClock.elapsedRealtime() - timeStamp) > PATTERN_TIMEOUT
+                && mVisibleActivitiesCounter <= 0
            ) {
             return isPatternEnabled();
         }

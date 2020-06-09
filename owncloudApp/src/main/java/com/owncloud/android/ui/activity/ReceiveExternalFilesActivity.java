@@ -132,7 +132,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     private static final String DIALOG_WAIT_COPY_FILE = "DIALOG_WAIT_COPY_FILE";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         prepareStreamsToUpload();
 
         if (savedInstanceState == null) {
@@ -179,7 +179,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    protected void setAccount(Account account, boolean savedAccount) {
+    protected void setAccount(final Account account, final boolean savedAccount) {
         if (somethingToUpload()) {
             mAccountManager = (AccountManager) getSystemService(Context.ACCOUNT_SERVICE);
             Account[] accounts = mAccountManager.getAccountsByType(MainApp.Companion.getAccountType());
@@ -206,14 +206,14 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    protected void onAccountSet(boolean stateWasRecovered) {
+    protected void onAccountSet(final boolean stateWasRecovered) {
         super.onAccountSet(mAccountWasRestored);
         initTargetFolder();
         populateDirectoryList();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         Timber.v("onSaveInstanceState() start");
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_PARENTS, mParents);
@@ -247,7 +247,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
             builder.setCancelable(false);
             builder.setPositiveButton(R.string.uploader_wrn_no_account_setup_btn_text, new OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(final DialogInterface dialog, final int which) {
                     Intent intent = new Intent(android.provider.Settings.ACTION_ADD_ACCOUNT);
                     intent.putExtra("authorities", new String[] {MainApp.Companion.getAuthTokenType()});
                     startActivityForResult(intent, REQUEST_CODE__SETUP_ACCOUNT);
@@ -255,7 +255,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
             });
             builder.setNegativeButton(R.string.uploader_wrn_no_account_quit_btn_text, new OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(final DialogInterface dialog, final int which) {
                     finish();
                 }
             });
@@ -268,8 +268,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
                 try {
                     oca = new OwnCloudAccount(accounts[i], this);
                     dialogItems[i] =
-                        oca.getDisplayName() + " @ " +
-                        DisplayUtils.convertIdn(
+                        oca.getDisplayName() + " @ "
+                        + DisplayUtils.convertIdn(
                             accounts[i].name.substring(accounts[i].name.lastIndexOf("@") + 1),
                             false
                         );
@@ -312,7 +312,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         // click on folder in the list
         Timber.d("on item click");
         Vector<OCFile> tmpfiles = getStorageManager().getFolderContent(mFile);
@@ -335,7 +335,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         // click on button
         switch (v.getId()) {
         case R.id.uploader_choose_folder:
@@ -362,7 +362,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Timber.i("result received. req: " + requestCode + " res: " + resultCode);
         if (requestCode == REQUEST_CODE__SETUP_ACCOUNT) {
@@ -430,7 +430,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
         startSyncFolderOperation(getCurrentDir());
     }
 
-    private void startSyncFolderOperation(OCFile folder) {
+    private void startSyncFolderOperation(final OCFile folder) {
 
         mSyncInProgress = true;
 
@@ -444,7 +444,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
         synchFolderOp.execute(getStorageManager(), this, null, null);
     }
 
-    private Vector<OCFile> sortFileList(Vector<OCFile> files) {
+    private Vector<OCFile> sortFileList(final Vector<OCFile> files) {
         // Read sorting order, default to sort by name ascending
         FileStorageUtils.mSortOrderFileDisp = PreferenceManager.getSortOrder(this, FileStorageUtils.FILE_DISPLAY_SORT);
         FileStorageUtils.mSortAscendingFileDisp = PreferenceManager.getSortAscending(this,
@@ -455,7 +455,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
         return files;
     }
 
-    private String generatePath(Stack<String> dirs) {
+    private String generatePath(final Stack<String> dirs) {
         StringBuilder full_path = new StringBuilder();
 
         for (String a : dirs) {
@@ -470,9 +470,9 @@ public class ReceiveExternalFilesActivity extends FileActivity
             mStreamsToUpload.add(getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
             if (mStreamsToUpload.get(0) != null) {
                 String streamToUpload = mStreamsToUpload.get(0).toString();
-                if (streamToUpload.contains("/data") && streamToUpload.contains(getPackageName()) &&
-                        !streamToUpload.contains(getCacheDir().getPath()) &&
-                        !streamToUpload.contains(Environment.getExternalStorageDirectory().toString())) {
+                if (streamToUpload.contains("/data") && streamToUpload.contains(getPackageName())
+                        && !streamToUpload.contains(getCacheDir().getPath())
+                        && !streamToUpload.contains(Environment.getExternalStorageDirectory().toString())) {
                     finish();
                 }
             }
@@ -482,8 +482,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     private boolean somethingToUpload() {
-        return (mStreamsToUpload != null && mStreamsToUpload.get(0) != null ||
-                isPlainTextUpload());
+        return (mStreamsToUpload != null && mStreamsToUpload.get(0) != null
+                || isPlainTextUpload());
     }
 
     /**
@@ -492,8 +492,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
      * @return true/false
      */
     private boolean isPlainTextUpload() {
-        return mStreamsToUpload.get(0) == null &&
-               getIntent().getStringExtra(Intent.EXTRA_TEXT) != null;
+        return mStreamsToUpload.get(0) == null
+               && getIntent().getStringExtra(Intent.EXTRA_TEXT) != null;
     }
 
     public void uploadFiles() {
@@ -535,7 +535,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    public void onRemoteOperationFinish(RemoteOperation operation, RemoteOperationResult result) {
+    public void onRemoteOperationFinish(final RemoteOperation operation, final RemoteOperationResult result) {
         super.onRemoteOperationFinish(operation, result);
 
         if (operation instanceof CreateFolderOperation) {
@@ -551,8 +551,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
      * @param operation Creation operation performed.
      * @param result    Result of the creation.
      */
-    private void onCreateFolderOperationFinish(CreateFolderOperation operation,
-            RemoteOperationResult result) {
+    private void onCreateFolderOperationFinish(final CreateFolderOperation operation,
+            final RemoteOperationResult result) {
         if (result.isSuccess()) {
             populateDirectoryList();
         } else {
@@ -574,8 +574,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
      */
     private void initTargetFolder() {
         if (getStorageManager() == null) {
-            throw new IllegalStateException("Do not call this method before " +
-                                            "initializing mStorageManager");
+            throw new IllegalStateException("Do not call this method before "
+                                            + "initializing mStorageManager");
         }
 
         String lastPath = PreferenceManager.getLastUploadPath(this);
@@ -594,7 +594,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         inflater.inflate(R.menu.sort_menu, menu.findItem(R.id.action_sort).getSubMenu());
@@ -606,7 +606,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
         case R.id.action_create_dir:
@@ -660,19 +660,19 @@ public class ReceiveExternalFilesActivity extends FileActivity
         super.onResume();
     }
 
-    private void sortByName(boolean isAscending) {
+    private void sortByName(final boolean isAscending) {
         mAdapter.setSortOrder(FileStorageUtils.SORT_NAME, isAscending);
     }
 
-    private void sortBySize(boolean isAscending) {
+    private void sortBySize(final boolean isAscending) {
         mAdapter.setSortOrder(FileStorageUtils.SORT_SIZE, isAscending);
     }
 
-    private void sortByDate(boolean isAscending) {
+    private void sortByDate(final boolean isAscending) {
         mAdapter.setSortOrder(FileStorageUtils.SORT_DATE, isAscending);
     }
 
-    private void recoverSortMenuState(Menu menu) {
+    private void recoverSortMenuState(final Menu menu) {
         if (menu != null) {
             menu.findItem(R.id.action_sort_descending).setChecked(
                 !PreferenceManager.getSortAscending(this, FileStorageUtils.FILE_DISPLAY_SORT));
@@ -717,7 +717,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
          * {@link BroadcastReceiver} to enable syncing feedback in UI
          */
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             String event = intent.getAction();
             Timber.d("Received broadcast %s", event);
             String accountName = intent.getStringExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME);
@@ -726,8 +726,8 @@ public class ReceiveExternalFilesActivity extends FileActivity
             RemoteOperationResult synchResult =
                 (RemoteOperationResult) intent.getSerializableExtra(
                     FileSyncAdapter.EXTRA_RESULT);
-            boolean sameAccount = (getAccount() != null &&
-                                   accountName.equals(getAccount().name) && getStorageManager() != null);
+            boolean sameAccount = (getAccount() != null
+                                   && accountName.equals(getAccount().name) && getStorageManager() != null);
 
             if (sameAccount) {
 
@@ -735,10 +735,10 @@ public class ReceiveExternalFilesActivity extends FileActivity
                     mSyncInProgress = true;
 
                 } else {
-                    OCFile currentFile = (mFile == null) ? null :
-                                         getStorageManager().getFileByPath(mFile.getRemotePath());
-                    OCFile currentDir = (getCurrentFolder() == null) ? null :
-                                        getStorageManager().getFileByPath(getCurrentFolder().getRemotePath());
+                    OCFile currentFile = (mFile == null) ? null
+                                         : getStorageManager().getFileByPath(mFile.getRemotePath());
+                    OCFile currentDir = (getCurrentFolder() == null) ? null
+                                        : getStorageManager().getFileByPath(getCurrentFolder().getRemotePath());
 
                     if (currentDir == null) {
                         // current folder was removed from the server
@@ -762,16 +762,16 @@ public class ReceiveExternalFilesActivity extends FileActivity
                         mFile = currentFile;
                     }
 
-                    mSyncInProgress = (!FileSyncAdapter.EVENT_FULL_SYNC_END.equals(event) &&
-                                       !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event));
+                    mSyncInProgress = (!FileSyncAdapter.EVENT_FULL_SYNC_END.equals(event)
+                                       && !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event));
 
                     if (RefreshFolderOperation.EVENT_SINGLE_FOLDER_CONTENTS_SYNCED.
-                            equals(event) &&
-                            /// TODO refactor and make common
+                            equals(event)
+                            && /// TODO refactor and make common
                             synchResult != null && !synchResult.isSuccess()) {
 
-                        if (synchResult.getCode() == ResultCode.UNAUTHORIZED ||
-                                (synchResult.isException() && synchResult.getException()
+                        if (synchResult.getCode() == ResultCode.UNAUTHORIZED
+                                || (synchResult.isException() && synchResult.getException()
                                  instanceof AuthenticatorException)) {
 
                             requestCredentialsUpdate();
@@ -792,7 +792,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
      * Process the result of CopyAndUploadContentUrisTask
      */
     @Override
-    public void onTmpFilesCopied(ResultCode result) {
+    public void onTmpFilesCopied(final ResultCode result) {
         dismissLoadingDialog();
         finish();
     }
@@ -804,7 +804,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
      * @param messageResTitle DataResult id of the title to show in the dialog. 0 to show default alert message.
      *                        -1 to show no title.
      */
-    private void showErrorDialog(int messageResId, int messageResTitle) {
+    private void showErrorDialog(final int messageResId, final int messageResTitle) {
 
         ConfirmationDialogFragment errorDialog = ConfirmationDialogFragment.newInstance(
                     messageResId,
@@ -818,16 +818,16 @@ public class ReceiveExternalFilesActivity extends FileActivity
         errorDialog.setOnConfirmationListener(
         new ConfirmationDialogFragment.ConfirmationDialogFragmentListener() {
             @Override
-            public void onConfirmation(String callerTag) {
+            public void onConfirmation(final String callerTag) {
                 finish();
             }
 
             @Override
-            public void onNeutral(String callerTag) {
+            public void onNeutral(final String callerTag) {
             }
 
             @Override
-            public void onCancel(String callerTag) {
+            public void onCancel(final String callerTag) {
             }
         }
         );
@@ -852,17 +852,17 @@ public class ReceiveExternalFilesActivity extends FileActivity
 
         input.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void beforeTextChanged(final CharSequence charSequence, final int i, final int i1, final int i2) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onTextChanged(final CharSequence charSequence, final int i, final int i1, final int i2) {
 
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged(final Editable editable) {
                 inputLayout.setError(null);
                 inputLayout.setErrorEnabled(false);
             }
@@ -900,7 +900,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
      * @param fileName The name of the file.
      * @return Uri from created file.
      */
-    private Uri savePlainTextToFile(String fileName) {
+    private Uri savePlainTextToFile(final String fileName) {
         Uri uri = null;
         String content = getIntent().getStringExtra(Intent.EXTRA_TEXT);
         try {
@@ -923,7 +923,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
      * @param alertDialog AlertDialog
      * @param input       EditText The view where to place the filename in.
      */
-    private void setFileNameFromIntent(AlertDialog alertDialog, EditText input) {
+    private void setFileNameFromIntent(final AlertDialog alertDialog, final EditText input) {
         String subject = getIntent().getStringExtra(Intent.EXTRA_SUBJECT);
         String title = getIntent().getStringExtra(Intent.EXTRA_TITLE);
         String fileName = subject != null ? subject : title;
@@ -945,7 +945,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
          * If the upload is text shared from other apps and was successfully uploaded -> delete cache
          */
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             boolean success = intent.getBooleanExtra(Extras.EXTRA_UPLOAD_RESULT, false);
             String localPath = intent.getStringExtra(Extras.EXTRA_OLD_FILE_PATH);
             if (success && localPath.contains(getCacheDir().getPath())) {

@@ -52,7 +52,7 @@ public final class CustomHttpDataSourceFactory extends BaseFactory {
      * Map<String, String>)
      */
     public CustomHttpDataSourceFactory(
-        String userAgent, TransferListener<? super DataSource> listener, Map<String,
+        final String userAgent, final TransferListener<? super DataSource> listener, final Map<String,
         String> params) {
         this(userAgent, listener, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
              DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, false, params);
@@ -69,11 +69,11 @@ public final class CustomHttpDataSourceFactory extends BaseFactory {
      * @param allowCrossProtocolRedirects Whether cross-protocol redirects (i.e. redirects from HTTP
      *                                    to HTTPS and vice versa) are enabled.
      */
-    public CustomHttpDataSourceFactory(String userAgent,
-                                       TransferListener<? super DataSource> listener,
-                                       int connectTimeoutMillis, int readTimeoutMillis,
-                                       boolean allowCrossProtocolRedirects,
-                                       Map<String, String> params) {
+    public CustomHttpDataSourceFactory(final String userAgent,
+                                       final TransferListener<? super DataSource> listener,
+                                       final int connectTimeoutMillis, final int readTimeoutMillis,
+                                       final boolean allowCrossProtocolRedirects,
+                                       final Map<String, String> params) {
         this.userAgent = userAgent;
         this.listener = listener;
         this.connectTimeoutMillis = connectTimeoutMillis;

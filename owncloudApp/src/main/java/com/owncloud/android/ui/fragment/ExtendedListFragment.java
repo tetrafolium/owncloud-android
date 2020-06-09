@@ -61,10 +61,10 @@ public class ExtendedListFragment extends Fragment
     private static final String KEY_IS_GRID_VISIBLE = "IS_GRID_VISIBLE";
 
     static final String ARG_JUST_FOLDERS = ExtendedListFragment.class.getCanonicalName() + ".JUST_FOLDERS";
-    static final String ARG_LIST_FILE_OPTION = ExtendedListFragment.class.getCanonicalName() +
-            ".LIST_FILE_OPTION";
-    static final String ARG_PICKING_A_FOLDER = ExtendedListFragment.class.getCanonicalName() +
-            ".ARG_PICKING_A_FOLDER";
+    static final String ARG_LIST_FILE_OPTION = ExtendedListFragment.class.getCanonicalName()
+            + ".LIST_FILE_OPTION";
+    static final String ARG_PICKING_A_FOLDER = ExtendedListFragment.class.getCanonicalName()
+            + ".ARG_PICKING_A_FOLDER";
 
     private ProgressBar mProgressBar;
     private View mShadowView;
@@ -94,7 +94,7 @@ public class ExtendedListFragment extends Fragment
 
     private ListAdapter mAdapter;
 
-    void setListAdapter(ListAdapter listAdapter) {
+    void setListAdapter(final ListAdapter listAdapter) {
         mAdapter = listAdapter;
         mCurrentListView.setAdapter(listAdapter);
         mCurrentListView.invalidateViews();
@@ -141,7 +141,7 @@ public class ExtendedListFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         Timber.v("onCreateView");
         View v = inflater.inflate(R.layout.list_fragment, null);
 
@@ -205,7 +205,7 @@ public class ExtendedListFragment extends Fragment
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             mIndexes = savedInstanceState.getIntegerArrayList(KEY_INDEXES);
@@ -223,7 +223,7 @@ public class ExtendedListFragment extends Fragment
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+    public void onSaveInstanceState(final @NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         Timber.v("onSaveInstanceState()");
         savedInstanceState.putBoolean(KEY_IS_GRID_VISIBLE, isGridEnabled());
@@ -248,8 +248,8 @@ public class ExtendedListFragment extends Fragment
      */
     protected int getReferencePosition() {
         if (mCurrentListView != null) {
-            return (mCurrentListView.getFirstVisiblePosition() +
-                    mCurrentListView.getLastVisiblePosition()) / 2;
+            return (mCurrentListView.getFirstVisiblePosition()
+                    + mCurrentListView.getLastVisiblePosition()) / 2;
         } else {
             return 0;
         }
@@ -291,7 +291,7 @@ public class ExtendedListFragment extends Fragment
     /*
      * Save index and top position
      */
-    protected void saveIndexAndTopPosition(int index) {
+    protected void saveIndexAndTopPosition(final int index) {
 
         mIndexes.add(index);
 
@@ -308,7 +308,7 @@ public class ExtendedListFragment extends Fragment
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         // to be @overriden
     }
 
@@ -323,7 +323,7 @@ public class ExtendedListFragment extends Fragment
         }
     }
 
-    public void setOnRefreshListener(OnEnforceableRefreshListener listener) {
+    public void setOnRefreshListener(final OnEnforceableRefreshListener listener) {
         mOnRefreshListener = listener;
     }
 
@@ -336,7 +336,7 @@ public class ExtendedListFragment extends Fragment
      *
      * @param enabled Desired state for capturing swipe gesture.
      */
-    public void setSwipeEnabled(boolean enabled) {
+    public void setSwipeEnabled(final boolean enabled) {
         mRefreshListLayout.setEnabled(enabled);
         mRefreshGridLayout.setEnabled(enabled);
         mRefreshEmptyLayout.setEnabled(enabled);
@@ -349,7 +349,7 @@ public class ExtendedListFragment extends Fragment
      *
      * @param enabled Desired visibility for the FAB.
      */
-    public void setFabEnabled(boolean enabled) {
+    public void setFabEnabled(final boolean enabled) {
         if (enabled) {
             mFabMain.setVisibility(View.VISIBLE);
         } else {
@@ -360,7 +360,7 @@ public class ExtendedListFragment extends Fragment
     /**
      * Set message for empty list view
      */
-    public void setMessageForEmptyList(String message) {
+    public void setMessageForEmptyList(final String message) {
         if (mEmptyListMessage != null) {
             mEmptyListMessage.setText(message);
         }
@@ -375,7 +375,7 @@ public class ExtendedListFragment extends Fragment
         return (mEmptyListMessage != null) ? mEmptyListMessage.getText().toString() : "";
     }
 
-    protected void onCreateSwipeToRefresh(SwipeRefreshLayout refreshLayout) {
+    protected void onCreateSwipeToRefresh(final SwipeRefreshLayout refreshLayout) {
         // Colors in animations
         refreshLayout.setColorSchemeResources(R.color.color_accent, R.color.primary,
                                               R.color.primary_dark);
@@ -384,7 +384,7 @@ public class ExtendedListFragment extends Fragment
     }
 
     @Override
-    public void onRefresh(boolean ignoreETag) {
+    public void onRefresh(final boolean ignoreETag) {
         mRefreshListLayout.setRefreshing(false);
         mRefreshGridLayout.setRefreshing(false);
         mRefreshEmptyLayout.setRefreshing(false);
@@ -394,12 +394,12 @@ public class ExtendedListFragment extends Fragment
         }
     }
 
-    protected void setChoiceMode(int choiceMode) {
+    protected void setChoiceMode(final int choiceMode) {
         mListView.setChoiceMode(choiceMode);
         mGridView.setChoiceMode(choiceMode);
     }
 
-    protected void setMultiChoiceModeListener(AbsListView.MultiChoiceModeListener listener) {
+    protected void setMultiChoiceModeListener(final AbsListView.MultiChoiceModeListener listener) {
         mListView.setMultiChoiceModeListener(listener);
         mGridView.setMultiChoiceModeListener(listener);
     }
@@ -410,7 +410,7 @@ public class ExtendedListFragment extends Fragment
      *
      * @param enabled
      */
-    protected void setFooterEnabled(boolean enabled) {
+    protected void setFooterEnabled(final boolean enabled) {
         if (enabled) {
             if (mGridView.getFooterViewCount() == 0) {
                 if (mGridFooterView.getParent() != null) {
@@ -451,7 +451,7 @@ public class ExtendedListFragment extends Fragment
      *
      * @param text
      */
-    protected void setFooterText(String text) {
+    protected void setFooterText(final String text) {
         if (text != null && text.length() > 0) {
             ((TextView) mListFooterView.findViewById(R.id.footerText)).setText(text);
             ((TextView) mGridFooterView.findViewById(R.id.footerText)).setText(text);
@@ -462,7 +462,7 @@ public class ExtendedListFragment extends Fragment
         }
     }
 
-    public void setProgressBarAsIndeterminate(boolean indeterminate) {
+    public void setProgressBarAsIndeterminate(final boolean indeterminate) {
         Timber.d("Setting progress visibility to %s", indeterminate);
         mShadowView.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);

@@ -47,14 +47,14 @@ public class MediaServiceBinder extends Binder implements MediaController.MediaP
      *
      * @param service       A {@link MediaService} instance to access with the binder
      */
-    public MediaServiceBinder(MediaService service) {
+    public MediaServiceBinder(final MediaService service) {
         if (service == null) {
             throw new IllegalArgumentException("Argument 'service' can not be null");
         }
         mService = service;
     }
 
-    public boolean isPlaying(OCFile mFile) {
+    public boolean isPlaying(final OCFile mFile) {
         return (mFile != null && mFile.equals(mService.getCurrentFile()));
     }
 
@@ -124,7 +124,7 @@ public class MediaServiceBinder extends Binder implements MediaController.MediaP
     }
 
     @Override
-    public void seekTo(int pos) {
+    public void seekTo(final int pos) {
         Timber.d("Seeking " + pos + " through binder...");
         MediaPlayer currentPlayer = mService.getPlayer();
         MediaService.State currentState = mService.getState();
@@ -139,7 +139,7 @@ public class MediaServiceBinder extends Binder implements MediaController.MediaP
         mService.processPlayRequest();  // this will finish the service if there is no file preloaded to play
     }
 
-    public void start(Account account, OCFile file, boolean playImmediately, int position) {
+    public void start(final Account account, final OCFile file, final boolean playImmediately, final int position) {
         Timber.d("Loading and starting through binder...");
         Intent i = new Intent(mService, MediaService.class);
         i.putExtra(MediaService.EXTRA_ACCOUNT, account);
@@ -150,11 +150,11 @@ public class MediaServiceBinder extends Binder implements MediaController.MediaP
         mService.startService(i);
     }
 
-    public void registerMediaController(MediaControlView mediaController) {
+    public void registerMediaController(final MediaControlView mediaController) {
         mService.setMediaContoller(mediaController);
     }
 
-    public void unregisterMediaController(MediaControlView mediaController) {
+    public void unregisterMediaController(final MediaControlView mediaController) {
         if (mediaController != null && mediaController == mService.getMediaController()) {
             mService.setMediaContoller(null);
         }

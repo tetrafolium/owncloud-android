@@ -35,7 +35,7 @@ import timber.log.Timber;
 public class RetryDownloadJobService extends JobService {
 
     @Override
-    public boolean onStartJob(JobParameters jobParameters) {
+    public boolean onStartJob(final JobParameters jobParameters) {
 
         String accountName = jobParameters.getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
 
@@ -79,7 +79,7 @@ public class RetryDownloadJobService extends JobService {
     }
 
     @Override
-    public boolean onStopJob(JobParameters jobParameters) {
+    public boolean onStopJob(final JobParameters jobParameters) {
         return true;
     }
 }

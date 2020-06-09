@@ -109,7 +109,7 @@ public class OCUpload implements Parcelable {
      * @param remotePath        Absolute path in the remote account to set to the uploaded file.
      * @param accountName       Name of an ownCloud account to update the file to.
      */
-    public OCUpload(String localPath, String remotePath, String accountName) {
+    public OCUpload(final String localPath, final String remotePath, final String accountName) {
         if (localPath == null || !localPath.startsWith(File.separator)) {
             throw new IllegalArgumentException("Local path must be an absolute path in the local file system");
         }
@@ -131,7 +131,7 @@ public class OCUpload implements Parcelable {
      * @param  ocFile           {@link OCFile} instance to update in the remote server.
      * @param  account          ownCloud {@link Account} where ocFile is contained.
      */
-    public OCUpload(OCFile ocFile, Account account) {
+    public OCUpload(final OCFile ocFile, final Account account) {
         this(ocFile.getStoragePath(), ocFile.getRemotePath(), account.name);
     }
 
@@ -154,7 +154,7 @@ public class OCUpload implements Parcelable {
     }
 
     // Getters & Setters
-    public void setUploadId(long id) {
+    public void setUploadId(final long id) {
         mId = id;
     }
 
@@ -173,7 +173,7 @@ public class OCUpload implements Parcelable {
      * Sets uploadStatus AND SETS lastResult = null;
      * @param uploadStatus the uploadStatus to set
      */
-    public void setUploadStatus(UploadStatus uploadStatus) {
+    public void setUploadStatus(final UploadStatus uploadStatus) {
         this.mUploadStatus = uploadStatus;
         setLastResult(UploadResult.UNKNOWN);
     }
@@ -188,7 +188,7 @@ public class OCUpload implements Parcelable {
     /**
      * @param lastResult the lastResult to set
      */
-    public void setLastResult(UploadResult lastResult) {
+    public void setLastResult(final UploadResult lastResult) {
         this.mLastResult = ((lastResult != null) ? lastResult : UploadResult.UNKNOWN);
     }
 
@@ -199,7 +199,7 @@ public class OCUpload implements Parcelable {
         return mLocalPath;
     }
 
-    public void setLocalPath(String localPath) {
+    public void setLocalPath(final String localPath) {
         mLocalPath = localPath;
     }
 
@@ -213,7 +213,7 @@ public class OCUpload implements Parcelable {
     /**
      * @param remotePath
      */
-    public void setRemotePath(String remotePath) {
+    public void setRemotePath(final String remotePath) {
         mRemotePath = remotePath;
     }
 
@@ -224,7 +224,7 @@ public class OCUpload implements Parcelable {
         return mFileSize;
     }
 
-    public void setFileSize(long fileSize) {
+    public void setFileSize(final long fileSize) {
         mFileSize = fileSize;
     }
 
@@ -245,7 +245,7 @@ public class OCUpload implements Parcelable {
     /**
      * @param localAction the localAction to set
      */
-    public void setLocalAction(int localAction) {
+    public void setLocalAction(final int localAction) {
         this.mLocalAction = localAction;
     }
 
@@ -259,7 +259,7 @@ public class OCUpload implements Parcelable {
     /**
      * @param forceOverwrite the forceOverwrite to set
      */
-    public void setForceOverwrite(boolean forceOverwrite) {
+    public void setForceOverwrite(final boolean forceOverwrite) {
         this.mForceOverwrite = forceOverwrite;
     }
 
@@ -273,7 +273,7 @@ public class OCUpload implements Parcelable {
     /**
      * @param mCreatesRemoteFolder folder needs to be created or not
      */
-    public void setCreateRemoteFolder(boolean mCreatesRemoteFolder) {
+    public void setCreateRemoteFolder(final boolean mCreatesRemoteFolder) {
         this.mCreatesRemoteFolder = mCreatesRemoteFolder;
     }
 
@@ -287,11 +287,11 @@ public class OCUpload implements Parcelable {
     /**
      * Returns owncloud account as {@link Account} object.
      */
-    public Account getAccount(Context context) {
+    public Account getAccount(final Context context) {
         return AccountUtils.getOwnCloudAccountByName(context, getAccountName());
     }
 
-    public void setCreatedBy(int createdBy) {
+    public void setCreatedBy(final int createdBy) {
         mCreatedBy = createdBy;
     }
 
@@ -299,7 +299,7 @@ public class OCUpload implements Parcelable {
         return mCreatedBy;
     }
 
-    public void setUploadEndTimestamp(long uploadEndTimestamp) {
+    public void setUploadEndTimestamp(final long uploadEndTimestamp) {
         mUploadEndTimeStamp = uploadEndTimestamp;
     }
 
@@ -307,7 +307,7 @@ public class OCUpload implements Parcelable {
         return mUploadEndTimeStamp;
     }
 
-    public void setTransferId(String transferId) {
+    public void setTransferId(final String transferId) {
         mTransferId = transferId;
     }
 
@@ -321,8 +321,8 @@ public class OCUpload implements Parcelable {
     public String toFormattedString() {
         try {
             String localPath = getLocalPath() != null ? getLocalPath() : "";
-            return localPath + " status:" + getUploadStatus() + " result:" +
-                   (getLastResult() == null ? "null" : getLastResult().getValue());
+            return localPath + " status:" + getUploadStatus() + " result:"
+                   + (getLastResult() == null ? "null" : getLastResult().getValue());
         } catch (NullPointerException e) {
             Timber.d("Exception %s", e.toString());
             return (e.toString());
@@ -335,12 +335,12 @@ public class OCUpload implements Parcelable {
     public static final Parcelable.Creator<OCUpload> CREATOR = new Parcelable.Creator<OCUpload>() {
 
         @Override
-        public OCUpload createFromParcel(Parcel source) {
+        public OCUpload createFromParcel(final Parcel source) {
             return new OCUpload(source);
         }
 
         @Override
-        public OCUpload[] newArray(int size) {
+        public OCUpload[] newArray(final int size) {
             return new OCUpload[size];
         }
     };
@@ -350,11 +350,11 @@ public class OCUpload implements Parcelable {
      *
      * @param source The source parcel
      */
-    protected OCUpload(Parcel source) {
+    protected OCUpload(final Parcel source) {
         readFromParcel(source);
     }
 
-    public void readFromParcel(Parcel source) {
+    public void readFromParcel(final Parcel source) {
         mId = source.readLong();
         mLocalPath = source.readString();
         mRemotePath = source.readString();
@@ -384,7 +384,7 @@ public class OCUpload implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeLong(mId);
         dest.writeString(mLocalPath);
         dest.writeString(mRemotePath);
@@ -400,6 +400,6 @@ public class OCUpload implements Parcelable {
         dest.writeString(mTransferId);
     }
 
-    enum CanUploadFileNowStatus {NOW, LATER, FILE_GONE, ERROR}
+    enum CanUploadFileNowStatus { NOW, LATER, FILE_GONE, ERROR }
 
 }

@@ -52,7 +52,7 @@ public class FileStorageUtils {
     /**
      * Get local owncloud storage path for accountName.
      */
-    public static String getSavePath(String accountName) {
+    public static String getSavePath(final String accountName) {
         File sdCard = Environment.getExternalStorageDirectory();
         return sdCard.getAbsolutePath() + "/" + MainApp.Companion.getDataFolder() + "/" + Uri.encode(accountName, "@");
         // URL encoding is an 'easy fix' to overcome that NTFS and FAT32 don't allow ":" in file names,
@@ -64,14 +64,14 @@ public class FileStorageUtils {
      * corresponding local path (in local owncloud storage) to remote uploaded
      * file.
      */
-    public static String getDefaultSavePathFor(String accountName, OCFile file) {
+    public static String getDefaultSavePathFor(final String accountName, final OCFile file) {
         return getSavePath(accountName) + file.getRemotePath();
     }
 
     /**
      * Get absolute path to tmp folder inside datafolder in sd-card for given accountName.
      */
-    public static String getTemporalPath(String accountName) {
+    public static String getTemporalPath(final String accountName) {
         File sdCard = Environment.getExternalStorageDirectory();
         return sdCard.getAbsolutePath() + "/" + MainApp.Companion.getDataFolder() + "/tmp/" + Uri.encode(accountName,
                 "@");
@@ -90,7 +90,7 @@ public class FileStorageUtils {
         return savePath.getUsableSpace();
     }
 
-    public static String getParentPath(String remotePath) {
+    public static String getParentPath(final String remotePath) {
         String parentPath = new File(remotePath).getParent();
         parentPath = parentPath.endsWith(OCFile.PATH_SEPARATOR) ? parentPath : parentPath + OCFile.PATH_SEPARATOR;
         return parentPath;
@@ -102,7 +102,7 @@ public class FileStorageUtils {
      * @param remote remote file read from the server (remote file or folder).
      * @return New OCFile instance representing the remote resource described by remote.
      */
-    public static OCFile createOCFileFromRemoteFile(RemoteFile remote) {
+    public static OCFile createOCFileFromRemoteFile(final RemoteFile remote) {
         OCFile file = new OCFile(remote.getRemotePath());
         file.setCreationTimestamp(remote.getCreationTimestamp());
         if (remote.getMimeType().equalsIgnoreCase("DIR")) {
@@ -122,7 +122,7 @@ public class FileStorageUtils {
     /**
      * Sorts all filenames, regarding last user decision
      */
-    public static Vector<OCFile> sortFolder(Vector<OCFile> files, int sortOrder, boolean isAscending) {
+    public static Vector<OCFile> sortFolder(final Vector<OCFile> files, final int sortOrder, final boolean isAscending) {
         switch (sortOrder) {
         case SORT_NAME:
             FileStorageUtils.sortByName(files, isAscending);
@@ -141,7 +141,7 @@ public class FileStorageUtils {
     /**
      * Sorts list by Date
      */
-    private static void sortByDate(Vector<OCFile> files, boolean isAscending) {
+    private static void sortByDate(final Vector<OCFile> files, final boolean isAscending) {
         final int val;
         if (isAscending) {
             val = 1;
@@ -163,7 +163,7 @@ public class FileStorageUtils {
     /**
      * Sorts list by Size
      */
-    private static void sortBySize(Vector<OCFile> files, boolean isAscending) {
+    private static void sortBySize(final Vector<OCFile> files, final boolean isAscending) {
         final int val;
         if (isAscending) {
             val = 1;
@@ -183,7 +183,7 @@ public class FileStorageUtils {
      *
      * @param files files to sort
      */
-    private static void sortByName(Vector<OCFile> files, boolean isAscending) {
+    private static void sortByName(final Vector<OCFile> files, final boolean isAscending) {
         final int val;
         if (isAscending) {
             val = 1;
@@ -208,7 +208,7 @@ public class FileStorageUtils {
      * Mimetype String of a file
      *
      */
-    public static String getMimeTypeFromName(String path) {
+    public static String getMimeTypeFromName(final String path) {
         String extension = "";
         int pos = path.lastIndexOf('.');
         if (pos >= 0) {
@@ -218,7 +218,7 @@ public class FileStorageUtils {
         return (result != null) ? result : "";
     }
 
-    public static boolean deleteDir(File dir) {
+    public static boolean deleteDir(final File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
             if (children != null) {

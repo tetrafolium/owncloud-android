@@ -24,20 +24,20 @@ import android.widget.LinearLayout;
 
 public class SquareLinearLayout extends LinearLayout {
 
-    public SquareLinearLayout(Context context) {
+    public SquareLinearLayout(final Context context) {
         super(context);
     }
 
-    public SquareLinearLayout(Context context, AttributeSet attrs) {
+    public SquareLinearLayout(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareLinearLayout(Context context, AttributeSet attrs, int defStyle) {
+    public SquareLinearLayout(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec);
     }
 }

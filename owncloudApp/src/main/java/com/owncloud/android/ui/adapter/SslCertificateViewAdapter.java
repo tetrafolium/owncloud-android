@@ -42,12 +42,12 @@ public class SslCertificateViewAdapter implements SslUntrustedCertDialog.Certifi
      *
      * @param
      */
-    public SslCertificateViewAdapter(SslCertificate certificate) {
+    public SslCertificateViewAdapter(final SslCertificate certificate) {
         mCertificate = certificate;
     }
 
     @Override
-    public void updateCertificateView(View dialogView) {
+    public void updateCertificateView(final View dialogView) {
         TextView nullCerView = dialogView.findViewById(R.id.null_cert);
         if (mCertificate != null) {
             nullCerView.setVisibility(View.GONE);
@@ -61,7 +61,7 @@ public class SslCertificateViewAdapter implements SslUntrustedCertDialog.Certifi
         }
     }
 
-    private void showValidity(Date notBefore, Date notAfter, View dialogView) {
+    private void showValidity(final Date notBefore, final Date notAfter, final View dialogView) {
         TextView fromView = dialogView.findViewById(R.id.value_validity_from);
         TextView toView = dialogView.findViewById(R.id.value_validity_to);
         DateFormat dateFormat = DateFormat.getDateInstance();
@@ -69,7 +69,7 @@ public class SslCertificateViewAdapter implements SslUntrustedCertDialog.Certifi
         toView.setText(dateFormat.format(notAfter));
     }
 
-    private void showSubject(SslCertificate.DName subject, View dialogView) {
+    private void showSubject(final SslCertificate.DName subject, final View dialogView) {
         TextView cnView = dialogView.findViewById(R.id.value_subject_CN);
         cnView.setText(subject.getCName());
         cnView.setVisibility(View.VISIBLE);
@@ -91,7 +91,7 @@ public class SslCertificateViewAdapter implements SslUntrustedCertDialog.Certifi
         dialogView.findViewById(R.id.label_subject_L).setVisibility(View.GONE);
     }
 
-    private void showIssuer(SslCertificate.DName issuer, View dialogView) {
+    private void showIssuer(final SslCertificate.DName issuer, final View dialogView) {
         TextView cnView = dialogView.findViewById(R.id.value_issuer_CN);
         cnView.setText(issuer.getCName());
         cnView.setVisibility(View.VISIBLE);
@@ -113,7 +113,7 @@ public class SslCertificateViewAdapter implements SslUntrustedCertDialog.Certifi
         dialogView.findViewById(R.id.label_issuer_L).setVisibility(View.GONE);
     }
 
-    private void hideSignature(View dialogView) {
+    private void hideSignature(final View dialogView) {
         dialogView.findViewById(R.id.label_signature).setVisibility(View.GONE);
         dialogView.findViewById(R.id.label_signature_algorithm).setVisibility(View.GONE);
         dialogView.findViewById(R.id.value_signature_algorithm).setVisibility(View.GONE);

@@ -86,7 +86,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
      * {@link}
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         /// read extra parameters in intent
@@ -149,7 +149,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
         }
 
         @Override
-        public boolean isEnabled(int position) {
+        public boolean isEnabled(final int position) {
             return false;
         }
 
@@ -157,7 +157,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
          * {@inheritDoc}
          */
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             View view = convertView;
             if (view == null) {
                 LayoutInflater vi = (LayoutInflater) getSystemService(
@@ -172,8 +172,8 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
                         text1.setText(String.format(getString(R.string.foreign_files_local_text), localPath));
                     }
                 }
-                if (mRemotePaths != null && mRemotePaths.size() > 0 && position >= 0 &&
-                        position < mRemotePaths.size()) {
+                if (mRemotePaths != null && mRemotePaths.size() > 0 && position >= 0
+                        && position < mRemotePaths.size()) {
                     TextView text2 = view.findViewById(android.R.id.text2);
                     String remotePath = mRemotePaths.get(position);
                     if (text2 != null && remotePath != null) {
@@ -191,7 +191,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
      * @param v     Clicked view (button MOVE or CANCEL)
      */
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.ok) {
             /// perform movement operation in background thread
             Timber.d("Clicked MOVE, start movement");
@@ -229,7 +229,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
          * @return     'False' when the movement of any file fails.
          */
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(final Void... params) {
             while (!mLocalPaths.isEmpty()) {
                 String currentPath = mLocalPaths.get(0);
                 File currentFile = new File(currentPath);
@@ -262,7 +262,7 @@ public class ErrorsWhileCopyingHandlerActivity extends AppCompatActivity
          * @param result      'True' when the movement was successful.
          */
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(final Boolean result) {
             mAdapter.notifyDataSetChanged();
             mCurrentDialog.dismiss();
             mCurrentDialog = null;

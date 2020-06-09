@@ -40,12 +40,12 @@ import timber.log.Timber;
 public class ConflictsResolveActivity extends FileActivity implements OnConflictDecisionMadeListener {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public void conflictDecisionMade(Decision decision) {
+    public void conflictDecisionMade(final Decision decision) {
 
         Integer behaviour = null;
         Boolean forceOverwrite = null;
@@ -80,7 +80,7 @@ public class ConflictsResolveActivity extends FileActivity implements OnConflict
     }
 
     @Override
-    protected void onAccountSet(boolean stateWasRecovered) {
+    protected void onAccountSet(final boolean stateWasRecovered) {
         super.onAccountSet(stateWasRecovered);
         if (getAccount() != null) {
             OCFile file = getFile();

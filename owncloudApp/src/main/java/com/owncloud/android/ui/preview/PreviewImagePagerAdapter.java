@@ -63,8 +63,8 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
      * @param parentFolder    Folder where images will be searched for.
      * @param storageManager  Bridge to database.
      */
-    public PreviewImagePagerAdapter(FragmentManager fragmentManager, OCFile parentFolder,
-                                    Account account, FileDataStorageManager storageManager) {
+    public PreviewImagePagerAdapter(final FragmentManager fragmentManager, final OCFile parentFolder,
+                                    final Account account, final FileDataStorageManager storageManager) {
         super(fragmentManager);
 
         if (fragmentManager == null) {
@@ -96,11 +96,11 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
      *
      * @return A vector with the image files handled by the adapter.
      */
-    protected OCFile getFileAt(int position) {
+    protected OCFile getFileAt(final int position) {
         return mImageFiles.get(position);
     }
 
-    public Fragment getItem(int i) {
+    public Fragment getItem(final int i) {
         OCFile file = mImageFiles.get(i);
         Fragment fragment;
         if (file.isDown()) {
@@ -124,7 +124,7 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
         return fragment;
     }
 
-    public int getFilePosition(OCFile file) {
+    public int getFilePosition(final OCFile file) {
         return mImageFiles.indexOf(file);
     }
 
@@ -134,11 +134,11 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public CharSequence getPageTitle(int position) {
+    public CharSequence getPageTitle(final int position) {
         return mImageFiles.get(position).getFileName();
     }
 
-    private void updateFile(int position, OCFile file) {
+    private void updateFile(final int position, final OCFile file) {
         FileFragment fragmentToUpdate = mCachedFragments.get(position);
         if (fragmentToUpdate != null) {
             mObsoleteFragments.add(fragmentToUpdate);
@@ -147,7 +147,7 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
         mImageFiles.set(position, file);
     }
 
-    private void updateWithDownloadError(int position) {
+    private void updateWithDownloadError(final int position) {
         FileFragment fragmentToUpdate = mCachedFragments.get(position);
         if (fragmentToUpdate != null) {
             mObsoleteFragments.add(fragmentToUpdate);
@@ -163,7 +163,7 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    public void clearErrorAt(int position) {
+    public void clearErrorAt(final int position) {
         FileFragment fragmentToUpdate = mCachedFragments.get(position);
         if (fragmentToUpdate != null) {
             mObsoleteFragments.add(fragmentToUpdate);
@@ -172,7 +172,7 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public int getItemPosition(Object object) {
+    public int getItemPosition(final Object object) {
         if (mObsoleteFragments.contains(object)) {
             mObsoleteFragments.remove(object);
             return POSITION_NONE;
@@ -181,19 +181,19 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(final ViewGroup container, final int position) {
         Object fragment = super.instantiateItem(container, position);
         mCachedFragments.put(position, (FileFragment) fragment);
         return fragment;
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(final ViewGroup container, final int position, final Object object) {
         mCachedFragments.remove(position);
         super.destroyItem(container, position, object);
     }
 
-    public boolean pendingErrorAt(int position) {
+    public boolean pendingErrorAt(final int position) {
         return mDownloadErrors.contains(position);
     }
 
@@ -210,7 +210,7 @@ public class PreviewImagePagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    public void onDownloadEvent(OCFile file, String action, boolean success) {
+    public void onDownloadEvent(final OCFile file, final String action, final boolean success) {
         int position = getFilePosition(file);
         if (position >= 0) {
             if (action.equals(FileDownloader.getDownloadFinishMessage())) {

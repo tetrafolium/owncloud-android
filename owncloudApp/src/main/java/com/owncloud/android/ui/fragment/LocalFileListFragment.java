@@ -64,7 +64,7 @@ public class LocalFileListFragment extends ExtendedListFragment {
      * @param justFolders When 'true', only folders will be shown to the user, not files
      * @return New fragment with arguments set
      */
-    public static LocalFileListFragment newInstance(boolean justFolders) {
+    public static LocalFileListFragment newInstance(final boolean justFolders) {
         LocalFileListFragment frag = new LocalFileListFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_JUST_FOLDERS, justFolders);
@@ -76,13 +76,13 @@ public class LocalFileListFragment extends ExtendedListFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         try {
             mContainerActivity = (ContainerActivity) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement " +
-                                         LocalFileListFragment.ContainerActivity.class.getSimpleName());
+            throw new ClassCastException(context.toString() + " must implement "
+                                         + LocalFileListFragment.ContainerActivity.class.getSimpleName());
         }
     }
 
@@ -90,16 +90,16 @@ public class LocalFileListFragment extends ExtendedListFragment {
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         Timber.i("onCreateView() start");
         View v = super.onCreateView(inflater, container, savedInstanceState);
         setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         setSwipeEnabled(false); // Disable pull-to-refresh
         setFabEnabled(false); // Disable FAB
         setMessageForEmptyList(
-            isShowingJustFolders() ?
-            getString(R.string.local_file_list_empty_just_folders) :
-            getString(R.string.local_file_list_empty)
+            isShowingJustFolders()
+            ? getString(R.string.local_file_list_empty_just_folders)
+            : getString(R.string.local_file_list_empty)
         );
         Timber.i("onCreateView() end");
         return v;
@@ -113,7 +113,7 @@ public class LocalFileListFragment extends ExtendedListFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         Timber.i("onActivityCreated() start");
 
         super.onActivityCreated(savedInstanceState);
@@ -147,7 +147,7 @@ public class LocalFileListFragment extends ExtendedListFragment {
      * Notifies the container activity in any case.
      */
     @Override
-    public void onItemClick(AdapterView<?> l, View v, int position, long id) {
+    public void onItemClick(final AdapterView<?> l, final View v, final int position, final long id) {
         File file = (File) mAdapter.getItem(position);
         if (file != null) {
             /// Click on a directory
@@ -204,7 +204,7 @@ public class LocalFileListFragment extends ExtendedListFragment {
      *
      * @param directory Directory to be listed
      */
-    public void listFolder(File directory) {
+    public void listFolder(final File directory) {
 
         // Check input parameters for null
         if (directory == null) {

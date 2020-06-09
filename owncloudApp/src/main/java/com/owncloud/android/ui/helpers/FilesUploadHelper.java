@@ -46,17 +46,17 @@ public class FilesUploadHelper implements Parcelable {
     private Activity activity;
     private String accountName;
 
-    public FilesUploadHelper(Activity activity, String accountName) {
+    public FilesUploadHelper(final Activity activity, final String accountName) {
         this.activity = activity;
         this.accountName = accountName;
     }
 
-    protected FilesUploadHelper(Parcel in) {
+    protected FilesUploadHelper(final Parcel in) {
         this.capturedPhotoPath = in.readString();
         this.image = (File) in.readSerializable();
     }
 
-    public void init(Activity activity, String accountName) {
+    public void init(final Activity activity, final String accountName) {
         this.activity = activity;
         this.accountName = accountName;
     }
@@ -78,8 +78,8 @@ public class FilesUploadHelper implements Parcelable {
         private final String[] checkedFilePaths;
         private final OnCheckAvailableSpaceListener callback;
 
-        public CheckAvailableSpaceTask(String[] checkedFilePaths,
-                                       OnCheckAvailableSpaceListener listener) {
+        public CheckAvailableSpaceTask(final String[] checkedFilePaths,
+                                       final OnCheckAvailableSpaceListener listener) {
             super();
             this.checkedFilePaths = checkedFilePaths;
             this.callback = listener;
@@ -99,7 +99,7 @@ public class FilesUploadHelper implements Parcelable {
          * @return 'True' if there is space enough.
          */
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(final Void... params) {
             long total = 0;
             for (int i = 0; checkedFilePaths != null && i < checkedFilePaths.length; i++) {
                 String localPath = checkedFilePaths[i];
@@ -118,13 +118,13 @@ public class FilesUploadHelper implements Parcelable {
          * @param hasEnoughSpace 'True' when there is space enough to copy all the selected files.
          */
         @Override
-        protected void onPostExecute(Boolean hasEnoughSpace) {
+        protected void onPostExecute(final Boolean hasEnoughSpace) {
             callback.onCheckAvailableSpaceFinished(hasEnoughSpace, checkedFilePaths);
         }
     }
 
-    public void checkIfAvailableSpace(String[] checkedFilePaths,
-                                      OnCheckAvailableSpaceListener listener) {
+    public void checkIfAvailableSpace(final String[] checkedFilePaths,
+                                      final OnCheckAvailableSpaceListener listener) {
         new CheckAvailableSpaceTask(checkedFilePaths, listener).execute();
     }
 
@@ -199,19 +199,19 @@ public class FilesUploadHelper implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(this.capturedPhotoPath);
         dest.writeSerializable(this.image);
     }
 
     public static final Parcelable.Creator<FilesUploadHelper> CREATOR = new Parcelable.Creator<FilesUploadHelper>() {
         @Override
-        public FilesUploadHelper createFromParcel(Parcel source) {
+        public FilesUploadHelper createFromParcel(final Parcel source) {
             return new FilesUploadHelper(source);
         }
 
         @Override
-        public FilesUploadHelper[] newArray(int size) {
+        public FilesUploadHelper[] newArray(final int size) {
             return new FilesUploadHelper[size];
         }
     };

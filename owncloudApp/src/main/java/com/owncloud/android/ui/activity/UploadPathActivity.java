@@ -32,7 +32,7 @@ public class UploadPathActivity extends FolderPickerActivity implements FileFrag
     public static final String KEY_CAMERA_UPLOAD_PATH = "CAMERA_UPLOAD_PATH";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         String cameraUploadPath = getIntent().getStringExtra(KEY_CAMERA_UPLOAD_PATH);
@@ -48,7 +48,7 @@ public class UploadPathActivity extends FolderPickerActivity implements FileFrag
      * just updated.
      */
     @Override
-    protected void onAccountSet(boolean stateWasRecovered) {
+    protected void onAccountSet(final boolean stateWasRecovered) {
         super.onAccountSet(stateWasRecovered);
         if (getAccount() != null) {
 

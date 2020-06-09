@@ -80,15 +80,15 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
     private Account mAccount;
     private ComponentsGetter mTransferServiceGetter;
 
-    private enum ViewType {LIST_ITEM, GRID_IMAGE, GRID_ITEM}
+    private enum ViewType { LIST_ITEM, GRID_IMAGE, GRID_ITEM }
 
     public FileListListAdapter(
-        boolean justFolders,
-        boolean onlyAvailableOffline,
-        boolean sharedByLinkFiles,
-        boolean folderPicker,
-        Context context,
-        ComponentsGetter transferServiceGetter
+        final boolean justFolders,
+        final boolean onlyAvailableOffline,
+        final boolean sharedByLinkFiles,
+        final boolean folderPicker,
+        final Context context,
+        final ComponentsGetter transferServiceGetter
     ) {
         mJustFolders = justFolders;
         mOnlyAvailableOffline = onlyAvailableOffline;
@@ -115,7 +115,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public boolean isEnabled(int position) {
+    public boolean isEnabled(final int position) {
         // Disable click for files when selecting a folder in copying and moving operations
         return !mFolderPicker || mFiles.get(position).isFolder();
     }
@@ -126,7 +126,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Object getItem(final int position) {
         if (mFiles == null || mFiles.size() <= position) {
             return null;
         }
@@ -134,7 +134,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         if (mFiles == null || mFiles.size() <= position) {
             return 0;
         }
@@ -142,12 +142,12 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         return 0;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, final ViewGroup parent) {
 
         View view = convertView;
         OCFile file = null;
@@ -260,8 +260,8 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
             view.setBackgroundColor(Color.WHITE);
 
             AbsListView parentList = (AbsListView) parent;
-            if (parentList.getChoiceMode() != AbsListView.CHOICE_MODE_NONE &&
-                    parentList.getCheckedItemCount() > 0
+            if (parentList.getChoiceMode() != AbsListView.CHOICE_MODE_NONE
+                    && parentList.getCheckedItemCount() > 0
                ) {
                 if (parentList.isItemChecked(position)) {
                     view.setBackgroundColor(mContext.getResources().getColor(
@@ -324,7 +324,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         return view;
     }
 
-    private void setIconPinAcordingToFilesLocalState(ImageView localStateView, OCFile file) {
+    private void setIconPinAcordingToFilesLocalState(final ImageView localStateView, final OCFile file) {
         // local state
         localStateView.bringToFront();
         final FileDownloaderBinder downloaderBinder =
@@ -388,7 +388,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
      * @param updatedStorageManager Optional updated storage manager; used to replace
      *                              mStorageManager if is different (and not NULL)
      */
-    public void swapDirectory(OCFile folder, FileDataStorageManager updatedStorageManager) {
+    public void swapDirectory(final OCFile folder, final FileDataStorageManager updatedStorageManager) {
         if (updatedStorageManager != null && updatedStorageManager != mStorageManager) {
             mStorageManager = updatedStorageManager;
             mAccount = AccountUtils.getCurrentOwnCloudAccount(mContext);
@@ -425,7 +425,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
      * @param files Collection of files to filter
      * @return Folders in the input
      */
-    private Vector<OCFile> getFolders(Vector<OCFile> files) {
+    private Vector<OCFile> getFolders(final Vector<OCFile> files) {
         Vector<OCFile> ret = new Vector<>();
         OCFile current;
         for (int i = 0; i < files.size(); i++) {
@@ -437,7 +437,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         return ret;
     }
 
-    public void setSortOrder(Integer order, boolean ascending) {
+    public void setSortOrder(final Integer order, final boolean ascending) {
 
         PreferenceManager.setSortOrder(order, mContext, FileStorageUtils.FILE_DISPLAY_SORT);
         PreferenceManager.setSortAscending(ascending, mContext, FileStorageUtils.FILE_DISPLAY_SORT);
@@ -450,7 +450,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         notifyDataSetChanged();
     }
 
-    public ArrayList<OCFile> getCheckedItems(AbsListView parentList) {
+    public ArrayList<OCFile> getCheckedItems(final AbsListView parentList) {
         SparseBooleanArray checkedPositions = parentList.getCheckedItemPositions();
         ArrayList<OCFile> files = new ArrayList<>();
         Object item;
@@ -465,7 +465,7 @@ public class FileListListAdapter extends BaseAdapter implements ListAdapter {
         return files;
     }
 
-    public void filterBySearch(String query) {
+    public void filterBySearch(final String query) {
         query = query.toLowerCase();
 
         clearFilterBySearch();

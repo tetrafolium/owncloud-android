@@ -50,7 +50,7 @@ public class RateMeDialog extends DialogFragment {
     private static final String PLAY_STORE_URI = "http://play.google.com/store/apps/details?id=";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setCancelable(false);
@@ -63,7 +63,7 @@ public class RateMeDialog extends DialogFragment {
      * @param cancelable  If 'true', the dialog can be cancelled by the user input (BACK button, touch outside...)
      * @return New dialog instance, ready to show.
      */
-    public static RateMeDialog newInstance(String packageName, boolean cancelable) {
+    public static RateMeDialog newInstance(final String packageName, final boolean cancelable) {
         RateMeDialog fragment = new RateMeDialog();
         Bundle args = new Bundle();
         args.putBoolean(ARG_CANCELABLE, cancelable);
@@ -73,7 +73,7 @@ public class RateMeDialog extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         // Create a view by inflating desired layout
         View view = inflater.inflate(R.layout.rate_me_dialog, container, false);
 
@@ -138,7 +138,7 @@ public class RateMeDialog extends DialogFragment {
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 

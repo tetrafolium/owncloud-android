@@ -64,8 +64,8 @@ public class FileMenuFilter {
      * @param cg          Accessor to app components, needed to access synchronization services
      * @param context     Android {@link Context}, needed to access build setup resources.
      */
-    public FileMenuFilter(List<OCFile> targetFiles, Account account, ComponentsGetter cg,
-                          Context context) {
+    public FileMenuFilter(final List<OCFile> targetFiles, final Account account, final ComponentsGetter cg,
+                          final Context context) {
         mFiles = targetFiles;
         mAccount = account;
         mComponentsGetter = cg;
@@ -80,8 +80,8 @@ public class FileMenuFilter {
      * @param cg         Accessor to app components, needed to access synchronization services
      * @param context    Android {@link Context}, needed to access build setup resources.
      */
-    public FileMenuFilter(OCFile targetFile, Account account, ComponentsGetter cg,
-                          Context context) {
+    public FileMenuFilter(final OCFile targetFile, final Account account, final ComponentsGetter cg,
+                          final Context context) {
         this(Arrays.asList(targetFile), account, cg, context);
     }
 
@@ -91,8 +91,8 @@ public class FileMenuFilter {
      *
      * @param menu Options or context menu to filter.
      */
-    public void filter(Menu menu, boolean displaySelectAll, boolean displaySelectInverse,
-                       boolean onlyAvailableOffline, boolean sharedByLinkFiles) {
+    public void filter(final Menu menu, final boolean displaySelectAll, final boolean displaySelectInverse,
+                       final boolean onlyAvailableOffline, final boolean sharedByLinkFiles) {
         if (mFiles == null || mFiles.size() <= 0) {
             hideAll(menu);
 
@@ -121,7 +121,7 @@ public class FileMenuFilter {
         }
     }
 
-    private void hideAll(Menu menu) {
+    private void hideAll(final Menu menu) {
         MenuItem item;
         for (int i = 0; i < menu.size(); i++) {
             item = menu.getItem(i);
@@ -139,8 +139,8 @@ public class FileMenuFilter {
      * @param toHide List to save the options that must be shown in the menu.
      */
 
-    private void filter(List<Integer> toShow, List<Integer> toHide, boolean displaySelectAll,
-                        boolean displaySelectInverse, boolean onlyAvailableOffline, boolean sharedByLinkFiles) {
+    private void filter(final List<Integer> toShow, final List<Integer> toHide, final boolean displaySelectAll,
+                        final boolean displaySelectInverse, final boolean onlyAvailableOffline, final boolean sharedByLinkFiles) {
 
         boolean synchronizing = anyFileSynchronizing();
 
@@ -162,8 +162,8 @@ public class FileMenuFilter {
         }
 
         // DOWNLOAD
-        if (mFiles.isEmpty() || containsFolder() || anyFileDown() || synchronizing || videoPreviewing ||
-                onlyAvailableOffline || sharedByLinkFiles) {
+        if (mFiles.isEmpty() || containsFolder() || anyFileDown() || synchronizing || videoPreviewing
+                || onlyAvailableOffline || sharedByLinkFiles) {
             toHide.add(R.id.action_download_file);
 
         } else {
@@ -221,18 +221,18 @@ public class FileMenuFilter {
         }
 
         // SHARE FILE
-        boolean shareViaLinkAllowed = (mContext != null &&
-                                       mContext.getResources().getBoolean(R.bool.share_via_link_feature));
-        boolean shareWithUsersAllowed = (mContext != null &&
-                                         mContext.getResources().getBoolean(R.bool.share_with_users_feature));
+        boolean shareViaLinkAllowed = (mContext != null
+                                       && mContext.getResources().getBoolean(R.bool.share_via_link_feature));
+        boolean shareWithUsersAllowed = (mContext != null
+                                         && mContext.getResources().getBoolean(R.bool.share_with_users_feature));
 
         OCCapability capability = mComponentsGetter.getStorageManager().getCapability(mAccount.name);
 
-        boolean notAllowResharing = anyFileSharedWithMe() &&
-                                    capability != null && capability.getFilesSharingResharing().isFalse();
+        boolean notAllowResharing = anyFileSharedWithMe()
+                                    && capability != null && capability.getFilesSharingResharing().isFalse();
 
-        if ((!shareViaLinkAllowed && !shareWithUsersAllowed) || !isSingleSelection() ||
-                notAllowResharing || onlyAvailableOffline) {
+        if ((!shareViaLinkAllowed && !shareWithUsersAllowed) || !isSingleSelection()
+                || notAllowResharing || onlyAvailableOffline) {
             toHide.add(R.id.action_share_file);
         } else {
             toShow.add(R.id.action_share_file);
@@ -246,8 +246,8 @@ public class FileMenuFilter {
         }
 
         // SEND
-        boolean sendAllowed = (mContext != null &&
-                               mContext.getString(R.string.send_files_to_other_apps).equalsIgnoreCase("on"));
+        boolean sendAllowed = (mContext != null
+                               && mContext.getString(R.string.send_files_to_other_apps).equalsIgnoreCase("on"));
         if (!isSingleFile() || !sendAllowed || synchronizing || videoStreaming || onlyAvailableOffline) {
             toHide.add(R.id.action_send_file);
         } else {
@@ -278,14 +278,14 @@ public class FileMenuFilter {
             FileDownloaderBinder downloaderBinder = mComponentsGetter.getFileDownloaderBinder();
             synchronizing = (
                                 anyFileSynchronizing(opsBinder) ||      // comparing local and remote
-                                anyFileDownloading(downloaderBinder) ||
-                                anyFileUploading(uploaderBinder)
+                                anyFileDownloading(downloaderBinder)
+                                || anyFileUploading(uploaderBinder)
                             );
         }
         return synchronizing;
     }
 
-    private boolean anyFileSynchronizing(OperationsServiceBinder opsBinder) {
+    private boolean anyFileSynchronizing(final OperationsServiceBinder opsBinder) {
         boolean synchronizing = false;
         if (opsBinder != null) {
             for (int i = 0; !synchronizing && i < mFiles.size(); i++) {
@@ -295,7 +295,7 @@ public class FileMenuFilter {
         return synchronizing;
     }
 
-    private boolean anyFileDownloading(FileDownloaderBinder downloaderBinder) {
+    private boolean anyFileDownloading(final FileDownloaderBinder downloaderBinder) {
         boolean downloading = false;
         if (downloaderBinder != null) {
             for (int i = 0; !downloading && i < mFiles.size(); i++) {
@@ -305,7 +305,7 @@ public class FileMenuFilter {
         return downloading;
     }
 
-    private boolean anyFileUploading(FileUploaderBinder uploaderBinder) {
+    private boolean anyFileUploading(final FileUploaderBinder uploaderBinder) {
         boolean uploading = false;
         if (uploaderBinder != null) {
             for (int i = 0; !uploading && i < mFiles.size(); i++) {

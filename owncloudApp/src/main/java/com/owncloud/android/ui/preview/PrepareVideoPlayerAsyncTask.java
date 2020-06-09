@@ -43,8 +43,8 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
 
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
-    public PrepareVideoPlayerAsyncTask(Context context, OnPrepareVideoPlayerTaskListener listener,
-                                       OCFile file, Account account, Handler mainHandler) {
+    public PrepareVideoPlayerAsyncTask(final Context context, final OnPrepareVideoPlayerTaskListener listener,
+                                       final OCFile file, final Account account, final Handler mainHandler) {
         mContext = context;
         mListener = new WeakReference<>(listener);
         mFile = file;
@@ -53,7 +53,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
     }
 
     @Override
-    protected MediaSource doInBackground(Object... params) {
+    protected MediaSource doInBackground(final Object... params) {
 
         MediaSource mediaSource = null;
 
@@ -61,9 +61,9 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
 
         try {
             // If the file is already downloaded, reproduce it locally, if not, do streaming
-            uri = mFile.isDown() ? mFile.getStorageUri() :
-                  Uri.parse(AccountUtils.getWebDavUrlForAccount(mContext, mAccount) +
-                            Uri.encode(mFile.getRemotePath(), "/"));
+            uri = mFile.isDown() ? mFile.getStorageUri()
+                  : Uri.parse(AccountUtils.getWebDavUrlForAccount(mContext, mAccount)
+                            + Uri.encode(mFile.getRemotePath(), "/"));
 
             boolean useBandwidthMeter = true;
 
@@ -93,7 +93,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
      * @param uri
      * @return media to be played
      */
-    private MediaSource buildMediaSource(DataSource.Factory mediaDataSourceFactory, Uri uri) {
+    private MediaSource buildMediaSource(final DataSource.Factory mediaDataSourceFactory, final Uri uri) {
         return new ExtractorMediaSource(uri, mediaDataSourceFactory, new DefaultExtractorsFactory(),
                                         mHandler, null);
     }
@@ -106,9 +106,9 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
      * @return A new HttpDataSource factory.
      */
     private HttpDataSource.Factory buildHttpDataSourceFactory(
-        DefaultBandwidthMeter bandwidthMeter,
-        OCFile file,
-        Account account) {
+        final DefaultBandwidthMeter bandwidthMeter,
+        final OCFile file,
+        final Account account) {
 
         if (file.isDown()) {
 
@@ -147,7 +147,7 @@ public class PrepareVideoPlayerAsyncTask extends AsyncTask<Object, Void, MediaSo
     }
 
     @Override
-    protected void onPostExecute(MediaSource mediaSource) {
+    protected void onPostExecute(final MediaSource mediaSource) {
         super.onPostExecute(mediaSource);
         if (mediaSource != null) {
             OnPrepareVideoPlayerTaskListener listener = mListener.get();

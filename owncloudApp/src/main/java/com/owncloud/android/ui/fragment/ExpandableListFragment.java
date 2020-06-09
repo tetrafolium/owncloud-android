@@ -41,7 +41,7 @@ public class ExpandableListFragment extends ExtendedListFragment implements OnCh
 
     protected ExpandableListView mList;
 
-    public void setListAdapter(ExpandableListAdapter listAdapter) {
+    public void setListAdapter(final ExpandableListAdapter listAdapter) {
         mList.setAdapter(listAdapter);
         mList.invalidate();
     }
@@ -51,7 +51,7 @@ public class ExpandableListFragment extends ExtendedListFragment implements OnCh
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         Timber.v("onCreateView");
 
         View v = inflater.inflate(R.layout.list_fragment_expandable, null);
@@ -86,7 +86,7 @@ public class ExpandableListFragment extends ExtendedListFragment implements OnCh
     }
 
     @Override
-    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+    public boolean onChildClick(final ExpandableListView parent, final View v, final int groupPosition, final int childPosition, final long id) {
         // to be @overriden
         Timber.w("onChildClick(). This method should be overriden!");
         return false;

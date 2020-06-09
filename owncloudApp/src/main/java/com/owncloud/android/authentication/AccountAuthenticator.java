@@ -75,7 +75,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     private Handler mHandler;
 
-    AccountAuthenticator(Context context) {
+    AccountAuthenticator(final Context context) {
         super(context);
         mContext = context;
         mHandler = new Handler();
@@ -85,9 +85,9 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
      * {@inheritDoc}
      */
     @Override
-    public Bundle addAccount(AccountAuthenticatorResponse response,
-                             String accountType, String authTokenType,
-                             String[] requiredFeatures, Bundle options) {
+    public Bundle addAccount(final AccountAuthenticatorResponse response,
+                             final String accountType, final String authTokenType,
+                             final String[] requiredFeatures, final Bundle options) {
         Timber.i("Adding account with type " + accountType + " and auth token " + authTokenType);
 
         final Bundle bundle = new Bundle();
@@ -129,8 +129,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
      * {@inheritDoc}
      */
     @Override
-    public Bundle confirmCredentials(AccountAuthenticatorResponse response,
-                                     Account account, Bundle options) {
+    public Bundle confirmCredentials(final AccountAuthenticatorResponse response,
+                                     final Account account, final Bundle options) {
         try {
             validateAccountType(account.type);
         } catch (AuthenticatorException e) {
@@ -150,8 +150,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public Bundle editProperties(AccountAuthenticatorResponse response,
-                                 String accountType) {
+    public Bundle editProperties(final AccountAuthenticatorResponse response,
+                                 final String accountType) {
         return null;
     }
 
@@ -159,8 +159,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
      * {@inheritDoc}
      */
     @Override
-    public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse,
-                               Account account, String authTokenType, Bundle options) {
+    public Bundle getAuthToken(final AccountAuthenticatorResponse accountAuthenticatorResponse,
+                               final Account account, final String authTokenType, final Bundle options) {
         /// validate parameters
         try {
             validateAccountType(account.type);
@@ -200,21 +200,21 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public String getAuthTokenLabel(String authTokenType) {
+    public String getAuthTokenLabel(final String authTokenType) {
         return null;
     }
 
     @Override
-    public Bundle hasFeatures(AccountAuthenticatorResponse response,
-                              Account account, String[] features) {
+    public Bundle hasFeatures(final AccountAuthenticatorResponse response,
+                              final Account account, final String[] features) {
         final Bundle result = new Bundle();
         result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
         return result;
     }
 
     @Override
-    public Bundle updateCredentials(AccountAuthenticatorResponse response,
-                                    Account account, String authTokenType, Bundle options) {
+    public Bundle updateCredentials(final AccountAuthenticatorResponse response,
+                                    final Account account, final String authTokenType, final Bundle options) {
         final Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
                         response);
@@ -229,30 +229,30 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAccountRemovalAllowed(
-        AccountAuthenticatorResponse response, Account account)
+        final AccountAuthenticatorResponse response, final Account account)
     throws NetworkErrorException {
         return super.getAccountRemovalAllowed(response, account);
     }
 
-    private void setIntentFlags(Intent intent) {
+    private void setIntentFlags(final Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         intent.addFlags(Intent.FLAG_FROM_BACKGROUND);
     }
 
-    private void validateAccountType(String type)
+    private void validateAccountType(final String type)
     throws UnsupportedAccountTypeException {
         if (!type.equals(MainApp.Companion.getAccountType())) {
             throw new UnsupportedAccountTypeException();
         }
     }
 
-    private void validateAuthTokenType(String authTokenType)
+    private void validateAuthTokenType(final String authTokenType)
     throws UnsupportedAuthTokenTypeException {
-        if (!authTokenType.equals(MainApp.Companion.getAuthTokenType()) &&
-                !authTokenType.equals(AccountTypeUtils.getAuthTokenTypePass(MainApp.Companion.getAccountType())) &&
-                !authTokenType.equals(AccountTypeUtils.getAuthTokenTypeAccessToken(MainApp.Companion.getAccountType())) &&
-                !authTokenType.equals(AccountTypeUtils.getAuthTokenTypeRefreshToken(MainApp.Companion.getAccountType()))
+        if (!authTokenType.equals(MainApp.Companion.getAuthTokenType())
+                && !authTokenType.equals(AccountTypeUtils.getAuthTokenTypePass(MainApp.Companion.getAccountType()))
+                && !authTokenType.equals(AccountTypeUtils.getAuthTokenTypeAccessToken(MainApp.Companion.getAccountType()))
+                && !authTokenType.equals(AccountTypeUtils.getAuthTokenTypeRefreshToken(MainApp.Companion.getAccountType()))
            ) {
             throw new UnsupportedAuthTokenTypeException();
         }
@@ -262,7 +262,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         private static final long serialVersionUID = 1L;
         private Bundle mFailureBundle;
 
-        AuthenticatorException(int code, String errorMsg) {
+        AuthenticatorException(final int code, final String errorMsg) {
             mFailureBundle = new Bundle();
             mFailureBundle.putInt(AccountManager.KEY_ERROR_CODE, code);
             mFailureBundle
@@ -294,17 +294,17 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         }
     }
 
-    private boolean canBeRefreshed(String authTokenType) {
+    private boolean canBeRefreshed(final String authTokenType) {
         return (authTokenType.equals(AccountTypeUtils.getAuthTokenTypeAccessToken(MainApp.Companion.
                                      getAccountType())));
     }
 
     private void refreshToken(
-        AccountAuthenticatorResponse accountAuthenticatorResponse,
-        Account account,
-        String authTokenType,
-        AccountManager accountManager,
-        Bundle options) {
+        final AccountAuthenticatorResponse accountAuthenticatorResponse,
+        final Account account,
+        final String authTokenType,
+        final AccountManager accountManager,
+        final Bundle options) {
 
         // Prepare everything to perform the token request
         String refreshToken = accountManager.getUserData(
@@ -404,10 +404,10 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
      * Return bundle with intent to access LoginActivity and UPDATE the token for the account
      */
     private Bundle prepareBundleToAccessLoginActivity(
-        AccountAuthenticatorResponse accountAuthenticatorResponse,
-        Account account,
-        String authTokenType,
-        Bundle options
+        final AccountAuthenticatorResponse accountAuthenticatorResponse,
+        final Account account,
+        final String authTokenType,
+        final Bundle options
     ) {
         final Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,

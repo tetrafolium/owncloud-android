@@ -47,7 +47,7 @@ public class UploadListFragment extends ExpandableListFragment {
     private ExpandableUploadListAdapter mAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         setMessageForEmptyList(getString(R.string.upload_list_empty));
@@ -73,7 +73,7 @@ public class UploadListFragment extends ExpandableListFragment {
     }
 
     @Override
-    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+    public boolean onChildClick(final ExpandableListView parent, final View v, final int groupPosition, final int childPosition, final long id) {
         boolean handled = false;
         OCUpload OCUpload = (OCUpload) mAdapter.getChild(groupPosition, childPosition);
         if (OCUpload != null) {

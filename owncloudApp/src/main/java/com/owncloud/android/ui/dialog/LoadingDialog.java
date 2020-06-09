@@ -42,7 +42,7 @@ public class LoadingDialog extends DialogFragment {
     private static final String ARG_CANCELABLE = LoadingDialog.class.getCanonicalName() + ".ARG_CANCELABLE";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setCancelable(false);
@@ -55,7 +55,7 @@ public class LoadingDialog extends DialogFragment {
      * @param cancelable    If 'true', the dialog can be cancelled by the user input (BACK button, touch outside...)
      * @return New dialog instance, ready to show.
      */
-    public static LoadingDialog newInstance(int messageId, boolean cancelable) {
+    public static LoadingDialog newInstance(final int messageId, final boolean cancelable) {
         LoadingDialog fragment = new LoadingDialog();
         Bundle args = new Bundle();
         args.putInt(ARG_MESSAGE_ID, messageId);
@@ -65,7 +65,7 @@ public class LoadingDialog extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         // Create a view by inflating desired layout
         View v = inflater.inflate(R.layout.loading_dialog, container, false);
 
@@ -90,7 +90,7 @@ public class LoadingDialog extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -101,8 +101,8 @@ public class LoadingDialog extends DialogFragment {
             // disable the back button
             DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
                 @Override
-                public boolean onKey(DialogInterface dialog, int keyCode,
-                                     KeyEvent event) {
+                public boolean onKey(final DialogInterface dialog, final int keyCode,
+                                     final KeyEvent event) {
 
                     return keyCode == KeyEvent.KEYCODE_BACK;
                 }

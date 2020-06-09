@@ -51,7 +51,7 @@ import static com.owncloud.android.ui.notifications.NotificationUtils.notifyConf
 public class AvailableOfflineSyncJobService extends JobService {
 
     @Override
-    public boolean onStartJob(JobParameters jobParameters) {
+    public boolean onStartJob(final JobParameters jobParameters) {
         Timber.d("Starting job to sync available offline files");
 
         new AvailableOfflineJobTask(this).execute(jobParameters);
@@ -63,12 +63,12 @@ public class AvailableOfflineSyncJobService extends JobService {
 
         private final JobService mAvailableOfflineJobService;
 
-        public AvailableOfflineJobTask(JobService mAvailableOfflineJobService) {
+        public AvailableOfflineJobTask(final JobService mAvailableOfflineJobService) {
             this.mAvailableOfflineJobService = mAvailableOfflineJobService;
         }
 
         @Override
-        protected JobParameters doInBackground(JobParameters... jobParams) {
+        protected JobParameters doInBackground(final JobParameters... jobParams) {
 
             String accountName = jobParams[0].getExtras().getString(Extras.EXTRA_ACCOUNT_NAME);
 
@@ -92,7 +92,7 @@ public class AvailableOfflineSyncJobService extends JobService {
             return jobParams[0];
         }
 
-        private void syncAvailableOfflineFiles(List<Pair<OCFile, String>> availableOfflineFilesForAccount) {
+        private void syncAvailableOfflineFiles(final List<Pair<OCFile, String>> availableOfflineFilesForAccount) {
             for (Pair<OCFile, String> fileForAccount : availableOfflineFilesForAccount) {
 
                 String localPath = fileForAccount.first.getStoragePath();
@@ -106,10 +106,10 @@ public class AvailableOfflineSyncJobService extends JobService {
 
                 File localFile = new File(localPath);
 
-                if (localFile.lastModified() <= fileForAccount.first.getLastSyncDateForData() &&
-                        MainApp.Companion.isDeveloper()) {
-                    Timber.i("File " + fileForAccount.first.getRemotePath() + " already synchronized " +
-                             "in account " + fileForAccount.second + ", ignoring");
+                if (localFile.lastModified() <= fileForAccount.first.getLastSyncDateForData()
+                        && MainApp.Companion.isDeveloper()) {
+                    Timber.i("File " + fileForAccount.first.getRemotePath() + " already synchronized "
+                             + "in account " + fileForAccount.second + ", ignoring");
                     continue;
                 }
 
@@ -124,7 +124,7 @@ public class AvailableOfflineSyncJobService extends JobService {
          * @param availableOfflineFile file to synchronize
          * @param accountName          account to synchronize the available offline file with
          */
-        private void startSyncOperation(OCFile availableOfflineFile, String accountName) {
+        private void startSyncOperation(final OCFile availableOfflineFile, final String accountName) {
             if (MainApp.Companion.isDeveloper()) {
                 Timber.i("Requested synchronization for file %1s in account %2s",
                          availableOfflineFile.getRemotePath(), accountName);
@@ -154,7 +154,7 @@ public class AvailableOfflineSyncJobService extends JobService {
          *
          * @param jobId id of the job to cancel
          */
-        private void cancelPeriodicJob(int jobId) {
+        private void cancelPeriodicJob(final int jobId) {
             JobScheduler jobScheduler = (JobScheduler) mAvailableOfflineJobService.getSystemService(
                                             Context.JOB_SCHEDULER_SERVICE);
 
@@ -164,7 +164,7 @@ public class AvailableOfflineSyncJobService extends JobService {
         }
 
         @Override
-        protected void onPostExecute(JobParameters jobParameters) {
+        protected void onPostExecute(final JobParameters jobParameters) {
             mAvailableOfflineJobService.jobFinished(jobParameters, false);
         }
     }
@@ -173,7 +173,7 @@ public class AvailableOfflineSyncJobService extends JobService {
     /*
      * Called by the system if the job is cancelled before being finished
      */
-    public boolean onStopJob(JobParameters jobParameters) {
+    public boolean onStopJob(final JobParameters jobParameters) {
         Timber.d("Job was cancelled before finishing.");
         return true;
     }

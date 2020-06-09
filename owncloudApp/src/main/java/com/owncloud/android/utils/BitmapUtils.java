@@ -54,7 +54,7 @@ public class BitmapUtils {
      * @param reqHeight     Height of the surface where the Bitmap will be drawn on, in pixels.
      * @return
      */
-    public static Bitmap decodeSampledBitmapFromFile(String srcPath, int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromFile(final String srcPath, final int reqWidth, final int reqHeight) {
 
         // set desired options that will affect the size of the bitmap
         final Options options = new Options();
@@ -88,7 +88,7 @@ public class BitmapUtils {
      * @return The largest inSampleSize value that is a power of 2 and keeps both
      *                      height and width larger than reqWidth and reqHeight.
      */
-    private static int calculateSampleFactor(Options options, int reqWidth, int reqHeight) {
+    private static int calculateSampleFactor(final Options options, final int reqWidth, final int reqHeight) {
 
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -231,7 +231,7 @@ public class BitmapUtils {
      * @param file
      * @return true/false
      */
-    public static boolean isImage(File file) {
+    public static boolean isImage(final File file) {
         final Uri selectedUri = Uri.fromFile(file);
         final String fileExtension = MimeTypeMap.getFileExtensionFromUrl(selectedUri.toString().toLowerCase());
         final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
@@ -247,7 +247,7 @@ public class BitmapUtils {
      * @throws UnsupportedEncodingException if the charset is not supported
      * @throws NoSuchAlgorithmException if the specified algorithm is not available
      */
-    public static int[] calculateAvatarBackgroundRGB(String accountName)
+    public static int[] calculateAvatarBackgroundRGB(final String accountName)
     throws UnsupportedEncodingException, NoSuchAlgorithmException {
         // using adapted algorithm from /core/js/placeholder.js:50
         final String username = AccountUtils.getUsernameOfAccount(accountName);
@@ -271,7 +271,7 @@ public class BitmapUtils {
      * @param bitmap the original bitmap
      * @return the circular bitmap
      */
-    public static RoundedBitmapDrawable bitmapToCircularBitmapDrawable(Resources resources, Bitmap bitmap) {
+    public static RoundedBitmapDrawable bitmapToCircularBitmapDrawable(final Resources resources, final Bitmap bitmap) {
         RoundedBitmapDrawable roundedBitmap = RoundedBitmapDrawableFactory.create(resources, bitmap);
         roundedBitmap.setCircular(true);
         return roundedBitmap;

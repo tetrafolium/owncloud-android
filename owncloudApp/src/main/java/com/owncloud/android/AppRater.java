@@ -39,7 +39,7 @@ public class AppRater {
     private static final String APP_RATER_PREF_DATE_FIRST_LAUNCH = "date_first_launch";
     public static final String APP_RATER_PREF_DATE_NEUTRAL = "date_neutral";
 
-    public static void appLaunched(Context mContext, String packageName) {
+    public static void appLaunched(final Context mContext, final String packageName) {
         SharedPreferences prefs = mContext.getSharedPreferences(APP_RATER_PREF_TITLE, 0);
         if (prefs.getBoolean(APP_RATER_PREF_DONT_SHOW, false)) {
             Timber.d("Do not show the rate dialog again as the user decided");
@@ -66,13 +66,13 @@ public class AppRater {
 
         /// Wait at least n days before opening
         if (launchCount >= LAUNCHES_UNTIL_PROMPT) {
-            Timber.d("The number of launchs already exceed " + LAUNCHES_UNTIL_PROMPT +
-                     ", the default number of launches, so let's check some dates");
+            Timber.d("The number of launchs already exceed " + LAUNCHES_UNTIL_PROMPT
+                     + ", the default number of launches, so let's check some dates");
             Timber.d("Current moment is %s", System.currentTimeMillis());
-            Timber.d("The date of the first launch + days until prompt is " + dateFirstLaunch +
-                     daysToMilliseconds(DAYS_UNTIL_PROMPT));
-            Timber.d("The date of the neutral click + days until neutral click is " + dateNeutralClick +
-                     daysToMilliseconds(DAYS_UNTIL_NEUTRAL_CLICK));
+            Timber.d("The date of the first launch + days until prompt is " + dateFirstLaunch
+                     + daysToMilliseconds(DAYS_UNTIL_PROMPT));
+            Timber.d("The date of the neutral click + days until neutral click is " + dateNeutralClick
+                     + daysToMilliseconds(DAYS_UNTIL_NEUTRAL_CLICK));
             if (System.currentTimeMillis() >= Math.max(dateFirstLaunch
                     + daysToMilliseconds(DAYS_UNTIL_PROMPT), dateNeutralClick
                     + daysToMilliseconds(DAYS_UNTIL_NEUTRAL_CLICK))) {
@@ -84,11 +84,11 @@ public class AppRater {
         editor.apply();
     }
 
-    private static int daysToMilliseconds(int days) {
+    private static int daysToMilliseconds(final int days) {
         return days * 24 * 60 * 60 * 1000;
     }
 
-    private static void showRateDialog(Context mContext, String packageName) {
+    private static void showRateDialog(final Context mContext, final String packageName) {
         RateMeDialog rateMeDialog = RateMeDialog.newInstance(packageName, false);
         FragmentManager fm = ((FragmentActivity) mContext).getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();

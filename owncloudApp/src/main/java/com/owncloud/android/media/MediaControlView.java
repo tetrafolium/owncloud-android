@@ -72,7 +72,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     private ImageButton mFfwdButton;
     private ImageButton mRewButton;
 
-    public MediaControlView(Context context, AttributeSet attrs) {
+    public MediaControlView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
 
@@ -97,13 +97,13 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         requestFocus();
     }
 
-    public void setMediaPlayer(MediaPlayerControl player) {
+    public void setMediaPlayer(final MediaPlayerControl player) {
         mPlayer = player;
         mHandler.sendEmptyMessage(SHOW_PROGRESS);
         updatePausePlay();
     }
 
-    private void initControllerView(View v) {
+    private void initControllerView(final View v) {
         mPauseButton = v.findViewById(R.id.playBtn);
         if (mPauseButton != null) {
             mPauseButton.requestFocus();
@@ -161,7 +161,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
 
     private Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             int pos;
             switch (msg.what) {
             case SHOW_PROGRESS:
@@ -175,7 +175,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         }
     };
 
-    private String stringForTime(int timeMs) {
+    private String stringForTime(final int timeMs) {
         int totalSeconds = timeMs / 1000;
 
         int seconds = totalSeconds % 60;
@@ -217,7 +217,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     }
 
     @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
+    public boolean dispatchKeyEvent(final KeyEvent event) {
         int keyCode = event.getKeyCode();
         final boolean uniqueDown = event.getRepeatCount() == 0
                                    && event.getAction() == KeyEvent.ACTION_DOWN;
@@ -272,7 +272,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         if (mPauseButton != null) {
             mPauseButton.setEnabled(enabled);
         }
@@ -290,7 +290,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         int pos;
         boolean playing = mPlayer.isPlaying();
         switch (v.getId()) {
@@ -323,7 +323,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     }
 
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+    public void onProgressChanged(final SeekBar seekBar, final int progress, final boolean fromUser) {
         if (!fromUser) {
             // We're not interested in programmatically generated changes to
             // the progress bar's position.
@@ -345,7 +345,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
      * Will be followed by several onProgressChanged notifications.
      */
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
+    public void onStartTrackingTouch(final SeekBar seekBar) {
         mDragging = true;                           // monitors the duration of dragging
         mHandler.removeMessages(SHOW_PROGRESS);     // grants no more updates with media player progress while dragging
     }
@@ -355,7 +355,7 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
      * adjusting of the seekbar.
      */
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
+    public void onStopTrackingTouch(final SeekBar seekBar) {
         mDragging = false;
         setProgress();
         updatePausePlay();
@@ -363,13 +363,13 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     }
 
     @Override
-    public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
+    public void onInitializeAccessibilityEvent(final AccessibilityEvent event) {
         super.onInitializeAccessibilityEvent(event);
         event.setClassName(MediaControlView.class.getName());
     }
 
     @Override
-    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+    public void onInitializeAccessibilityNodeInfo(final AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
         info.setClassName(MediaControlView.class.getName());
     }

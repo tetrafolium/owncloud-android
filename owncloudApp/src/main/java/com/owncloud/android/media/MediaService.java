@@ -61,8 +61,8 @@ import java.io.IOException;
 public class MediaService extends Service implements OnCompletionListener, OnPreparedListener,
     OnErrorListener, AudioManager.OnAudioFocusChangeListener {
 
-    private static final String MY_PACKAGE = MediaService.class.getPackage() != null ?
-            MediaService.class.getPackage().getName() : "com.owncloud.android.media";
+    private static final String MY_PACKAGE = MediaService.class.getPackage() != null
+            ? MediaService.class.getPackage().getName() : "com.owncloud.android.media";
 
     private static final String MEDIA_SERVICE_NOTIFICATION_CHANNEL_ID =
         "MEDIA_SERVICE_NOTIFICATION_CHANNEL";
@@ -163,7 +163,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      * @param extra     See {@link MediaPlayer.OnErrorListener#onError(MediaPlayer, int, int)
      * @return Message suitable to users.
      */
-    public static String getMessageForMediaError(Context context, int what, int extra) {
+    public static String getMessageForMediaError(final Context context, final int what, final int extra) {
         int messageId;
 
         if (what == OC_MEDIA_ERROR) {
@@ -263,7 +263,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         mAccountManager = AccountManager.get(this);
         mAccountManager.addOnAccountsUpdatedListener(new OnAccountsUpdateListener() {
             @Override
-            public void onAccountsUpdated(Account[] accounts) {
+            public void onAccountsUpdated(final Account[] accounts) {
                 // stop playback if account of the played media files was removed
                 if (mAccount != null && !AccountUtils.exists(mAccount.name, MediaService.this)) {
                     processStopRequest(false);
@@ -278,7 +278,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      * {@inheritDoc}
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         String action = intent.getAction();
         if (action.equals(ACTION_PLAY_FILE)) {
             processPlayFileRequest(intent);
@@ -292,7 +292,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         return START_NOT_STICKY; // don't want it to restart in case it's killed.
     }
 
-    private void processStopFileRequest(Intent intent) {
+    private void processStopFileRequest(final Intent intent) {
         OCFile file = intent.getExtras().getParcelable(EXTRA_FILE);
         if (file != null && file.equals(mFile)) {
             processStopRequest(true);
@@ -306,7 +306,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      *
      * @param intent    Intent received in the request with the data to identify the file to play.
      */
-    private void processPlayFileRequest(Intent intent) {
+    private void processPlayFileRequest(final Intent intent) {
         if (mState != State.PREPARING) {
             mFile = intent.getExtras().getParcelable(EXTRA_FILE);
             mAccount = intent.getExtras().getParcelable(EXTRA_ACCOUNT);
@@ -375,7 +375,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      *
      * @param   force       When 'true', the playback is stopped no matter the value of mState
      */
-    protected void processStopRequest(boolean force) {
+    protected void processStopRequest(final boolean force) {
         if (mState != State.PREPARING || force) {
             mState = State.STOPPED;
             mFile = null;
@@ -393,7 +393,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      *
      * @param releaseMediaPlayer    Indicates whether the Media Player should also be released or not
      */
-    protected void releaseResources(boolean releaseMediaPlayer) {
+    protected void releaseResources(final boolean releaseMediaPlayer) {
         // stop being a foreground service
         stopForeground(true);
 
@@ -536,7 +536,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         }
     }
 
-    private void updateFileObserver(String url) {
+    private void updateFileObserver(final String url) {
         stopFileObserver();
         mFileObserver = new MediaFileObserver(url);
         mFileObserver.startWatching();
@@ -549,7 +549,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     }
 
     /** Called when media player is done playing current song. */
-    public void onCompletion(MediaPlayer player) {
+    public void onCompletion(final MediaPlayer player) {
         Toast.makeText(this, String.format(getString(R.string.media_event_done), mFile.getFileName()),
                        Toast.LENGTH_LONG).show();
         if (mMediaController != null) {
@@ -569,7 +569,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      *
      * Time to start.
      */
-    public void onPrepared(MediaPlayer player) {
+    public void onPrepared(final MediaPlayer player) {
         mState = State.PLAYING;
         updateNotification(String.format(getString(R.string.media_state_playing), mFile.getFileName()));
         if (mMediaController != null) {
@@ -589,7 +589,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
     /**
      * Updates the status notification
      */
-    private void updateNotification(String content) {
+    private void updateNotification(final String content) {
         String ticker = String.format(getString(R.string.media_notif_ticker), getString(R.string.app_name));
 
         // TODO check if updating the Intent is really necessary
@@ -618,7 +618,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      *
      * A notification must be created to keep the user aware of the existance of the service.
      */
-    private void setUpAsForeground(String content) {
+    private void setUpAsForeground(final String content) {
         String ticker = String.format(getString(R.string.media_notif_ticker), getString(R.string.app_name));
 
         /// creates status notification
@@ -649,7 +649,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      *
      * Warns the user about the error and resets the media player.
      */
-    public boolean onError(MediaPlayer mp, int what, int extra) {
+    public boolean onError(final MediaPlayer mp, final int what, final int extra) {
         Timber.e("Error in audio playback, what = " + what + ", extra = " + extra);
 
         String message = getMessageForMediaError(this, what, extra);
@@ -665,7 +665,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      * {@inheritDoc}
      */
     @Override
-    public void onAudioFocusChange(int focusChange) {
+    public void onAudioFocusChange(final int focusChange) {
         if (focusChange > 0) {
             // focus gain; check AudioManager.AUDIOFOCUS_* values
             mAudioFocus = AudioFocus.FOCUS;
@@ -705,7 +705,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      * MediaService.
      */
     @Override
-    public IBinder onBind(Intent arg) {
+    public IBinder onBind(final Intent arg) {
         return mBinder;
     }
 
@@ -715,7 +715,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      * The service is destroyed if playback stopped or paused
      */
     @Override
-    public boolean onUnbind(Intent intent) {
+    public boolean onUnbind(final Intent intent) {
         if (mState == State.PAUSED || mState == State.STOPPED) {
             processStopRequest(false);
         }
@@ -751,7 +751,7 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
         return mState;
     }
 
-    protected void setMediaContoller(MediaControlView mediaController) {
+    protected void setMediaContoller(final MediaControlView mediaController) {
         mMediaController = mediaController;
     }
 
@@ -765,12 +765,12 @@ public class MediaService extends Service implements OnCompletionListener, OnPre
      */
     private class MediaFileObserver extends FileObserver {
 
-        public MediaFileObserver(String path) {
+        public MediaFileObserver(final String path) {
             super((new File(path)).getParent(), FileObserver.DELETE | FileObserver.MOVED_FROM);
         }
 
         @Override
-        public void onEvent(int event, String path) {
+        public void onEvent(final int event, final String path) {
             if (path != null && path.equals(mFile.getFileName())) {
                 Timber.d("Media file deleted or moved out of sight, stopping playback");
                 processStopRequest(true);

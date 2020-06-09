@@ -71,7 +71,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
     private LocalBroadcastManager mLocalBroadcastManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -141,7 +141,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
     // UploadListFragment.ContainerActivity
     // ////////////////////////////////////////
     @Override
-    public boolean onUploadItemClick(OCUpload file) {
+    public boolean onUploadItemClick(final OCUpload file) {
         /// TODO is this path still active?
         File f = new File(file.getLocalPath());
         if (!f.exists()) {
@@ -158,7 +158,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
     /**
      * Open file with app associates with its MIME type. If MIME type unknown, show list with all apps.
      */
-    private void openFileWithDefault(String localPath) {
+    private void openFileWithDefault(final String localPath) {
         Intent myIntent = new Intent(android.content.Intent.ACTION_VIEW);
         File file = new File(localPath);
         String mimetype = MimetypeIconUtil.getBestMimeTypeByFilename(localPath);
@@ -178,7 +178,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         boolean retval = true;
         UploadsStorageManager storageManager;
         UploadListFragment uploadListFragment =
@@ -221,14 +221,14 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.upload_list_menu, menu);
         return true;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == FileActivity.REQUEST_CODE__UPDATE_CREDENTIALS && resultCode == RESULT_OK) {
             // Retry uploads of the updated account
@@ -251,7 +251,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
      * @param result    Result of the removal.
      */
     @Override
-    public void onRemoteOperationFinish(RemoteOperation operation, RemoteOperationResult result) {
+    public void onRemoteOperationFinish(final RemoteOperation operation, final RemoteOperationResult result) {
         if (operation instanceof CheckCurrentCredentialsOperation) {
             // Do not call super in this case; more refactoring needed around onRemoteOeprationFinish :'(
             getFileOperationsHelper().setOpIdWaitingFor(Long.MAX_VALUE);
@@ -283,7 +283,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
     private class UploadListServiceConnection implements ServiceConnection {
 
         @Override
-        public void onServiceConnected(ComponentName component, IBinder service) {
+        public void onServiceConnected(final ComponentName component, final IBinder service) {
             if (service instanceof FileUploaderBinder) {
                 if (mUploaderBinder == null) {
                     mUploaderBinder = (FileUploaderBinder) service;
@@ -295,8 +295,8 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
                         uploadListFragment.binderReady();
                     }
                 } else {
-                    Timber.d("mUploaderBinder already set. mUploaderBinder: " +
-                             mUploaderBinder + " service:" + service);
+                    Timber.d("mUploaderBinder already set. mUploaderBinder: "
+                             + mUploaderBinder + " service:" + service);
                 }
             } else {
                 Timber.d("UploadListActivity not connected to Upload service. component: " + component + " service: " + service);
@@ -304,7 +304,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName component) {
+        public void onServiceDisconnected(final ComponentName component) {
             if (component.equals(new ComponentName(UploadListActivity.this, FileUploader.class))) {
                 Timber.d("UploadListActivity suddenly disconnected from Upload service");
                 mUploaderBinder = null;
@@ -320,7 +320,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
          * {@link BroadcastReceiver} to enable syncing feedback in UI
          */
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             UploadListFragment uploadListFragment =
                 (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
 
@@ -332,7 +332,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
      * Called when the ownCloud {@link Account} associated to the Activity was just updated.
      */
     @Override
-    protected void onAccountSet(boolean stateWasRecovered) {
+    protected void onAccountSet(final boolean stateWasRecovered) {
         super.onAccountSet(stateWasRecovered);
         getSupportActionBar().setTitle(getString(R.string.uploads_view_title));
         if (mAccountWasSet) {

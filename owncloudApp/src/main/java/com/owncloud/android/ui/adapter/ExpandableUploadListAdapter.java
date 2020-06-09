@@ -86,7 +86,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
         OCUpload[] items;
         String name;
 
-        UploadGroup(String groupName) {
+        UploadGroup(final String groupName) {
             this.name = groupName;
             items = new OCUpload[0];
         }
@@ -102,7 +102,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
         Comparator<OCUpload> comparator = new Comparator<OCUpload>() {
 
             @Override
-            public int compare(OCUpload upload1, OCUpload upload2) {
+            public int compare(final OCUpload upload1, final OCUpload upload2) {
                 if (upload1.getUploadStatus().equals(UploadStatus.UPLOAD_IN_PROGRESS)) {
                     if (!upload2.getUploadStatus().equals(UploadStatus.UPLOAD_IN_PROGRESS)) {
                         return -1;
@@ -126,11 +126,11 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
                 }
             }
 
-            private int compareUploadId(OCUpload upload1, OCUpload upload2) {
+            private int compareUploadId(final OCUpload upload1, final OCUpload upload2) {
                 return Long.compare(upload1.getUploadId(), upload2.getUploadId());
             }
 
-            private int compareUpdateTime(OCUpload upload1, OCUpload upload2) {
+            private int compareUpdateTime(final OCUpload upload1, final OCUpload upload2) {
                 return Long.compare(upload2.getUploadEndTimestamp(), upload1.getUploadEndTimestamp());
             }
         };
@@ -140,7 +140,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
 
     private UploadGroup[] mUploadGroups;
 
-    public ExpandableUploadListAdapter(FileActivity parentActivity) {
+    public ExpandableUploadListAdapter(final FileActivity parentActivity) {
         Timber.d("ExpandableUploadListAdapter");
         mParentActivity = parentActivity;
         mUploadsStorageManager = new UploadsStorageManager(mParentActivity.getContentResolver());
@@ -187,14 +187,14 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
     }
 
     @Override
-    public void registerDataSetObserver(DataSetObserver observer) {
+    public void registerDataSetObserver(final DataSetObserver observer) {
         super.registerDataSetObserver(observer);
         mUploadsStorageManager.addObserver(this);
         Timber.d("registerDataSetObserver");
     }
 
     @Override
-    public void unregisterDataSetObserver(DataSetObserver observer) {
+    public void unregisterDataSetObserver(final DataSetObserver observer) {
         super.unregisterDataSetObserver(observer);
         mUploadsStorageManager.deleteObserver(this);
         Timber.d("unregisterDataSetObserver");
@@ -205,7 +205,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
         return true;
     }
 
-    private View getView(OCUpload[] uploadsItems, int position, View convertView, ViewGroup parent) {
+    private View getView(final OCUpload[] uploadsItems, final int position, final View convertView, final ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             LayoutInflater inflator =
@@ -260,8 +260,8 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
             try {
                 Account account = AccountUtils.getOwnCloudAccountByName(mParentActivity, upload.getAccountName());
                 OwnCloudAccount oca = new OwnCloudAccount(account, mParentActivity);
-                String accountName =  oca.getDisplayName() + " @ " +
-                                      DisplayUtils.convertIdn(account.name.substring(account.name.lastIndexOf("@") + 1), false);
+                String accountName =  oca.getDisplayName() + " @ "
+                                      + DisplayUtils.convertIdn(account.name.substring(account.name.lastIndexOf("@") + 1), false);
                 accountNameTextView.setText(accountName);
             } catch (Exception e) {
                 Timber.w("Couldn't get display name for account, using old style");
@@ -307,9 +307,9 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
 
                     } else {
                         /// not really uploading; stop listening progress if view is reused!
-                        if (convertView != null &&
-                                mProgressListener != null &&
-                                mProgressListener.isWrapping(progressBar)) {
+                        if (convertView != null
+                                && mProgressListener != null
+                                && mProgressListener.isWrapping(progressBar)) {
                             binder.removeDatatransferProgressListener(
                                 mProgressListener,
                                 mProgressListener.getUpload()   // the one that was added
@@ -373,7 +373,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
                     // not a credentials error
                     view.setOnClickListener(new OnClickListener() {
                         @Override
-                        public void onClick(View v) {
+                        public void onClick(final View v) {
                             File file = new File(upload.getLocalPath());
                             if (file.exists()) {
                                 TransferRequester requester = new TransferRequester();
@@ -412,8 +412,8 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
 
             // TODO this code is duplicated; refactor to a common place
             if ((fakeFileToCheatThumbnailsCacheManagerInterface.isImage()
-                    && fakeFileToCheatThumbnailsCacheManagerInterface.getRemoteId() != null &&
-                    upload.getUploadStatus() == UploadStatus.UPLOAD_SUCCEEDED)) {
+                    && fakeFileToCheatThumbnailsCacheManagerInterface.getRemoteId() != null
+                    && upload.getUploadStatus() == UploadStatus.UPLOAD_SUCCEEDED)) {
                 // Thumbnail in Cache?
                 Bitmap thumbnail = ThumbnailsCacheManager.getBitmapFromDiskCache(
                                        String.valueOf(fakeFileToCheatThumbnailsCacheManagerInterface.getRemoteId())
@@ -494,7 +494,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
      * @param upload        Upload to describe.
      * @return Text describing the status of the given upload.
      */
-    private String getStatusText(OCUpload upload) {
+    private String getStatusText(final OCUpload upload) {
 
         String status;
         switch (upload.getUploadStatus()) {
@@ -632,7 +632,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
     }
 
     @Override
-    public void update(Observable arg0, Object arg1) {
+    public void update(final Observable arg0, final Object arg1) {
         Timber.d("update");
         loadUploadItemsFromDb();
     }
@@ -643,28 +643,28 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
     }
 
     @Override
-    public Object getChild(int groupPosition, int childPosition) {
+    public Object getChild(final int groupPosition, final int childPosition) {
         return mUploadGroups[(int) getGroupId(groupPosition)].items[childPosition];
     }
 
     @Override
-    public long getChildId(int groupPosition, int childPosition) {
+    public long getChildId(final int groupPosition, final int childPosition) {
         return childPosition;
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
-                             ViewGroup parent) {
+    public View getChildView(final int groupPosition, final int childPosition, final boolean isLastChild, final View convertView,
+                             final ViewGroup parent) {
         return getView(mUploadGroups[(int) getGroupId(groupPosition)].items, childPosition, convertView, parent);
     }
 
     @Override
-    public int getChildrenCount(int groupPosition) {
+    public int getChildrenCount(final int groupPosition) {
         return mUploadGroups[(int) getGroupId(groupPosition)].items.length;
     }
 
     @Override
-    public Object getGroup(int groupPosition) {
+    public Object getGroup(final int groupPosition) {
         return mUploadGroups[(int) getGroupId(groupPosition)];
     }
 
@@ -684,7 +684,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
      * Could probably be done more intuitive but this tested methods works as intended.
      */
     @Override
-    public long getGroupId(int groupPosition) {
+    public long getGroupId(final int groupPosition) {
         int id = -1;
         for (int i = 0; i <= groupPosition; ) {
             id++;
@@ -696,7 +696,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(final int groupPosition, final boolean isExpanded, final View convertView, final ViewGroup parent) {
         //force group to stay unfolded
         ExpandableListView listView = (ExpandableListView) parent;
         listView.expandGroup(groupPosition);
@@ -716,8 +716,8 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
         TextView tvGroupName = convertView.findViewById(R.id.uploadListGroupName);
         TextView tvFileCount = convertView.findViewById(R.id.textViewFileCount);
 
-        int stringResFileCount = group.getGroupCount() == 1 ? R.string.uploads_view_group_file_count_single :
-                                 R.string.uploads_view_group_file_count;
+        int stringResFileCount = group.getGroupCount() == 1 ? R.string.uploads_view_group_file_count_single
+                                 : R.string.uploads_view_group_file_count;
         String fileCountText = String.format(mParentActivity.getString(stringResFileCount), group.getGroupCount());
 
         tvGroupName.setText(group.getGroupName());
@@ -726,7 +726,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
     }
 
     @Override
-    public boolean isChildSelectable(int groupPosition, int childPosition) {
+    public boolean isChildSelectable(final int groupPosition, final int childPosition) {
         return true;
     }
 
@@ -735,13 +735,13 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
         OCUpload mUpload;
         WeakReference<ProgressBar> mProgressBar;
 
-        ProgressListener(OCUpload upload, ProgressBar progressBar) {
+        ProgressListener(final OCUpload upload, final ProgressBar progressBar) {
             mUpload = upload;
             mProgressBar = new WeakReference<>(progressBar);
         }
 
         @Override
-        public void onTransferProgress(long progressRate, long totalTransferredSoFar, long totalToTransfer, String
+        public void onTransferProgress(final long progressRate, final long totalTransferredSoFar, final long totalToTransfer, final String
                                        filename) {
             int percent = (int) (100.0 * ((double) totalTransferredSoFar) / ((double) totalToTransfer));
             if (percent != mLastPercent) {
@@ -754,11 +754,11 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
             mLastPercent = percent;
         }
 
-        boolean isWrapping(ProgressBar progressBar) {
+        boolean isWrapping(final ProgressBar progressBar) {
             ProgressBar wrappedProgressBar = mProgressBar.get();
             return (
-                       wrappedProgressBar != null &&
-                       wrappedProgressBar == progressBar   // on purpose; don't replace with equals
+                       wrappedProgressBar != null
+                       && wrappedProgressBar == progressBar   // on purpose; don't replace with equals
                    );
         }
 

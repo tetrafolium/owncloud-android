@@ -31,11 +31,11 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
     private final Activity mContext;
     private final String LINE_SEPARATOR = "\n";
 
-    public ExceptionHandler(Activity context) {
+    public ExceptionHandler(final Activity context) {
         mContext = context;
     }
 
-    public void uncaughtException(Thread thread, Throwable exception) {
+    public void uncaughtException(final Thread thread, final Throwable exception) {
         Timber.e(exception, "ExceptionHandler caught UncaughtException");
         StringWriter stackTrace = new StringWriter();
         exception.printStackTrace(new PrintWriter(stackTrace));

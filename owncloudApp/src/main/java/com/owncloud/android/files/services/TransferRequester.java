@@ -64,14 +64,14 @@ public class TransferRequester {
      * Call to upload several new files
      */
     public void uploadNewFiles(
-        Context context,
-        Account account,
-        String[] localPaths,
-        String[] remotePaths,
-        String[] mimeTypes,
-        Integer behaviour,
-        Boolean createRemoteFolder,
-        int createdBy
+        final Context context,
+        final Account account,
+        final String[] localPaths,
+        final String[] remotePaths,
+        final String[] mimeTypes,
+        final Integer behaviour,
+        final Boolean createRemoteFolder,
+        final int createdBy
     ) {
         Intent intent = new Intent(context, FileUploader.class);
 
@@ -83,8 +83,8 @@ public class TransferRequester {
         intent.putExtra(FileUploader.KEY_CREATE_REMOTE_FOLDER, createRemoteFolder);
         intent.putExtra(FileUploader.KEY_CREATED_BY, createdBy);
 
-        if ((createdBy == CREATED_AS_CAMERA_UPLOAD_PICTURE || createdBy == CREATED_AS_CAMERA_UPLOAD_VIDEO) &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if ((createdBy == CREATED_AS_CAMERA_UPLOAD_PICTURE || createdBy == CREATED_AS_CAMERA_UPLOAD_VIDEO)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Since in Android O the apps in background are not allowed to start background
             // services and camera uploads feature may try to do it, this is the way to proceed
             Timber.d("Start to upload some files from foreground/background, startForeground() will be called soon");
@@ -98,8 +98,8 @@ public class TransferRequester {
     /**
      * Call to upload a new single file
      */
-    public void uploadNewFile(Context context, Account account, String localPath, String remotePath, int
-                              behaviour, String mimeType, boolean createRemoteFile, int createdBy) {
+    public void uploadNewFile(final Context context, final Account account, final String localPath, final String remotePath, final int
+                              behaviour, final String mimeType, final boolean createRemoteFile, final int createdBy) {
 
         uploadNewFiles(
             context,
@@ -116,8 +116,8 @@ public class TransferRequester {
     /**
      * Call to update multiple files already uploaded
      */
-    private void uploadsUpdate(Context context, Account account, OCFile[] existingFiles, Integer behaviour,
-                               Boolean forceOverwrite, boolean requestedFromAvOfflineJobService) {
+    private void uploadsUpdate(final Context context, final Account account, final OCFile[] existingFiles, final Integer behaviour,
+                               final Boolean forceOverwrite, final boolean requestedFromAvOfflineJobService) {
         Intent intent = new Intent(context, FileUploader.class);
 
         intent.putExtra(FileUploader.KEY_ACCOUNT, account);
@@ -140,8 +140,8 @@ public class TransferRequester {
     /**
      * Call to update a dingle file already uploaded
      */
-    public void uploadUpdate(Context context, Account account, OCFile existingFile, Integer behaviour,
-                             Boolean forceOverwrite, boolean requestedFromAvOfflineJobService) {
+    public void uploadUpdate(final Context context, final Account account, final OCFile existingFile, final Integer behaviour,
+                             final Boolean forceOverwrite, final boolean requestedFromAvOfflineJobService) {
 
         uploadsUpdate(context, account, new OCFile[] {existingFile}, behaviour, forceOverwrite,
                       requestedFromAvOfflineJobService);
@@ -150,7 +150,7 @@ public class TransferRequester {
     /**
      * Call to retry upload identified by remotePath
      */
-    public void retry(Context context, OCUpload upload, boolean requestedFromWifiBackEvent) {
+    public void retry(final Context context, final OCUpload upload, final boolean requestedFromWifiBackEvent) {
         if (upload != null && context != null) {
             Account account = AccountUtils.getOwnCloudAccountByName(
                                   context,
@@ -174,8 +174,8 @@ public class TransferRequester {
      * @param requestedFromWifiBackEvent true if the retry was requested because wifi connection was back,
      *                                   false otherwise
      */
-    public void retryFailedUploads(Context context, Account account, UploadResult uploadResult,
-                                   boolean requestedFromWifiBackEvent) {
+    public void retryFailedUploads(final Context context, final Account account, final UploadResult uploadResult,
+                                   final boolean requestedFromWifiBackEvent) {
         UploadsStorageManager uploadsStorageManager = new UploadsStorageManager(context.getContentResolver());
         OCUpload[] failedUploads = uploadsStorageManager.getFailedUploads();
         Account currentAccount = null;
@@ -184,8 +184,8 @@ public class TransferRequester {
             accountMatch = (account == null || account.name.equals(failedUpload.getAccountName()));
             resultMatch = (uploadResult == null || uploadResult.equals(failedUpload.getLastResult()));
             if (accountMatch && resultMatch) {
-                if (currentAccount == null ||
-                        !currentAccount.name.equals(failedUpload.getAccountName())) {
+                if (currentAccount == null
+                        || !currentAccount.name.equals(failedUpload.getAccountName())) {
                     currentAccount = failedUpload.getAccount(context);
                 }
                 retry(context, currentAccount, failedUpload, requestedFromWifiBackEvent);
@@ -202,16 +202,16 @@ public class TransferRequester {
      * @param requestedFromWifiBackEvent true if the retry was requested because wifi connection was back,
      *                                   false otherwise
      */
-    private void retry(Context context, Account account, OCUpload upload, boolean requestedFromWifiBackEvent) {
+    private void retry(final Context context, final Account account, final OCUpload upload, final boolean requestedFromWifiBackEvent) {
         if (upload != null) {
             Intent intent = new Intent(context, FileUploader.class);
             intent.putExtra(FileUploader.KEY_RETRY, true);
             intent.putExtra(FileUploader.KEY_ACCOUNT, account);
             intent.putExtra(FileUploader.KEY_RETRY_UPLOAD, upload);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && (upload.getCreatedBy() ==
-                    CREATED_AS_CAMERA_UPLOAD_PICTURE || upload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_VIDEO ||
-                    requestedFromWifiBackEvent)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && (upload.getCreatedBy()
+                    == CREATED_AS_CAMERA_UPLOAD_PICTURE || upload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_VIDEO
+                    || requestedFromWifiBackEvent)) {
                 // Since in Android O the apps in background are not allowed to start background
                 // services and camera uploads feature may try to do it, this is the way to proceed
                 if (requestedFromWifiBackEvent) {
@@ -232,11 +232,11 @@ public class TransferRequester {
      * @param context Caller {@link Context}
      * @return 'true' when conditions for a scheduled retry are met, 'false' otherwise.
      */
-    boolean shouldScheduleRetry(Context context, Exception exception) {
+    boolean shouldScheduleRetry(final Context context, final Exception exception) {
         return (
-                   !ConnectivityUtils.isNetworkActive(context) ||
-                   PowerUtils.isDeviceIdle(context) ||
-                   exception instanceof SocketTimeoutException // TODO check if exception is the same in HTTP
+                   !ConnectivityUtils.isNetworkActive(context)
+                   || PowerUtils.isDeviceIdle(context)
+                   || exception instanceof SocketTimeoutException // TODO check if exception is the same in HTTP
                    // server
                );
     }
@@ -250,7 +250,7 @@ public class TransferRequester {
      * @param accountName Local name of the OC account where the upload will be retried.
      * @param remotePath  Full path of the file to upload, relative to root of the OC account.
      */
-    void scheduleUpload(Context context, int jobId, String accountName, String remotePath) {
+    void scheduleUpload(final Context context, final int jobId, final String accountName, final String remotePath) {
         boolean scheduled = scheduleTransfer(
                                 context,
                                 RetryUploadJobService.class,
@@ -273,7 +273,7 @@ public class TransferRequester {
      * @param accountName Local name of the OC account where the download will be retried.
      * @param remotePath  Full path of the file to download, relative to root of the OC account.
      */
-    void scheduleDownload(Context context, int jobId, String accountName, String remotePath) {
+    void scheduleDownload(final Context context, final int jobId, final String accountName, final String remotePath) {
         boolean scheduled = scheduleTransfer(
                                 context,
                                 RetryDownloadJobService.class,
@@ -299,11 +299,11 @@ public class TransferRequester {
      * @param remotePath            Full path of the file to upload, relative to root of the OC account.
      */
     private boolean scheduleTransfer(
-        Context context,
-        Class<?> scheduledRetryService,
-        int jobId,
-        String accountName,
-        String remotePath
+        final Context context,
+        final Class<?> scheduledRetryService,
+        final int jobId,
+        final String accountName,
+        final String remotePath
     ) {
         ComponentName serviceComponent = new ComponentName(
             context,
@@ -341,7 +341,7 @@ public class TransferRequester {
      * @param remotePath  to upload the file
      * @return 2 if only wifi is required, 1 if any internet connection is required (wifi or cellular)
      */
-    private int getRequiredNetworkType(Context context, String accountName, String remotePath) {
+    private int getRequiredNetworkType(final Context context, final String accountName, final String remotePath) {
 
         UploadsStorageManager uploadsStorageManager = new UploadsStorageManager(context.getContentResolver());
 
@@ -353,9 +353,9 @@ public class TransferRequester {
         // Wifi by default
         int networkType = JobInfo.NETWORK_TYPE_UNMETERED;
 
-        if (ocUpload != null && (ocUpload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_PICTURE &&
-                                 !mConfig.isWifiOnlyForPictures() || ocUpload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_VIDEO &&
-                                 !mConfig.isWifiOnlyForVideos())) {
+        if (ocUpload != null && (ocUpload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_PICTURE
+                                 && !mConfig.isWifiOnlyForPictures() || ocUpload.getCreatedBy() == CREATED_AS_CAMERA_UPLOAD_VIDEO
+                                 && !mConfig.isWifiOnlyForVideos())) {
 
             // Wifi or cellular
             networkType = JobInfo.NETWORK_TYPE_ANY;

@@ -41,17 +41,17 @@ public class ProgressIndicator extends FrameLayout {
     protected int mNumberOfSteps = -1;
     protected int mCurrentStep = -1;
 
-    public ProgressIndicator(Context context) {
+    public ProgressIndicator(final Context context) {
         super(context);
         setup();
     }
 
-    public ProgressIndicator(Context context, AttributeSet attrs) {
+    public ProgressIndicator(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         setup();
     }
 
-    public ProgressIndicator(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ProgressIndicator(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setup();
     }
@@ -60,7 +60,7 @@ public class ProgressIndicator extends FrameLayout {
         return mNumberOfSteps > mCurrentStep;
     }
 
-    public void setNumberOfSteps(int steps) {
+    public void setNumberOfSteps(final int steps) {
         mNumberOfSteps = steps;
         mDotsContainer.removeAllViews();
         for (int i = 0; i < steps; ++i) {
@@ -71,7 +71,7 @@ public class ProgressIndicator extends FrameLayout {
         animateToStep(1);
     }
 
-    public void animateToStep(int step) {
+    public void animateToStep(final int step) {
         if (step < 1 || step > mNumberOfSteps) {
             return;
         }

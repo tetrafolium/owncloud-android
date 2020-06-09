@@ -42,13 +42,13 @@ public class CustomPopup {
     private Drawable background = null;
     protected final WindowManager mWManager;
 
-    public CustomPopup(View anchor) {
+    public CustomPopup(final View anchor) {
         mAnchor = anchor;
         mWindow = new PopupWindow(anchor.getContext());
 
         mWindow.setTouchInterceptor(new OnTouchListener() {
 
-            public boolean onTouch(View v, MotionEvent event) {
+            public boolean onTouch(final View v, final MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
                     CustomPopup.this.dismiss();
                     return true;
@@ -91,16 +91,16 @@ public class CustomPopup {
         mWindow.setContentView(root);
     }
 
-    public void setBackgroundDrawable(Drawable background) {
+    public void setBackgroundDrawable(final Drawable background) {
         this.background = background;
     }
 
-    public void setContentView(View root) {
+    public void setContentView(final View root) {
         this.root = root;
         mWindow.setContentView(root);
     }
 
-    public void setContentView(int layoutResId) {
+    public void setContentView(final int layoutResId) {
         LayoutInflater inflater = (LayoutInflater) mAnchor.getContext()
                                   .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         setContentView(inflater.inflate(layoutResId, null));
@@ -110,7 +110,7 @@ public class CustomPopup {
         showDropDown(0, 0);
     }
 
-    public void showDropDown(int x, int y) {
+    public void showDropDown(final int x, final int y) {
         preShow();
         mWindow.setAnimationStyle(android.R.style.Animation_Dialog);
         mWindow.showAsDropDown(mAnchor, x, y);
@@ -120,7 +120,7 @@ public class CustomPopup {
         showLikeQuickAction(0, 0);
     }
 
-    public void showLikeQuickAction(int x, int y) {
+    public void showLikeQuickAction(final int x, final int y) {
         preShow();
 
         mWindow.setAnimationStyle(android.R.style.Animation_Dialog);

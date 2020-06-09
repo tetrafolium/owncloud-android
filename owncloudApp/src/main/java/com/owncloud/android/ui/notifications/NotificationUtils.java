@@ -56,7 +56,7 @@ public class NotificationUtils {
      * @param context Context that will use the builder to create notifications
      * @return An instance of the regular {@link NotificationCompat.Builder}.
      */
-    public static NotificationCompat.Builder newNotificationBuilder(Context context) {
+    public static NotificationCompat.Builder newNotificationBuilder(final Context context) {
         return new NotificationCompat.Builder(context).
                setColor(context.getResources().getColor(R.color.primary));
     }
@@ -64,7 +64,7 @@ public class NotificationUtils {
     public static void cancelWithDelay(
         final NotificationManager notificationManager,
         final int notificationId,
-        long delayInMillis) {
+        final long delayInMillis) {
 
         HandlerThread thread = new HandlerThread(
             "NotificationDelayerThread_" + (new Random(System.currentTimeMillis())).nextInt(),
@@ -87,7 +87,7 @@ public class NotificationUtils {
      * @param fileInConflict file in conflict
      * @param account        account which the file in conflict belongs to
      */
-    public static void notifyConflict(OCFile fileInConflict, Account account, Context context) {
+    public static void notifyConflict(final OCFile fileInConflict, final Account account, final Context context) {
         NotificationManager notificationManager = (NotificationManager) context.
                 getSystemService(NOTIFICATION_SERVICE);
         NotificationCompat.Builder notificationBuilder = newNotificationBuilder(context);
@@ -118,8 +118,8 @@ public class NotificationUtils {
         .setAutoCancel(true);
 
         Intent showConflictActivityIntent = new Intent(context, ConflictsResolveActivity.class);
-        showConflictActivityIntent.setFlags(showConflictActivityIntent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK |
-                                            Intent.FLAG_FROM_BACKGROUND);
+        showConflictActivityIntent.setFlags(showConflictActivityIntent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK
+                                            | Intent.FLAG_FROM_BACKGROUND);
         showConflictActivityIntent.putExtra(ConflictsResolveActivity.EXTRA_FILE, fileInConflict);
         showConflictActivityIntent.putExtra(ConflictsResolveActivity.EXTRA_ACCOUNT, account);
 
@@ -131,8 +131,8 @@ public class NotificationUtils {
         int notificationId = 0;
 
         // We need a notification id for each file in conflict, let's use the file id but in a safe way
-        if ((int) fileInConflict.getFileId() >= Integer.MIN_VALUE && (int) fileInConflict.getFileId() <=
-                Integer.MAX_VALUE) {
+        if ((int) fileInConflict.getFileId() >= Integer.MIN_VALUE && (int) fileInConflict.getFileId()
+                <= Integer.MAX_VALUE) {
             notificationId = (int) fileInConflict.getFileId();
         }
 

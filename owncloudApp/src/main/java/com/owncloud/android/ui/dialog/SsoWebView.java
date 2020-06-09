@@ -24,11 +24,11 @@ import android.webkit.WebView;
 
 public class SsoWebView extends WebView {
 
-    public SsoWebView(Context context) {
+    public SsoWebView(final Context context) {
         super(context);
     }
 
-    public SsoWebView(Context context, AttributeSet attr) {
+    public SsoWebView(final Context context, final AttributeSet attr) {
         super(context, attr);
     }
 

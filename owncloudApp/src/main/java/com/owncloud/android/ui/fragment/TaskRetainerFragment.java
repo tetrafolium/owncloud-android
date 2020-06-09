@@ -41,7 +41,7 @@ public class TaskRetainerFragment extends Fragment {
      * the listener in the main thread (should so), no sync problem should occur.
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         if (mTask != null) {
             if (context instanceof ReceiveExternalFilesActivity) {
@@ -56,7 +56,7 @@ public class TaskRetainerFragment extends Fragment {
      * Only called once, since the instance is retained across configuration changes
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);    // the key point
     }
@@ -66,7 +66,7 @@ public class TaskRetainerFragment extends Fragment {
      *
      * @param task  Task to retain
      */
-    public void setTask(CopyAndUploadContentUrisTask task) {
+    public void setTask(final CopyAndUploadContentUrisTask task) {
         if (mTask != null) {
             mTask.setListener(null);
         }

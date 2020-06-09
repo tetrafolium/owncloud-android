@@ -114,10 +114,10 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * @return Fragment ready to be used.
      */
     public static PreviewVideoFragment newInstance(
-        OCFile file,
-        Account account,
-        int startPlaybackPosition,
-        boolean autoplay
+        final OCFile file,
+        final Account account,
+        final int startPlaybackPosition,
+        final boolean autoplay
     ) {
         PreviewVideoFragment frag = new PreviewVideoFragment();
         Bundle args = new Bundle();
@@ -150,7 +150,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -159,8 +159,8 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         Timber.v("onCreateView");
 
@@ -182,7 +182,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Timber.v("onActivityCreated");
 
@@ -261,7 +261,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * {@inheritDoc}
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         Timber.v("onSaveInstanceState");
 
@@ -274,7 +274,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         Timber.v("onActivityResult %s", this);
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
@@ -285,7 +285,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
 
     // OnClickListener methods
 
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if (view == fullScreenButton) {
             releasePlayer();
             startFullScreenVideo();
@@ -326,7 +326,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * {@inheritDoc}
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.file_actions_menu, menu);
     }
@@ -335,7 +335,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * {@inheritDoc}
      */
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
         FileMenuFilter mf = new FileMenuFilter(
@@ -377,7 +377,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share_file: {
             releasePlayer();
@@ -461,7 +461,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * @param mediaSource media to be played
      */
     @Override
-    public void OnPrepareVideoPlayerTaskCallback(MediaSource mediaSource) {
+    public void OnPrepareVideoPlayerTaskCallback(final MediaSource mediaSource) {
         Timber.v("playerPrepared");
         player.prepare(mediaSource);
     }
@@ -483,7 +483,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
     // Video player eventListener implementation
 
     @Override
-    public void onPlayerError(ExoPlaybackException error) {
+    public void onPlayerError(final ExoPlaybackException error) {
 
         Timber.e(error, "Error in video player");
 
@@ -521,17 +521,17 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
     }
 
     @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+    public void onTracksChanged(final TrackGroupArray trackGroups, final TrackSelectionArray trackSelections) {
         // Do nothing
     }
 
     @Override
-    public void onLoadingChanged(boolean isLoading) {
+    public void onLoadingChanged(final boolean isLoading) {
         // Do nothing
     }
 
     @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+    public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
         // If player is already, show full screen button
         if (playbackState == ExoPlayer.STATE_READY) {
             fullScreenButton.setVisibility(View.VISIBLE);
@@ -546,13 +546,13 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
     }
 
     @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
+    public void onTimelineChanged(final Timeline timeline, final Object manifest) {
         // Do nothing
     }
 
     // File extra methods
     @Override
-    public void onFileMetadataChanged(OCFile updatedFile) {
+    public void onFileMetadataChanged(final OCFile updatedFile) {
         if (updatedFile != null) {
             setFile(updatedFile);
         }
@@ -586,7 +586,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Timber.v("onConfigurationChanged %s", this);
     }
@@ -611,7 +611,7 @@ public class PreviewVideoFragment extends FileFragment implements View.OnClickLi
      * @param file File to test if can be previewed.
      * @return 'True' if the file can be handled by the fragment.
      */
-    public static boolean canBePreviewed(OCFile file) {
+    public static boolean canBePreviewed(final OCFile file) {
         return (file != null && file.isVideo());
     }
 }

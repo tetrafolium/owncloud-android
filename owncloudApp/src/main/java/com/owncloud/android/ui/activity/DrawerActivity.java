@@ -133,7 +133,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
             //Notch support
             mNavigationView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
-                public void onViewAttachedToWindow(View v) {
+                public void onViewAttachedToWindow(final View v) {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
                         DisplayCutout displayCutout = v.getRootWindowInsets().getDisplayCutout();
 
@@ -143,12 +143,12 @@ public abstract class DrawerActivity extends ToolbarActivity {
 
                             int orientation = getResources().getConfiguration().orientation;
                             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                                int displayCutoutDP = (displayCutout.getSafeInsetTop()) /
-                                                      (getResources().getDisplayMetrics().densityDpi /
-                                                       DisplayMetrics.DENSITY_DEFAULT);
+                                int displayCutoutDP = (displayCutout.getSafeInsetTop())
+                                                      / (getResources().getDisplayMetrics().densityDpi
+                                                       / DisplayMetrics.DENSITY_DEFAULT);
                                 rlDrawerActiveUser.getLayoutParams().height =
-                                    (int) getResources().getDimension(R.dimen.nav_drawer_header_height) +
-                                    displayCutoutDP;
+                                    (int) getResources().getDimension(R.dimen.nav_drawer_header_height)
+                                    + displayCutoutDP;
                             } else {
                                 rlDrawerActiveUser.getLayoutParams().height =
                                     (int) getResources().getDimension(R.dimen.nav_drawer_header_height);
@@ -158,7 +158,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
                 }
 
                 @Override
-                public void onViewDetachedFromWindow(View v) {
+                public void onViewDetachedFromWindow(final View v) {
                 }
             });
 
@@ -171,7 +171,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
+            public void onDrawerClosed(final View view) {
                 super.onDrawerClosed(view);
                 // standard behavior of drawer is to switch to the standard menu on closing
                 if (mIsAccountChooserActive) {
@@ -181,7 +181,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
             }
 
             /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
+            public void onDrawerOpened(final View drawerView) {
                 super.onDrawerOpened(drawerView);
                 mDrawerToggle.setDrawerIndicatorEnabled(true);
                 invalidateOptionsMenu();
@@ -199,7 +199,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param navigationView the drawers navigation view
      */
-    protected void setupDrawerContent(NavigationView navigationView) {
+    protected void setupDrawerContent(final NavigationView navigationView) {
         // Disable help or feedback on customization
         if (!getResources().getBoolean(R.bool.help_enabled)) {
             navigationView.getMenu().removeItem(R.id.drawer_menu_help);
@@ -251,7 +251,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
         }
     }
 
-    void setCheckedItemAtBottomBar(int checkedMenuItem) {
+    void setCheckedItemAtBottomBar(final int checkedMenuItem) {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         bottomNavigationView.getMenu().findItem(checkedMenuItem).setChecked(true);
     }
@@ -262,7 +262,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param menuItemId the menu item to be checked/highlighted
      */
-    void setupNavigationBottomBar(int menuItemId) {
+    void setupNavigationBottomBar(final int menuItemId) {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         // Allow or disallow touches with other visible windows
         bottomNavigationView.setFilterTouchesWhenObscured(
@@ -276,7 +276,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
         });
     }
 
-    private void navBarNavigationTo(int menuItemId, boolean isCurrentOptionActive) {
+    private void navBarNavigationTo(final int menuItemId, final boolean isCurrentOptionActive) {
 
         switch (menuItemId) {
         case R.id.nav_all_files:
@@ -321,7 +321,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param accountName The account name to be set
      */
-    private void accountClicked(String accountName) {
+    private void accountClicked(final String accountName) {
         if (!AccountUtils.getCurrentOwnCloudAccount(getApplicationContext()).name.equals(accountName)) {
             AccountUtils.setCurrentOwnCloudAccount(getApplicationContext(), accountName);
             // Refresh dependencies to be used in selected account
@@ -335,7 +335,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param view the clicked ImageView
      */
-    public void onAccountDrawerClick(View view) {
+    public void onAccountDrawerClick(final View view) {
         accountClicked(view.getContentDescription().toString());
     }
 
@@ -372,7 +372,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      * @param lockMode The new lock mode for the given drawer. One of {@link DrawerLayout#LOCK_MODE_UNLOCKED},
      *                 {@link DrawerLayout#LOCK_MODE_LOCKED_CLOSED} or {@link DrawerLayout#LOCK_MODE_LOCKED_OPEN}.
      */
-    public void setDrawerLockMode(int lockMode) {
+    public void setDrawerLockMode(final int lockMode) {
         if (mDrawerLayout != null) {
             mDrawerLayout.setDrawerLockMode(lockMode);
         }
@@ -383,7 +383,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param enable <code>true</code> to enable, <code>false</code> to disable
      */
-    public void setDrawerIndicatorEnabled(boolean enable) {
+    public void setDrawerIndicatorEnabled(final boolean enable) {
         if (mDrawerToggle != null) {
             mDrawerToggle.setDrawerIndicatorEnabled(enable);
         }
@@ -437,7 +437,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param accounts list of accounts
      */
-    private void repopulateAccountList(Account[] accounts) {
+    private void repopulateAccountList(final Account[] accounts) {
         // remove all accounts from list
         mNavigationView.getMenu().removeGroup(R.id.drawer_menu_accounts);
 
@@ -539,7 +539,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      * <p/>
      * Assumes that navigation drawer is NOT visible.
      */
-    protected void updateActionBarTitleAndHomeButton(OCFile chosenFile) {
+    protected void updateActionBarTitleAndHomeButton(final OCFile chosenFile) {
         super.updateActionBarTitleAndHomeButton(chosenFile);
 
         /// set home button properties
@@ -554,7 +554,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param account the account to be set in the drawer
      */
-    protected void setAccountInDrawer(Account account) {
+    protected void setAccountInDrawer(final Account account) {
         if (mDrawerLayout != null && account != null) {
             TextView username = (TextView) findNavigationViewChildById(R.id.drawer_username);
             TextView usernameFull = (TextView) findNavigationViewChildById(R.id.drawer_username_full);
@@ -619,7 +619,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param menuItemId the menu item to be highlighted
      */
-    protected void setDrawerMenuItemChecked(int menuItemId) {
+    protected void setDrawerMenuItemChecked(final int menuItemId) {
         if (mNavigationView != null && mNavigationView.getMenu() != null && mNavigationView.getMenu().findItem
                 (menuItemId) != null) {
             mNavigationView.getMenu().findItem(menuItemId).setChecked(true);
@@ -630,7 +630,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -647,7 +647,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean(KEY_IS_ACCOUNT_CHOOSER_ACTIVE, mIsAccountChooserActive);
@@ -655,7 +655,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         mIsAccountChooserActive = savedInstanceState.getBoolean(KEY_IS_ACCOUNT_CHOOSER_ACTIVE, false);
@@ -671,7 +671,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if (mDrawerToggle != null) {
@@ -685,7 +685,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    public void onConfigurationChanged(final @NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (mDrawerToggle != null) {
             mDrawerToggle.onConfigurationChanged(newConfig);
@@ -708,7 +708,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // update Account list and active account if Manage Account activity replies with
@@ -737,7 +737,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      * @param id the view's id
      * @return The view if found or <code>null</code> otherwise.
      */
-    private View findNavigationViewChildById(int id) {
+    private View findNavigationViewChildById(final int id) {
         return ((NavigationView) findViewById(R.id.nav_view)).getHeaderView(0).findViewById(id);
     }
 
@@ -747,7 +747,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
     protected abstract void restart();
 
     @Override
-    protected void onAccountCreationSuccessful(AccountManagerFuture<Bundle> future) {
+    protected void onAccountCreationSuccessful(final AccountManagerFuture<Bundle> future) {
         super.onAccountCreationSuccessful(future);
         updateAccountList();
         updateQuota();
@@ -781,7 +781,7 @@ public abstract class DrawerActivity extends ToolbarActivity {
      *
      * @param listener Object interested in changes of the drawer layout.
      */
-    public void addDrawerListener(DrawerLayout.DrawerListener listener) {
+    public void addDrawerListener(final DrawerLayout.DrawerListener listener) {
         if (mDrawerLayout != null) {
             mDrawerLayout.addDrawerListener(listener);
         } else {

@@ -63,7 +63,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final String DIALOG_WAIT_TAG = "DIALOG_WAIT";
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
         Timber.v("onNewIntent() start");
         Account current = AccountUtils.getCurrentOwnCloudAccount(this);
@@ -98,7 +98,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param account      New {@link Account} to set.
      * @param savedAccount When 'true', account was retrieved from a saved instance state.
      */
-    protected void setAccount(Account account, boolean savedAccount) {
+    protected void setAccount(final Account account, final boolean savedAccount) {
         Account oldAccount = mCurrentAccount;
         boolean validAccount =
             (account != null && AccountUtils.setCurrentOwnCloudAccount(getApplicationContext(),
@@ -144,7 +144,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param mandatoryCreation When 'true', if an account is not created by the user, the app will be closed.
      *                          To use when no ownCloud account is available.
      */
-    protected void createAccount(boolean mandatoryCreation) {
+    protected void createAccount(final boolean mandatoryCreation) {
         AccountManager am = AccountManager.get(getApplicationContext());
         am.addAccount(MainApp.Companion.getAccountType(),
                       null,
@@ -160,7 +160,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * <p>
      * Child classes must grant that state depending on the {@link Account} is updated.
      */
-    protected void onAccountSet(boolean stateWasRecovered) {
+    protected void onAccountSet(final boolean stateWasRecovered) {
         if (getAccount() != null) {
             mStorageManager = new FileDataStorageManager(this, getAccount(), getContentResolver());
             mCapabilities = mStorageManager.getCapability(mCurrentAccount.name);
@@ -169,7 +169,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(final Account account) {
         mCurrentAccount = account;
     }
 
@@ -219,7 +219,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      *
      * @param future
      */
-    protected void onAccountCreationSuccessful(AccountManagerFuture<Bundle> future) {
+    protected void onAccountCreationSuccessful(final AccountManagerFuture<Bundle> future) {
         // no special handling in base activity
     }
 
@@ -236,12 +236,12 @@ public abstract class BaseActivity extends AppCompatActivity {
          *
          * @param mandatoryCreation When 'true', if an account was not created, the app is closed.
          */
-        public AccountCreationCallback(boolean mandatoryCreation) {
+        public AccountCreationCallback(final boolean mandatoryCreation) {
             mMandatoryCreation = mandatoryCreation;
         }
 
         @Override
-        public void run(AccountManagerFuture<Bundle> future) {
+        public void run(final AccountManagerFuture<Bundle> future) {
             BaseActivity.this.mRedirectingToSetupAccount = false;
             boolean accountWasSet = false;
             if (future != null) {
@@ -286,7 +286,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * Show loading dialog
      */
-    public void showLoadingDialog(int messageId) {
+    public void showLoadingDialog(final int messageId) {
         // grant that only one waiting dialog is shown
         dismissLoadingDialog();
         // Construct dialog
@@ -320,7 +320,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      *
      * @param message Message to show.
      */
-    public void showSnackMessage(String message) {
+    public void showSnackMessage(final String message) {
         final View rootView = findViewById(android.R.id.content);
 
         if (rootView == null) {

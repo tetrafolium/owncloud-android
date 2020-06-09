@@ -54,7 +54,7 @@ public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
      * @param account Account to remove.
      * @return Dialog ready to show.
      */
-    public static RemoveAccountDialogFragment newInstance(Account account) {
+    public static RemoveAccountDialogFragment newInstance(final Account account) {
         if (account == null) {
             throw new IllegalArgumentException("Cannot remove a NULL account");
         }
@@ -73,7 +73,7 @@ public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // checked here to fail soon in case of wrong usage
         try {
@@ -87,7 +87,7 @@ public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
 
     @Override
     @NonNull
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         mTargetAccount = getArguments().getParcelable(ARG_TARGET_ACCOUNT);
 
@@ -100,7 +100,7 @@ public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
      * Performs the removal of the target account.
      */
     @Override
-    public void onConfirmation(String callerTag) {
+    public void onConfirmation(final String callerTag) {
         Activity parentActivity = getActivity();
         AccountManager am = AccountManager.get(parentActivity);
         AccountManagerCallback<Boolean> callback = (AccountManagerCallback<Boolean>) parentActivity;
@@ -115,12 +115,12 @@ public class RemoveAccountDialogFragment extends ConfirmationDialogFragment
     }
 
     @Override
-    public void onCancel(String callerTag) {
+    public void onCancel(final String callerTag) {
         // nothing to do here
     }
 
     @Override
-    public void onNeutral(String callerTag) {
+    public void onNeutral(final String callerTag) {
         // nothing to do here
     }
 }

@@ -43,7 +43,7 @@ public enum UploadResult {
 
     private final int value;
 
-    UploadResult(int value) {
+    UploadResult(final int value) {
         this.value = value;
     }
 
@@ -51,7 +51,7 @@ public enum UploadResult {
         return value;
     }
 
-    public static UploadResult fromValue(int value) {
+    public static UploadResult fromValue(final int value) {
         switch (value) {
         case -1:
             return UNKNOWN;
@@ -93,7 +93,7 @@ public enum UploadResult {
         return null;
     }
 
-    public static UploadResult fromOperationResult(RemoteOperationResult result) {
+    public static UploadResult fromOperationResult(final RemoteOperationResult result) {
         // messy :(
         switch (result.getCode()) {
         case OK:

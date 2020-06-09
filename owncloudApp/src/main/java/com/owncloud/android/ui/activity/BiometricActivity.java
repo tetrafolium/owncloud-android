@@ -75,7 +75,7 @@ public class BiometricActivity extends AppCompatActivity {
      * @param savedInstanceState Previously saved state - irrelevant in this case
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mActivity = this;
@@ -98,7 +98,7 @@ public class BiometricActivity extends AppCompatActivity {
 
     private Executor executor = new Executor() {
         @Override
-        public void execute(Runnable command) {
+        public void execute(final Runnable command) {
             handler.post(command);
         }
     };
@@ -116,14 +116,14 @@ public class BiometricActivity extends AppCompatActivity {
         BiometricPrompt biometricPrompt = new BiometricPrompt(BiometricActivity.this,
         executor, new BiometricPrompt.AuthenticationCallback() {
             @Override
-            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+            public void onAuthenticationError(final int errorCode, final @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
                 Timber.e("onAuthenticationError (" + errorCode + "): " + errString);
                 authError();
             }
 
             @Override
-            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+            public void onAuthenticationSucceeded(final @NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 mActivity.finish();
             }
@@ -177,8 +177,8 @@ public class BiometricActivity extends AppCompatActivity {
             mKeyStore.load(null);
             mKeyGenerator.init(new
                                KeyGenParameterSpec.Builder(KEY_NAME,
-                                       KeyProperties.PURPOSE_ENCRYPT |
-                                       KeyProperties.PURPOSE_DECRYPT)
+                                       KeyProperties.PURPOSE_ENCRYPT
+                                       | KeyProperties.PURPOSE_DECRYPT)
                                .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                                .setUserAuthenticationRequired(true)
                                .setEncryptionPaddings(
@@ -217,8 +217,8 @@ public class BiometricActivity extends AppCompatActivity {
         } catch (KeyPermanentlyInvalidatedException e) {
             Timber.e(e, "Key permanently invalidated while initializing the cipher");
             return false;
-        } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException |
-                     NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException
+                     | NoSuchAlgorithmException | InvalidKeyException e) {
             Timber.e(e, "Failed while initializing the cipher");
             return false;
         }

@@ -47,7 +47,7 @@ public class RemoveFileOperation extends SyncOperation {
      * @param onlyLocalCopy         When 'true', and a local copy of the file exists, only this is
      *                              removed.
      */
-    public RemoveFileOperation(String remotePath, boolean onlyLocalCopy, boolean isLastFile) {
+    public RemoveFileOperation(final String remotePath, final boolean onlyLocalCopy, final boolean isLastFile) {
         mRemotePath = remotePath;
         mOnlyLocalCopy = onlyLocalCopy;
         mIsLastFile = isLastFile;
@@ -72,7 +72,7 @@ public class RemoveFileOperation extends SyncOperation {
      * @param   client      Client object to communicate with the remote ownCloud server.
      */
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         RemoteOperationResult result = null;
 
         mFileToRemove = getStorageManager().getFileByPath(mRemotePath);

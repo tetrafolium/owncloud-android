@@ -48,7 +48,7 @@ public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
      * @param files           Files to remove.
      * @return Dialog ready to show.
      */
-    public static RemoveFilesDialogFragment newInstance(ArrayList<OCFile> files) {
+    public static RemoveFilesDialogFragment newInstance(final ArrayList<OCFile> files) {
         RemoveFilesDialogFragment frag = new RemoveFilesDialogFragment();
         Bundle args = new Bundle();
         int messageStringId;
@@ -72,21 +72,21 @@ public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
             // choose message for a single file
             OCFile file = files.get(0);
 
-            messageStringId = (file.isFolder()) ?
-                              R.string.confirmation_remove_folder_alert :
-                              R.string.confirmation_remove_file_alert;
+            messageStringId = (file.isFolder())
+                              ? R.string.confirmation_remove_folder_alert
+                              : R.string.confirmation_remove_file_alert;
 
         } else {
             // choose message for more than one file
-            messageStringId = (containsFolder) ?
-                              R.string.confirmation_remove_folders_alert :
-                              R.string.confirmation_remove_files_alert;
+            messageStringId = (containsFolder)
+                              ? R.string.confirmation_remove_folders_alert
+                              : R.string.confirmation_remove_files_alert;
 
         }
 
-        int localRemoveButton = (!containsAvailableOffline && (containsFolder || containsDown)) ?
-                                R.string.confirmation_remove_local :
-                                -1;
+        int localRemoveButton = (!containsAvailableOffline && (containsFolder || containsDown))
+                                ? R.string.confirmation_remove_local
+                                : -1;
 
         args.putInt(ARG_MESSAGE_RESOURCE_ID, messageStringId);
         if (files.size() == 1) {
@@ -107,14 +107,14 @@ public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
      * @param file           File to remove.
      * @return Dialog ready to show.
      */
-    public static RemoveFilesDialogFragment newInstance(OCFile file) {
+    public static RemoveFilesDialogFragment newInstance(final OCFile file) {
         ArrayList<OCFile> list = new ArrayList<>();
         list.add(file);
         return newInstance(list);
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         mTargetFiles = getArguments().getParcelableArrayList(ARG_TARGET_FILES);
 
@@ -127,7 +127,7 @@ public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
      * Performs the removal of the target file, both locally and in the server.
      */
     @Override
-    public void onConfirmation(String callerTag) {
+    public void onConfirmation(final String callerTag) {
         ComponentsGetter cg = (ComponentsGetter) getActivity();
         cg.getFileOperationsHelper().removeFiles(mTargetFiles, false);
     }
@@ -136,13 +136,13 @@ public class RemoveFilesDialogFragment extends ConfirmationDialogFragment
      * Performs the removal of the local copy of the target file
      */
     @Override
-    public void onCancel(String callerTag) {
+    public void onCancel(final String callerTag) {
         ComponentsGetter cg = (ComponentsGetter) getActivity();
         cg.getFileOperationsHelper().removeFiles(mTargetFiles, true);
     }
 
     @Override
-    public void onNeutral(String callerTag) {
+    public void onNeutral(final String callerTag) {
         // nothing to do here
     }
 }

@@ -57,7 +57,7 @@ public abstract class FileFragment extends Fragment {
         return mFile;
     }
 
-    protected void setFile(OCFile file) {
+    protected void setFile(final OCFile file) {
         mFile = file;
     }
 
@@ -65,14 +65,14 @@ public abstract class FileFragment extends Fragment {
      * {@inheritDoc}
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         try {
             mContainerActivity = (ContainerActivity) context;
 
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement " +
-                                         ContainerActivity.class.getSimpleName());
+            throw new ClassCastException(context.toString() + " must implement "
+                                         + ContainerActivity.class.getSimpleName());
         }
     }
 
@@ -85,7 +85,7 @@ public abstract class FileFragment extends Fragment {
         super.onDetach();
     }
 
-    public void onSyncEvent(String syncEvent, boolean success, OCFile updatedFile) {
+    public void onSyncEvent(final String syncEvent, final boolean success, final OCFile updatedFile) {
         if (syncEvent.equals(FileUploader.getUploadStartMessage())) {
             updateViewForSyncInProgress();
 

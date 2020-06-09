@@ -72,10 +72,10 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      */
     private static final int MAX_FAILED_RESULTS = 3;
 
-    public static final String EVENT_FULL_SYNC_START = FileSyncAdapter.class.getName() +
-            ".EVENT_FULL_SYNC_START";
-    public static final String EVENT_FULL_SYNC_END = FileSyncAdapter.class.getName() +
-            ".EVENT_FULL_SYNC_END";
+    public static final String EVENT_FULL_SYNC_START = FileSyncAdapter.class.getName()
+            + ".EVENT_FULL_SYNC_START";
+    public static final String EVENT_FULL_SYNC_END = FileSyncAdapter.class.getName()
+            + ".EVENT_FULL_SYNC_END";
     public static final String EVENT_FULL_SYNC_FOLDER_CONTENTS_SYNCED =
         FileSyncAdapter.class.getName() + ".EVENT_FULL_SYNC_FOLDER_CONTENTS_SYNCED";
 
@@ -145,7 +145,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * <p>
      * {@inheritDoc}
      */
-    public FileSyncAdapter(Context context, boolean autoInitialize) {
+    public FileSyncAdapter(final Context context, final boolean autoInitialize) {
         super(context, autoInitialize);
     }
 
@@ -154,7 +154,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * <p>
      * {@inheritDoc}
      */
-    public FileSyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
+    public FileSyncAdapter(final Context context, final boolean autoInitialize, final boolean allowParallelSyncs) {
         super(context, autoInitialize, allowParallelSyncs);
     }
 
@@ -162,9 +162,9 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void onPerformSync(Account account, Bundle extras,
-                                           String authority, ContentProviderClient providerClient,
-                                           SyncResult syncResult) {
+    public synchronized void onPerformSync(final Account account, final Bundle extras,
+                                           final String authority, final ContentProviderClient providerClient,
+                                           final SyncResult syncResult) {
 
         mCancellation = false;
         mIsManualSync = extras.getBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, false);
@@ -274,7 +274,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      *                 server, so data will not be fetched. Only local changes of
      *                 available offline files will be pushed.
      */
-    private void synchronizeFolder(OCFile folder, boolean pushOnly) {
+    private void synchronizeFolder(final OCFile folder, final boolean pushOnly) {
 
         if (mFailedResultsCounter > MAX_FAILED_RESULTS || isFinisher(mLastFailedResult)) {
             return;
@@ -348,15 +348,15 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * @return 'True' if the result should immediately finish the
      * synchronization
      */
-    private boolean isFinisher(RemoteOperationResult failedResult) {
+    private boolean isFinisher(final RemoteOperationResult failedResult) {
         if (failedResult != null) {
             RemoteOperationResult.ResultCode code = failedResult.getCode();
-            return (code.equals(RemoteOperationResult.ResultCode.SSL_ERROR) ||
-                    code.equals(RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED) ||
-                    code.equals(RemoteOperationResult.ResultCode.BAD_OC_VERSION) ||
-                    code.equals(RemoteOperationResult.ResultCode.INSTANCE_NOT_CONFIGURED) ||
-                    code.equals(ResultCode.ACCOUNT_NOT_FOUND) ||
-                    code.equals(ResultCode.ACCOUNT_EXCEPTION)
+            return (code.equals(RemoteOperationResult.ResultCode.SSL_ERROR)
+                    || code.equals(RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED)
+                    || code.equals(RemoteOperationResult.ResultCode.BAD_OC_VERSION)
+                    || code.equals(RemoteOperationResult.ResultCode.INSTANCE_NOT_CONFIGURED)
+                    || code.equals(ResultCode.ACCOUNT_NOT_FOUND)
+                    || code.equals(ResultCode.ACCOUNT_EXCEPTION)
                    );
         }
         return false;
@@ -373,7 +373,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * @param folders Subfolders to recursively synchronize, with boolean value signaling if there are pending
      *                changes to sync in the server.
      */
-    private void syncSubfolders(List<Pair<OCFile, Boolean>> folders) {
+    private void syncSubfolders(final List<Pair<OCFile, Boolean>> folders) {
         int i;
         Pair<OCFile, Boolean> pair;
         for (i = 0; i < folders.size() && !mCancellation; i++) {
@@ -384,8 +384,8 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
         }
 
         if (mCancellation && i < folders.size()) {
-            Timber.d("Leaving synchronization before synchronizing " + folders.get(i).first.getRemotePath() + " due " +
-                     "to cancelation request");
+            Timber.d("Leaving synchronization before synchronizing " + folders.get(i).first.getRemotePath() + " due "
+                     + "to cancelation request");
         }
     }
 
@@ -398,8 +398,8 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * @param result        Result of an individual folder synchronization,
      *                      if completed; may be null.
      */
-    private void sendLocalBroadcast(String event, String dirRemotePath,
-                                    RemoteOperationResult result) {
+    private void sendLocalBroadcast(final String event, final String dirRemotePath,
+                                    final RemoteOperationResult result) {
         Timber.d("Send broadcast %s", event);
         Intent intent = new Intent(event);
         intent.putExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME, getAccount().name);
@@ -418,8 +418,8 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
     private void notifyFailedSynchronization() {
         NotificationCompat.Builder notificationBuilder = createNotificationBuilder();
         boolean needsToUpdateCredentials = (
-                                               mLastFailedResult != null &&
-                                               ResultCode.UNAUTHORIZED.equals(mLastFailedResult.getCode())
+                                               mLastFailedResult != null
+                                               && ResultCode.UNAUTHORIZED.equals(mLastFailedResult.getCode())
                                            );
         if (needsToUpdateCredentials) {
             // let the user update credentials with one click
@@ -540,7 +540,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * @param id      Id for the notification to build.
      * @param builder Notification builder, already set up.
      */
-    private void showNotification(int id, NotificationCompat.Builder builder) {
+    private void showNotification(final int id, final NotificationCompat.Builder builder) {
 
         NotificationManager mNotificationManager = ((NotificationManager) getContext().
                 getSystemService(Context.NOTIFICATION_SERVICE));
@@ -574,7 +574,7 @@ public class FileSyncAdapter extends AbstractOwnCloudSyncAdapter {
      * @param args Arguments to replace in a formatted string.
      * @return
      */
-    private String i18n(int key, Object... args) {
+    private String i18n(final int key, final Object... args) {
         return getContext().getString(key, args);
     }
 }

@@ -76,7 +76,7 @@ public class PreviewVideoActivity extends FileActivity implements ExoPlayer.Even
     // Activity lifecycle
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.v("onCreate");
 
@@ -134,7 +134,7 @@ public class PreviewVideoActivity extends FileActivity implements ExoPlayer.Even
 
     // Handle full screen modes
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+    public void onWindowFocusChanged(final boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             // Let app go truly full screen using immersive mode, user swipes to display the system bars
@@ -173,7 +173,7 @@ public class PreviewVideoActivity extends FileActivity implements ExoPlayer.Even
      * @param mediaSource media to be played
      */
     @Override
-    public void OnPrepareVideoPlayerTaskCallback(MediaSource mediaSource) {
+    public void OnPrepareVideoPlayerTaskCallback(final MediaSource mediaSource) {
         Timber.v("playerPrepared");
         player.prepare(mediaSource);
     }
@@ -201,7 +201,7 @@ public class PreviewVideoActivity extends FileActivity implements ExoPlayer.Even
     // Video player eventListener implementation
 
     @Override
-    public void onPlayerError(ExoPlaybackException error) {
+    public void onPlayerError(final ExoPlaybackException error) {
 
         Timber.e(error, "Error in video player");
 
@@ -213,7 +213,7 @@ public class PreviewVideoActivity extends FileActivity implements ExoPlayer.Even
      *
      * @param previewVideoError player error with the needed info
      */
-    private void showAlertDialog(PreviewVideoError previewVideoError) {
+    private void showAlertDialog(final PreviewVideoError previewVideoError) {
 
         new AlertDialog.Builder(this)
         .setMessage(previewVideoError.getErrorMessage())
@@ -223,12 +223,12 @@ public class PreviewVideoActivity extends FileActivity implements ExoPlayer.Even
     }
 
     @Override
-    public void onLoadingChanged(boolean isLoading) {
+    public void onLoadingChanged(final boolean isLoading) {
         // Do nothing.
     }
 
     @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+    public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
         // Do nothing.
     }
 
@@ -238,12 +238,12 @@ public class PreviewVideoActivity extends FileActivity implements ExoPlayer.Even
     }
 
     @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
+    public void onTimelineChanged(final Timeline timeline, final Object manifest) {
         // Do nothing
     }
 
     @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+    public void onTracksChanged(final TrackGroupArray trackGroups, final TrackSelectionArray trackSelections) {
         // Do nothing
     }
 

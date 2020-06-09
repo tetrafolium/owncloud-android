@@ -70,9 +70,9 @@ public class SynchronizeFileOperation extends SyncOperation {
      * @param context          Android context; needed to start transfers.
      */
     public SynchronizeFileOperation(
-        String remotePath,
-        Account account,
-        Context context
+        final String remotePath,
+        final Account account,
+        final Context context
     ) {
 
         mRemotePath = remotePath;
@@ -106,12 +106,12 @@ public class SynchronizeFileOperation extends SyncOperation {
      * @param requestedFromAvOfflineJobService When 'true' will perform some specific operations
      */
     public SynchronizeFileOperation(
-        OCFile localFile,
-        OCFile serverFile,
-        Account account,
-        boolean pushOnly,
-        Context context,
-        boolean requestedFromAvOfflineJobService
+        final OCFile localFile,
+        final OCFile serverFile,
+        final Account account,
+        final boolean pushOnly,
+        final Context context,
+        final boolean requestedFromAvOfflineJobService
     ) {
 
         mLocalFile = localFile;
@@ -119,8 +119,8 @@ public class SynchronizeFileOperation extends SyncOperation {
         if (mLocalFile != null) {
             mRemotePath = mLocalFile.getRemotePath();
             if (mServerFile != null && !mServerFile.getRemotePath().equals(mRemotePath)) {
-                throw new IllegalArgumentException("serverFile and localFile do not correspond" +
-                                                   " to the same OC file");
+                throw new IllegalArgumentException("serverFile and localFile do not correspond"
+                                                   + " to the same OC file");
             }
         } else if (mServerFile != null) {
             mRemotePath = mServerFile.getRemotePath();
@@ -134,7 +134,7 @@ public class SynchronizeFileOperation extends SyncOperation {
     }
 
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
 
         RemoteOperationResult<RemoteFile> result = null;
         mTransferWasRequested = false;
@@ -170,16 +170,16 @@ public class SynchronizeFileOperation extends SyncOperation {
                 } else if (mLocalFile.getEtag() == null || mLocalFile.getEtag().length() == 0) {
                     // file uploaded (null) or downloaded ("")
                     // before upgrade to version 1.8.0; this is legacy condition
-                    serverChanged = mServerFile.getModificationTimestamp() !=
-                                    mLocalFile.getModificationTimestampAtLastSyncForData();
+                    serverChanged = mServerFile.getModificationTimestamp()
+                                    != mLocalFile.getModificationTimestampAtLastSyncForData();
                 } else {
                     serverChanged = (!mServerFile.getEtag().equals(mLocalFile.getEtag()));
                 }
 
                 /// decide if file changed in local device
                 boolean localChanged = (
-                                           mLocalFile.getLocalModificationTimestamp() >
-                                           mLocalFile.getLastSyncDateForData()
+                                           mLocalFile.getLocalModificationTimestamp()
+                                           > mLocalFile.getLastSyncDateForData()
                                        );
 
                 /// decide action to perform depending upon changes
@@ -230,7 +230,7 @@ public class SynchronizeFileOperation extends SyncOperation {
      *
      * @param file OCFile object representing the file to upload
      */
-    private void requestForUpload(OCFile file) {
+    private void requestForUpload(final OCFile file) {
         TransferRequester requester = new TransferRequester();
         requester.uploadUpdate(mContext, mAccount, file, FileUploader.LOCAL_BEHAVIOUR_MOVE, true,
                                mRequestedFromAvOfflineJobService);
@@ -243,7 +243,7 @@ public class SynchronizeFileOperation extends SyncOperation {
      *
      * @param file OCFile object representing the file to download
      */
-    private void requestForDownload(OCFile file) {
+    private void requestForDownload(final OCFile file) {
         Intent intent = new Intent(mContext, FileDownloader.class);
         intent.putExtra(FileDownloader.KEY_ACCOUNT, mAccount);
         intent.putExtra(FileDownloader.KEY_FILE, file);

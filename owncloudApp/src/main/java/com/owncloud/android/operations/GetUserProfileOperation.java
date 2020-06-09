@@ -54,7 +54,7 @@ public class GetUserProfileOperation extends SyncOperation {
      *
      * @param remotePath Remote path of the file.
      */
-    GetUserProfileOperation(String remotePath) {
+    GetUserProfileOperation(final String remotePath) {
         mRemotePath = remotePath;
     }
 
@@ -70,7 +70,7 @@ public class GetUserProfileOperation extends SyncOperation {
      *              Call {@link RemoteOperationResult#getData()}.get(0) to get it.
      */
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         UserProfile userProfile;
 
         try {
@@ -78,7 +78,7 @@ public class GetUserProfileOperation extends SyncOperation {
             UserProfilesRepository userProfilesRepository = UserProfilesRepository.getUserProfilesRepository();
             UseCaseHelper useCaseHelper = new UseCaseHelper();
             UseCaseResult<UserInfo> useCaseResult = useCaseHelper.getUserInfo();
-            if (useCaseResult.getDataOrNull()!= null) {
+            if (useCaseResult.getDataOrNull() != null) {
                 // store display name with account data
                 AccountManager accountManager = AccountManager.get(MainApp.Companion.getAppContext());
                 UserInfo userInfo = useCaseResult.getDataOrNull();

@@ -80,7 +80,7 @@ public class PreviewImageActivity extends FileActivity implements
     private View mFullScreenAnchorView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
         super.onCreate(savedInstanceState);
@@ -100,7 +100,7 @@ public class PreviewImageActivity extends FileActivity implements
         (new View.OnSystemUiVisibilityChangeListener() {
             @SuppressLint("InlinedApi")
             @Override
-            public void onSystemUiVisibilityChange(int flags) {
+            public void onSystemUiVisibilityChange(final int flags) {
                 boolean visible = (flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
                 ActionBar actionBar = getSupportActionBar();
                 if (visible) {
@@ -141,8 +141,8 @@ public class PreviewImageActivity extends FileActivity implements
             PreferenceUtils.shouldDisallowTouchesWithOtherVisibleWindows(this)
         );
 
-        int position = mHasSavedPosition ? mSavedPosition :
-                       mPreviewImagePagerAdapter.getFilePosition(getFile());
+        int position = mHasSavedPosition ? mSavedPosition
+                       : mPreviewImagePagerAdapter.getFilePosition(getFile());
         position = (position >= 0) ? position : 0;
         mViewPager.setAdapter(mPreviewImagePagerAdapter);
         mViewPager.addOnPageChangeListener(this);
@@ -165,7 +165,7 @@ public class PreviewImageActivity extends FileActivity implements
         }
     }
 
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
         // Trigger the initial hide() shortly after the activity has been
@@ -177,20 +177,20 @@ public class PreviewImageActivity extends FileActivity implements
 
     Handler mHideSystemUiHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             hideSystemUI(mFullScreenAnchorView);
             getSupportActionBar().hide();
         }
     };
 
-    private void delayedHide(int delayMillis) {
+    private void delayedHide(final int delayMillis) {
         mHideSystemUiHandler.removeMessages(0);
         mHideSystemUiHandler.sendEmptyMessageDelayed(0, delayMillis);
     }
 
     /// handle Window Focus changes
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+    public void onWindowFocusChanged(final boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
         // When the window loses focus (e.g. the action overflow is shown),
@@ -201,7 +201,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @Override
-    public void onRemoteOperationFinish(RemoteOperation operation, RemoteOperationResult result) {
+    public void onRemoteOperationFinish(final RemoteOperation operation, final RemoteOperationResult result) {
         super.onRemoteOperationFinish(operation, result);
 
         if (operation instanceof RemoveFileOperation) {
@@ -212,8 +212,8 @@ public class PreviewImageActivity extends FileActivity implements
         }
     }
 
-    private void onSynchronizeFileOperationFinish(SynchronizeFileOperation operation,
-            RemoteOperationResult result) {
+    private void onSynchronizeFileOperationFinish(final SynchronizeFileOperation operation,
+            final RemoteOperationResult result) {
         if (result.isSuccess()) {
             invalidateOptionsMenu();
         }
@@ -230,7 +230,7 @@ public class PreviewImageActivity extends FileActivity implements
     private class PreviewImageServiceConnection implements ServiceConnection {
 
         @Override
-        public void onServiceConnected(ComponentName component, IBinder service) {
+        public void onServiceConnected(final ComponentName component, final IBinder service) {
 
             if (component.equals(new ComponentName(PreviewImageActivity.this,
                                                    FileDownloader.class))) {
@@ -248,7 +248,7 @@ public class PreviewImageActivity extends FileActivity implements
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName component) {
+        public void onServiceDisconnected(final ComponentName component) {
             if (component.equals(new ComponentName(PreviewImageActivity.this,
                                                    FileDownloader.class))) {
                 Timber.d("Download service suddenly disconnected");
@@ -262,7 +262,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         boolean returnValue;
 
         switch (item.getItemId()) {
@@ -307,7 +307,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @Override
-    public void showDetails(OCFile file) {
+    public void showDetails(final OCFile file) {
         Intent showDetailsIntent = new Intent(this, FileDisplayActivity.class);
         showDetailsIntent.setAction(FileDisplayActivity.ACTION_DETAILS);
         showDetailsIntent.putExtra(FileActivity.EXTRA_FILE, file);
@@ -323,7 +323,7 @@ public class PreviewImageActivity extends FileActivity implements
      * @param position Position index of the new selected page
      */
     @Override
-    public void onPageSelected(int position) {
+    public void onPageSelected(final int position) {
         Timber.d("onPageSelected %s", position);
 
         if (getOperationsServiceBinder() != null) {
@@ -360,7 +360,7 @@ public class PreviewImageActivity extends FileActivity implements
      * @param state The new scroll state (SCROLL_STATE_IDLE, _DRAGGING, _SETTLING
      */
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onPageScrollStateChanged(final int state) {
     }
 
     /**
@@ -375,7 +375,7 @@ public class PreviewImageActivity extends FileActivity implements
      * @param positionOffsetPixels Value in pixels indicating the offset from position.
      */
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
     }
 
     /**
@@ -386,11 +386,11 @@ public class PreviewImageActivity extends FileActivity implements
      */
     private class DownloadFinishReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             String accountName = intent.getStringExtra(Extras.EXTRA_ACCOUNT_NAME);
             String downloadedRemotePath = intent.getStringExtra(Extras.EXTRA_REMOTE_PATH);
-            if (getAccount().name.equals(accountName) &&
-                    downloadedRemotePath != null) {
+            if (getAccount().name.equals(accountName)
+                    && downloadedRemotePath != null) {
 
                 OCFile file = getStorageManager().getFileByPath(downloadedRemotePath);
                 mPreviewImagePagerAdapter.onDownloadEvent(
@@ -418,7 +418,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @Override
-    protected void onAccountSet(boolean stateWasRecovered) {
+    protected void onAccountSet(final boolean stateWasRecovered) {
         super.onAccountSet(stateWasRecovered);
         if (getAccount() != null) {
             OCFile file = getFile();
@@ -449,13 +449,13 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @Override
-    public void onBrowsedDownTo(OCFile folder) {
+    public void onBrowsedDownTo(final OCFile folder) {
         // TODO Auto-generated method stub
 
     }
 
     @SuppressLint("InlinedApi")
-    private void hideSystemUI(View anchorView) {
+    private void hideSystemUI(final View anchorView) {
         anchorView.setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_HIDE_NAVIGATION         // hides NAVIGATION BAR; Android >= 4.0
             | View.SYSTEM_UI_FLAG_FULLSCREEN              // hides STATUS BAR;     Android >= 4.1
@@ -467,7 +467,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @SuppressLint("InlinedApi")
-    private void showSystemUI(View anchorView) {
+    private void showSystemUI(final View anchorView) {
         anchorView.setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE           // draw full window;     Android >= 4.1
             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
@@ -476,7 +476,7 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @Override
-    public void navigateToOption(FileListOption fileListOption) {
+    public void navigateToOption(final FileListOption fileListOption) {
         backToDisplayActivity();
         super.navigateToOption(fileListOption);
     }

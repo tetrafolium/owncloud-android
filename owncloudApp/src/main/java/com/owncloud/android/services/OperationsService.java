@@ -104,7 +104,7 @@ public class OperationsService extends Service {
         public Account mAccount;
         public String mCookie;
 
-        public Target(Account account, Uri serverUrl, String cookie) {
+        public Target(final Account account, final Uri serverUrl, final String cookie) {
             mAccount = account;
             mServerUrl = serverUrl;
             mCookie = cookie;
@@ -148,7 +148,7 @@ public class OperationsService extends Service {
      * This ensures the service will keep on working although the caller activity goes away.
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         Timber.d("Starting command with id %s", startId);
 
         // WIP: for the moment, only SYNC_FOLDER is expected here;
@@ -206,7 +206,7 @@ public class OperationsService extends Service {
      * except the addition of new operations.
      */
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(final Intent intent) {
         return mOperationsBinder;
     }
 
@@ -214,7 +214,7 @@ public class OperationsService extends Service {
      * Called when ALL the bound clients were unbound.
      */
     @Override
-    public boolean onUnbind(Intent intent) {
+    public boolean onUnbind(final Intent intent) {
         mOperationsBinder.clearListeners();
         return false;   // not accepting rebinding (default behaviour)
     }
@@ -234,7 +234,7 @@ public class OperationsService extends Service {
 
         private ServiceHandler mServiceHandler;
 
-        OperationsServiceBinder(ServiceHandler serviceHandler) {
+        OperationsServiceBinder(final ServiceHandler serviceHandler) {
             mServiceHandler = serviceHandler;
         }
 
@@ -244,7 +244,7 @@ public class OperationsService extends Service {
          * @param account ownCloud account where the remote folder is stored.
          * @param file    A folder in the queue of pending synchronizations
          */
-        public void cancel(Account account, OCFile file) {
+        public void cancel(final Account account, final OCFile file) {
             mSyncFolderHandler.cancel(account, file);
         }
 
@@ -259,7 +259,7 @@ public class OperationsService extends Service {
          * @param callbackHandler {@link Handler} to access the listener without
          *                        breaking Android threading protection.
          */
-        public void addOperationListener(OnRemoteOperationListener listener, Handler callbackHandler) {
+        public void addOperationListener(final OnRemoteOperationListener listener, final Handler callbackHandler) {
             synchronized (mBoundListeners) {
                 mBoundListeners.put(listener, callbackHandler);
             }
@@ -271,7 +271,7 @@ public class OperationsService extends Service {
          *
          * @param listener Object to notify about progress of transfer.
          */
-        public void removeOperationListener(OnRemoteOperationListener listener) {
+        public void removeOperationListener(final OnRemoteOperationListener listener) {
             synchronized (mBoundListeners) {
                 mBoundListeners.remove(listener);
             }
@@ -285,7 +285,7 @@ public class OperationsService extends Service {
          * @param operationIntent Intent describing a new operation to queue and execute.
          * @return Identifier of the operation created, or null if failed.
          */
-        public long queueNewOperation(Intent operationIntent) {
+        public long queueNewOperation(final Intent operationIntent) {
             Pair<Target, RemoteOperation> itemToQueue = newOperation(operationIntent);
             if (itemToQueue != null) {
                 mServiceHandler.mPendingOperations.add(itemToQueue);
@@ -299,7 +299,7 @@ public class OperationsService extends Service {
             }
         }
 
-        public boolean dispatchResultIfFinished(int operationId, OnRemoteOperationListener listener) {
+        public boolean dispatchResultIfFinished(final int operationId, final OnRemoteOperationListener listener) {
             Pair<RemoteOperation, RemoteOperationResult> undispatched =
                 mUndispatchedFinishedOperations.remove(operationId);
             if (undispatched != null) {
@@ -321,7 +321,7 @@ public class OperationsService extends Service {
          * @param file    File to check if something is synchronizing
          *                / downloading / uploading inside.
          */
-        public boolean isSynchronizing(Account account, OCFile file) {
+        public boolean isSynchronizing(final Account account, final OCFile file) {
             return mSyncFolderHandler.isSynchronizing(account, file.getRemotePath());
         }
 
@@ -344,7 +344,7 @@ public class OperationsService extends Service {
         private OwnCloudClient mOwnCloudClient = null;
         private FileDataStorageManager mStorageManager;
 
-        ServiceHandler(Looper looper, OperationsService service) {
+        ServiceHandler(final Looper looper, final OperationsService service) {
             super(looper);
             if (service == null) {
                 throw new IllegalArgumentException("Received invalid NULL in parameter 'service'");
@@ -353,7 +353,7 @@ public class OperationsService extends Service {
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             nextOperation();
             Timber.d("Stopping after command with id %s", msg.arg1);
             mService.stopSelf(msg.arg1);
@@ -446,12 +446,12 @@ public class OperationsService extends Service {
      * @return Pair with the new operation object and the information about its
      * target server.
      */
-    private Pair<Target, RemoteOperation> newOperation(Intent operationIntent) {
+    private Pair<Target, RemoteOperation> newOperation(final Intent operationIntent) {
         RemoteOperation operation = null;
         Target target = null;
         try {
-            if (!operationIntent.hasExtra(EXTRA_ACCOUNT) &&
-                    !operationIntent.hasExtra(EXTRA_SERVER_URL)) {
+            if (!operationIntent.hasExtra(EXTRA_ACCOUNT)
+                    && !operationIntent.hasExtra(EXTRA_SERVER_URL)) {
                 Timber.e("Not enough information provided in intent");
 
             } else {

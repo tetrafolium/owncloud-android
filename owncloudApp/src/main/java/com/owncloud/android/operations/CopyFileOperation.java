@@ -47,7 +47,7 @@ public class CopyFileOperation extends SyncOperation {
      * @param srcPath          Remote path of the {@link OCFile} to move.
      * @param targetParentPath Path to the folder where the file will be copied into.
      */
-    public CopyFileOperation(String srcPath, String targetParentPath) {
+    public CopyFileOperation(final String srcPath, final String targetParentPath) {
         mSrcPath = srcPath;
         mTargetParentPath = targetParentPath;
         if (!mTargetParentPath.endsWith(OCFile.PATH_SEPARATOR)) {
@@ -63,7 +63,7 @@ public class CopyFileOperation extends SyncOperation {
      * @param client Client object to communicate with the remote ownCloud server.
      */
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         RemoteOperationResult result;
 
         /// 1. check copy validity

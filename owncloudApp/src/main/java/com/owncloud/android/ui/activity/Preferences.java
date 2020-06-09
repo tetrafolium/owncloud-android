@@ -135,7 +135,7 @@ public class Preferences extends PreferenceActivity {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
@@ -292,8 +292,8 @@ public class Preferences extends PreferenceActivity {
                 if (patternSet) {
                     showSnackMessage(R.string.pattern_already_set);
                 } else {
-                    i.setAction(incoming ? PassCodeActivity.ACTION_REQUEST_WITH_RESULT :
-                                PassCodeActivity.ACTION_CHECK_WITH_RESULT);
+                    i.setAction(incoming ? PassCodeActivity.ACTION_REQUEST_WITH_RESULT
+                                : PassCodeActivity.ACTION_CHECK_WITH_RESULT);
 
                     startActivityForResult(i, incoming ? ACTION_REQUEST_PASSCODE : ACTION_CONFIRM_PASSCODE);
                 }
@@ -311,8 +311,8 @@ public class Preferences extends PreferenceActivity {
                 if (passcodeSet) {
                     showSnackMessage(R.string.passcode_already_set);
                 } else {
-                    intent.setAction(state ? PatternLockActivity.ACTION_REQUEST_WITH_RESULT :
-                                     PatternLockActivity.ACTION_CHECK_WITH_RESULT);
+                    intent.setAction(state ? PatternLockActivity.ACTION_REQUEST_WITH_RESULT
+                                     : PatternLockActivity.ACTION_CHECK_WITH_RESULT);
                     startActivityForResult(intent, state ? ACTION_REQUEST_PATTERN : ACTION_CONFIRM_PATTERN);
                 }
                 return false;
@@ -523,8 +523,8 @@ public class Preferences extends PreferenceActivity {
                 int clickCount = mAppPrefs.getInt(MainApp.CLICK_DEV_MENU, 0);
                 if (mAppPrefs.getInt(MainApp.CLICK_DEV_MENU, 0) > MainApp.CLICKS_NEEDED_TO_BE_DEVELOPER) {
                     return true;
-                } else if (mAppPrefs.getInt(MainApp.CLICK_DEV_MENU, 0) ==
-                           MainApp.CLICKS_NEEDED_TO_BE_DEVELOPER) {
+                } else if (mAppPrefs.getInt(MainApp.CLICK_DEV_MENU, 0)
+                           == MainApp.CLICKS_NEEDED_TO_BE_DEVELOPER) {
                     showDeveloperItems(pCategoryMore);
                 } else if (clickCount > 0) {
                     Toast.makeText(this,
@@ -540,7 +540,7 @@ public class Preferences extends PreferenceActivity {
         }
     }
 
-    private void showDeveloperItems(PreferenceCategory preferenceCategory) {
+    private void showDeveloperItems(final PreferenceCategory preferenceCategory) {
         Preference pLogger = findPreference(PREFERENCE_LOGGER);
         if (mAppPrefs.getInt(MainApp.CLICK_DEV_MENU, 0) >= MainApp.CLICKS_NEEDED_TO_BE_DEVELOPER && pLogger == null) {
             preferenceCategory.addPreference(mLogger);
@@ -556,7 +556,7 @@ public class Preferences extends PreferenceActivity {
      *                     view and showing it when the user just unchecked the feature checkbox
      * @param isChecked    camera uploads for pictures is checked
      */
-    private void toggleCameraUploadsPictureOptions(Boolean initializing, Boolean isChecked) {
+    private void toggleCameraUploadsPictureOptions(final Boolean initializing, final Boolean isChecked) {
         if (isChecked) {
             mPrefCameraUploadsCategory.addPreference(mPrefCameraPictureUploadsWiFi);
             mPrefCameraUploadsCategory.addPreference(mPrefCameraPictureUploadsPath);
@@ -599,7 +599,7 @@ public class Preferences extends PreferenceActivity {
      *                     view and showing it when the user just unchecked the feature checkbox
      * @param isChecked    camera uploads for videos is checked
      */
-    private void toggleCameraUploadsVideoOptions(Boolean initializing, Boolean isChecked) {
+    private void toggleCameraUploadsVideoOptions(final Boolean initializing, final Boolean isChecked) {
         if (isChecked) {
             mPrefCameraUploadsCategory.addPreference(mPrefCameraVideoUploadsWiFi);
             mPrefCameraUploadsCategory.addPreference(mPrefCameraVideoUploadsPath);
@@ -636,7 +636,7 @@ public class Preferences extends PreferenceActivity {
         }
     }
 
-    private void toggleCameraUploadsCommonOptions(Boolean video, Boolean picture) {
+    private void toggleCameraUploadsCommonOptions(final Boolean video, final Boolean picture) {
         if (picture || video) {
             mPrefCameraUploadsCategory.addPreference(mPrefCameraUploadsSourcePath);
             mPrefCameraUploadsCategory.addPreference(mPrefCameraUploadsBehaviour);
@@ -655,8 +655,8 @@ public class Preferences extends PreferenceActivity {
         mPattern.setChecked(patternState);
         boolean biometricState = mAppPrefs.getBoolean(BiometricActivity.PREFERENCE_SET_BIOMETRIC, false);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mBiometricManager != null &&
-                !mBiometricManager.hasEnrolledBiometric()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mBiometricManager != null
+                && !mBiometricManager.hasEnrolledBiometric()) {
             biometricState = false;
         }
 
@@ -664,13 +664,13 @@ public class Preferences extends PreferenceActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
         return true;
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
         super.onMenuItemSelected(featureId, item);
         Intent intent;
 
@@ -688,7 +688,7 @@ public class Preferences extends PreferenceActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ACTION_SELECT_UPLOAD_PATH && resultCode == RESULT_OK) {
@@ -791,22 +791,22 @@ public class Preferences extends PreferenceActivity {
     }
 
     @Override
-    public void setContentView(@LayoutRes int layoutResID) {
+    public void setContentView(final @LayoutRes int layoutResID) {
         getDelegate().setContentView(layoutResID);
     }
 
     @Override
-    public void setContentView(View view) {
+    public void setContentView(final View view) {
         getDelegate().setContentView(view);
     }
 
     @Override
-    public void setContentView(View view, ViewGroup.LayoutParams params) {
+    public void setContentView(final View view, final ViewGroup.LayoutParams params) {
         getDelegate().setContentView(view, params);
     }
 
     @Override
-    public void addContentView(View view, ViewGroup.LayoutParams params) {
+    public void addContentView(final View view, final ViewGroup.LayoutParams params) {
         getDelegate().addContentView(view, params);
     }
 
@@ -817,19 +817,19 @@ public class Preferences extends PreferenceActivity {
     }
 
     @Override
-    protected void onTitleChanged(CharSequence title, int color) {
+    protected void onTitleChanged(final CharSequence title, final int color) {
         super.onTitleChanged(title, color);
         getDelegate().setTitle(title);
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         getDelegate().onConfigurationChanged(newConfig);
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         getDelegate().onPostCreate(savedInstanceState);
     }
@@ -936,7 +936,7 @@ public class Preferences extends PreferenceActivity {
         mBiometric.setSummary(null);
     }
 
-    private void disableBiometric(String summary) {
+    private void disableBiometric(final String summary) {
         if (mBiometric.isChecked()) {
             mBiometric.setChecked(false);
         }
@@ -949,7 +949,7 @@ public class Preferences extends PreferenceActivity {
      *
      * @param messageResource Message to show.
      */
-    private void showSnackMessage(int messageResource) {
+    private void showSnackMessage(final int messageResource) {
         Snackbar snackbar = Snackbar.make(
                                 findViewById(android.R.id.content),
                                 messageResource,
@@ -963,7 +963,7 @@ public class Preferences extends PreferenceActivity {
      *
      * @param message message to show in the dialog
      */
-    private void showSimpleDialog(String message) {
+    private void showSimpleDialog(final String message) {
         new AlertDialog.Builder(this)
         .setTitle(R.string.common_important)
         .setMessage(message)

@@ -31,12 +31,12 @@ public class CreateChunksFolderOperation extends CreateFolderOperation {
      *
      * @param remotePath         Path in which create the chunks folder in server
      */
-    public CreateChunksFolderOperation(String remotePath) {
+    public CreateChunksFolderOperation(final String remotePath) {
         super(remotePath, false);
     }
 
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         CreateRemoteChunkFolderOperation createRemoteChunkFolderOperation = new CreateRemoteChunkFolderOperation(
             mRemotePath,
             mCreateFullPath

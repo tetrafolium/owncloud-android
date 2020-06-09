@@ -55,12 +55,12 @@ public class ConfirmationDialogFragment extends DialogFragment {
      * @return Dialog ready to show.
      */
     public static ConfirmationDialogFragment newInstance(
-        int messageResId,
-        String[] messageArguments,
-        int titleResId,
-        int posBtn,
-        int neuBtn,
-        int negBtn
+        final int messageResId,
+        final String[] messageArguments,
+        final int titleResId,
+        final int posBtn,
+        final int neuBtn,
+        final int negBtn
     ) {
 
         if (messageResId == -1) {
@@ -79,12 +79,12 @@ public class ConfirmationDialogFragment extends DialogFragment {
         return frag;
     }
 
-    public void setOnConfirmationListener(ConfirmationDialogFragmentListener listener) {
+    public void setOnConfirmationListener(final ConfirmationDialogFragmentListener listener) {
         mListener = listener;
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         Object[] messageArguments = getArguments().getStringArray(ARG_MESSAGE_ARGUMENTS);
         int messageId = getArguments().getInt(ARG_MESSAGE_RESOURCE_ID, -1);
         int titleId = getArguments().getInt(ARG_TITLE_ID, -1);

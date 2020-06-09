@@ -66,7 +66,7 @@ public class DefaultAvatarTextDrawable extends Drawable {
      * @param b      rgb blue value
      * @param radius circle radius
      */
-    public DefaultAvatarTextDrawable(String text, int r, int g, int b, float radius) {
+    public DefaultAvatarTextDrawable(final String text, final int r, final int g, final int b, final float radius) {
         mRadius = radius;
         mText = text;
 
@@ -95,7 +95,7 @@ public class DefaultAvatarTextDrawable extends Drawable {
      * values
      */
     @NonNull
-    public static DefaultAvatarTextDrawable createAvatar(String accountName, float radiusInDp) throws
+    public static DefaultAvatarTextDrawable createAvatar(final String accountName, final float radiusInDp) throws
         UnsupportedEncodingException, NoSuchAlgorithmException {
         int[] rgb = BitmapUtils.calculateAvatarBackgroundRGB(accountName);
         DefaultAvatarTextDrawable avatar = new DefaultAvatarTextDrawable(
@@ -110,18 +110,18 @@ public class DefaultAvatarTextDrawable extends Drawable {
      * @param canvas The canvas to draw into
      */
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(final Canvas canvas) {
         canvas.drawCircle(mRadius, mRadius, mRadius, mBackground);
         canvas.drawText(mText, mRadius, mRadius - ((mTextPaint.descent() + mTextPaint.ascent()) / 2), mTextPaint);
     }
 
     @Override
-    public void setAlpha(int alpha) {
+    public void setAlpha(final int alpha) {
         mTextPaint.setAlpha(alpha);
     }
 
     @Override
-    public void setColorFilter(ColorFilter cf) {
+    public void setColorFilter(final ColorFilter cf) {
         mTextPaint.setColorFilter(cf);
     }
 

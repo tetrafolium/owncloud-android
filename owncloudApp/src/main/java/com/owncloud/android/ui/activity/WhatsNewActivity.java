@@ -61,7 +61,7 @@ public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPa
     private ViewPager mPager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.whats_new_activity);
 
@@ -126,7 +126,7 @@ public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPa
         return AccountUtils.getCurrentOwnCloudAccount(MainApp.Companion.getAppContext()) == null;
     }
 
-    static public void runIfNeeded(Context context) {
+    static public void runIfNeeded(final Context context) {
         if (context instanceof WhatsNewActivity) {
             return;
         }
@@ -136,32 +136,32 @@ public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPa
         }
     }
 
-    static private boolean shouldShow(Context context) {
+    static private boolean shouldShow(final Context context) {
         boolean isBeta = MainApp.Companion.isBeta();
         boolean showWizard = context.getResources().getBoolean(R.bool.wizard_enabled) && !BuildConfig.DEBUG;
-        return showWizard &&
-               ((isFirstRun() && context instanceof LoginActivity) ||
-                (
-                    !(isFirstRun() && (context instanceof FileDisplayActivity)) &&
-                    !(context instanceof PassCodeActivity) &&
-                    (FeatureList.getFiltered(getLastSeenVersionCode(), isFirstRun(),
+        return showWizard
+               && ((isFirstRun() && context instanceof LoginActivity)
+                || (
+                    !(isFirstRun() && (context instanceof FileDisplayActivity))
+                    && !(context instanceof PassCodeActivity)
+                    && (FeatureList.getFiltered(getLastSeenVersionCode(), isFirstRun(),
                                              isBeta).length > 0)
 
                 ));
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
     }
 
     @Override
-    public void onPageSelected(int position) {
+    public void onPageSelected(final int position) {
         mProgress.animateToStep(position + 1);
         updateNextButtonIfNeeded();
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onPageScrollStateChanged(final int state) {
 
     }
 
@@ -169,13 +169,13 @@ public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPa
 
         FeatureItem[] mFeatures;
 
-        public FeaturesViewAdapter(FragmentManager fm, FeatureItem[] features) {
+        public FeaturesViewAdapter(final FragmentManager fm, final FeatureItem[] features) {
             super(fm);
             mFeatures = features;
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(final int position) {
             return FeatureFragment.newInstance(mFeatures[position]);
         }
 
@@ -188,7 +188,7 @@ public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPa
     public static class FeatureFragment extends Fragment {
         private FeatureItem mItem;
 
-        static public FeatureFragment newInstance(FeatureItem item) {
+        static public FeatureFragment newInstance(final FeatureItem item) {
             FeatureFragment f = new FeatureFragment();
             Bundle args = new Bundle();
             args.putParcelable("feature", item);
@@ -197,15 +197,15 @@ public class WhatsNewActivity extends FragmentActivity implements ViewPager.OnPa
         }
 
         @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
+        public void onCreate(final @Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             mItem = getArguments() != null ? (FeatureItem) getArguments().getParcelable("feature") : null;
         }
 
         @Nullable
         @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                                 @Nullable Bundle savedInstanceState) {
+        public View onCreateView(final LayoutInflater inflater, final @Nullable ViewGroup container,
+                                 final @Nullable Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.whats_new_element, container, false);
 
             ImageView iv = v.findViewById(R.id.whatsNewImage);

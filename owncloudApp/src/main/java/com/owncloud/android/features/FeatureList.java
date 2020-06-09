@@ -66,7 +66,7 @@ public class FeatureList {
         return featuresList;
     }
 
-    static public FeatureItem[] getFiltered(final int lastSeenVersionCode, final boolean isFirstRun, boolean isBeta) {
+    static public FeatureItem[] getFiltered(final int lastSeenVersionCode, final boolean isFirstRun, final boolean isBeta) {
         List<FeatureItem> features = new LinkedList<>();
 
         Timber.d("Getting filtered features");
@@ -75,9 +75,9 @@ public class FeatureList {
             final int itemVersionCode = isBeta ? item.getBetaVersionNumber() : item.getVersionNumber();
             if (isFirstRun && item.shouldShowOnFirstRun()) {
                 features.add(item);
-            } else if (!isFirstRun && !item.shouldShowOnFirstRun() &&
-                       MainApp.Companion.getVersionCode() >= itemVersionCode &&
-                       lastSeenVersionCode < itemVersionCode) {
+            } else if (!isFirstRun && !item.shouldShowOnFirstRun()
+                       && MainApp.Companion.getVersionCode() >= itemVersionCode
+                       && lastSeenVersionCode < itemVersionCode) {
                 features.add(item);
             }
         }
@@ -93,8 +93,8 @@ public class FeatureList {
         private int betaVersion;
         private boolean showOnInitialRun;
 
-        private FeatureItem(int image, int titleText, int contentText, String version, String betaVersion,
-                            boolean showOnInitialRun) {
+        private FeatureItem(final int image, final int titleText, final int contentText, final String version, final String betaVersion,
+                            final boolean showOnInitialRun) {
             this.image = image;
             this.titleText = titleText;
             this.contentText = contentText;
@@ -145,7 +145,7 @@ public class FeatureList {
         }
 
         @Override
-        public void writeToParcel(Parcel dest, int flags) {
+        public void writeToParcel(final Parcel dest, final int flags) {
             dest.writeInt(image);
             dest.writeInt(titleText);
             dest.writeInt(contentText);
@@ -154,7 +154,7 @@ public class FeatureList {
             dest.writeByte((byte) (showOnInitialRun ? 1 : 0));
         }
 
-        private FeatureItem(Parcel p) {
+        private FeatureItem(final Parcel p) {
             image = p.readInt();
             titleText = p.readInt();
             contentText = p.readInt();
@@ -167,26 +167,26 @@ public class FeatureList {
         new Parcelable.Creator() {
 
             @Override
-            public Object createFromParcel(Parcel source) {
+            public Object createFromParcel(final Parcel source) {
                 return new FeatureItem(source);
             }
 
             @Override
-            public Object[] newArray(int size) {
+            public Object[] newArray(final int size) {
                 return new FeatureItem[size];
             }
         };
     }
 
-    private static int versionCodeFromString(String version) {
+    private static int versionCodeFromString(final String version) {
         String[] v = version.split(Pattern.quote("."));
         if (v.length != 3) {
             Timber.d("Version string is incorrect %s", version);
             return 0;
         }
 
-        return Integer.parseInt(v[0]) * (int) (10e6) +
-               Integer.parseInt(v[1]) * (int) (10e4) +
-               Integer.parseInt(v[2]) * 100;
+        return Integer.parseInt(v[0]) * (int) (10e6)
+               + Integer.parseInt(v[1]) * (int) (10e4)
+               + Integer.parseInt(v[2]) * 100;
     }
 }

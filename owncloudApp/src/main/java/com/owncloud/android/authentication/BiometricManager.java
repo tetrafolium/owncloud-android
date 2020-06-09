@@ -36,11 +36,11 @@ import com.owncloud.android.ui.activity.BiometricActivity;
 import java.util.HashSet;
 import java.util.Set;
 
-@RequiresApi(api = Build.VERSION_CODES.M)
 /**
  * Handle biometric requests. Besides, is a facade to access some
  * {@link androidx.biometric.BiometricMananager} methods
  */
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class BiometricManager {
 
     private static final Set<Class> sExemptOfBiometricActivites;
@@ -58,7 +58,7 @@ public class BiometricManager {
 
     private static BiometricManager mBiometricManagerInstance = null;
 
-    public static BiometricManager getBiometricManager(Context context) {
+    public static BiometricManager getBiometricManager(final Context context) {
 
         if (mBiometricManagerInstance == null) {
             mBiometricManagerInstance = new BiometricManager();
@@ -67,13 +67,13 @@ public class BiometricManager {
         return mBiometricManagerInstance;
     }
 
-    private Long mTimestamp = 0l;
+    private Long mTimestamp = 0L;
     private int mVisibleActivitiesCounter = 0;
 
     private BiometricManager() {
     }
 
-    public void onActivityStarted(Activity activity) {
+    public void onActivityStarted(final Activity activity) {
 
         if (!sExemptOfBiometricActivites.contains(activity.getClass())) {
 
@@ -99,7 +99,7 @@ public class BiometricManager {
         mVisibleActivitiesCounter++;    // keep it AFTER biometricShouldBeRequested was checked
     }
 
-    public void onActivityStopped(Activity activity) {
+    public void onActivityStopped(final Activity activity) {
         if (mVisibleActivitiesCounter > 0) {
             mVisibleActivitiesCounter--;
         }
@@ -129,8 +129,8 @@ public class BiometricManager {
     }
 
     public boolean isHardwareDetected() {
-        return mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE &&
-               mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+        return mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE
+               && mBiometricManager.canAuthenticate() != androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
     }
 
     public boolean hasEnrolledBiometric() {

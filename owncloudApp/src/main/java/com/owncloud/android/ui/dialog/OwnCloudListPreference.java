@@ -17,26 +17,26 @@ public class OwnCloudListPreference extends ListPreference {
     private Context mContext;
     private AppCompatDialog mDialog;
 
-    public OwnCloudListPreference(Context context) {
+    public OwnCloudListPreference(final Context context) {
         super(context);
         this.mContext = context;
     }
 
-    public OwnCloudListPreference(Context context, AttributeSet attrs) {
+    public OwnCloudListPreference(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
     }
 
-    public OwnCloudListPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public OwnCloudListPreference(final Context context, final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public OwnCloudListPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+    public OwnCloudListPreference(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
-    protected void showDialog(Bundle state) {
+    protected void showDialog(final Bundle state) {
         if (getEntries() == null || getEntryValues() == null) {
             throw new IllegalStateException(
                 "ListPreference requires an entries array and an entryValues array.");
@@ -71,7 +71,7 @@ public class OwnCloudListPreference extends ListPreference {
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public void onClick(final DialogInterface dialog, final int which) {
         if (which >= 0 && getEntryValues() != null) {
             String value = getEntryValues()[which].toString();
             if (callChangeListener(value)) {

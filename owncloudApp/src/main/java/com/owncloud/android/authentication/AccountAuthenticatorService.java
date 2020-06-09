@@ -34,7 +34,7 @@ public class AccountAuthenticatorService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(final Intent intent) {
         return mAuthenticator.getIBinder();
     }
 

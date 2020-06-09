@@ -46,7 +46,7 @@ public class ConflictsResolveDialog extends DialogFragment {
 
     private OnConflictDecisionMadeListener mListener;
 
-    public static ConflictsResolveDialog newInstance(String path, OnConflictDecisionMadeListener listener) {
+    public static ConflictsResolveDialog newInstance(final String path, final OnConflictDecisionMadeListener listener) {
         ConflictsResolveDialog f = new ConflictsResolveDialog();
         Bundle args = new Bundle();
         args.putString("remotepath", path);
@@ -56,7 +56,7 @@ public class ConflictsResolveDialog extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
                .setIcon(R.drawable.ic_warning)
                .setTitle(R.string.conflict_title)
@@ -82,7 +82,7 @@ public class ConflictsResolveDialog extends DialogFragment {
         .create();
     }
 
-    public void showDialog(AppCompatActivity activity) {
+    public void showDialog(final AppCompatActivity activity) {
         Fragment prev = activity.getSupportFragmentManager().findFragmentByTag("dialog");
         FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
         if (prev != null) {
@@ -93,7 +93,7 @@ public class ConflictsResolveDialog extends DialogFragment {
         this.show(ft, "dialog");
     }
 
-    public void dismissDialog(AppCompatActivity activity) {
+    public void dismissDialog(final AppCompatActivity activity) {
         Fragment prev = activity.getSupportFragmentManager().findFragmentByTag(getTag());
         if (prev != null) {
             FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
@@ -103,7 +103,7 @@ public class ConflictsResolveDialog extends DialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialog) {
+    public void onCancel(final DialogInterface dialog) {
         mListener.conflictDecisionMade(Decision.CANCEL);
     }
 

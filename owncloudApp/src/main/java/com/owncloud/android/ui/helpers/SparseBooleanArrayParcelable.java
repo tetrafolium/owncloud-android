@@ -33,7 +33,7 @@ public class SparseBooleanArrayParcelable implements Parcelable {
     new Parcelable.Creator<SparseBooleanArrayParcelable>() {
 
         @Override
-        public SparseBooleanArrayParcelable createFromParcel(Parcel source) {
+        public SparseBooleanArrayParcelable createFromParcel(final Parcel source) {
             // read size of array from source
             int size = source.readInt();
 
@@ -52,14 +52,14 @@ public class SparseBooleanArrayParcelable implements Parcelable {
         }
 
         @Override
-        public SparseBooleanArrayParcelable[] newArray(int size) {
+        public SparseBooleanArrayParcelable[] newArray(final int size) {
             return new SparseBooleanArrayParcelable[size];
         }
     };
 
     private final SparseBooleanArray mSba;
 
-    public SparseBooleanArrayParcelable(SparseBooleanArray sba) {
+    public SparseBooleanArrayParcelable(final SparseBooleanArray sba) {
         if (sba == null) {
             throw new IllegalArgumentException("Cannot wrap a null SparseBooleanArray");
         }
@@ -76,7 +76,7 @@ public class SparseBooleanArrayParcelable implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         // first, size of the array
         dest.writeInt(mSba.size());
 

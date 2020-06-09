@@ -45,14 +45,14 @@ public class CameraUploadsHandler {
 
     private CameraUploadsConfiguration mCameraUploadsConfig; // Camera uploads configuration, set by the user
 
-    public CameraUploadsHandler(CameraUploadsConfiguration cameraUploadsConfiguration) {
+    public CameraUploadsHandler(final CameraUploadsConfiguration cameraUploadsConfiguration) {
         mCameraUploadsConfig = cameraUploadsConfiguration;
     }
 
     /**
      * Schedule a periodic job to check pictures and videos to be uploaded
      */
-    public void scheduleCameraUploadsSyncJob(Context context) {
+    public void scheduleCameraUploadsSyncJob(final Context context) {
         // DB Connection
         CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager = new
         CameraUploadsSyncStorageManager(context.getContentResolver());
@@ -61,9 +61,9 @@ public class CameraUploadsHandler {
                                                 getCameraUploadSync(null, null, null);
 
         // Initialize synchronization timestamps for pictures/videos, if needed
-        if (ocCameraUploadSync == null ||
-                ocCameraUploadSync.getPicturesLastSync() == 0 ||
-                ocCameraUploadSync.getVideosLastSync() == 0) {
+        if (ocCameraUploadSync == null
+                || ocCameraUploadSync.getPicturesLastSync() == 0
+                || ocCameraUploadSync.getVideosLastSync() == 0) {
 
             initializeCameraUploadSync(cameraUploadsSyncStorageManager, ocCameraUploadSync);
         }
@@ -114,8 +114,8 @@ public class CameraUploadsHandler {
      * period in which to check the pictures/videos saved, discarding those created before enabling
      * Camera Uploads feature
      */
-    private void initializeCameraUploadSync(CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager,
-                                            OCCameraUploadSync ocCameraUploadSync) {
+    private void initializeCameraUploadSync(final CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager,
+                                            final OCCameraUploadSync ocCameraUploadSync) {
 
         // Set synchronization timestamps not needed
         if (!mCameraUploadsConfig.isEnabledForPictures() && !mCameraUploadsConfig.isEnabledForVideos()) {
@@ -158,7 +158,7 @@ public class CameraUploadsHandler {
      *
      * @param lastSyncTimestamp
      */
-    public void updatePicturesLastSync(Context context, long lastSyncTimestamp) {
+    public void updatePicturesLastSync(final Context context, final long lastSyncTimestamp) {
         // DB connection
         CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager = new
         CameraUploadsSyncStorageManager(context.getContentResolver());
@@ -177,7 +177,7 @@ public class CameraUploadsHandler {
      *
      * @param lastSyncTimestamp
      */
-    public void updateVideosLastSync(Context context, long lastSyncTimestamp) {
+    public void updateVideosLastSync(final Context context, final long lastSyncTimestamp) {
         // DB connection
         CameraUploadsSyncStorageManager cameraUploadsSyncStorageManager = new
         CameraUploadsSyncStorageManager(context.getContentResolver());
@@ -193,7 +193,7 @@ public class CameraUploadsHandler {
         }
     }
 
-    public void setCameraUploadsConfig(CameraUploadsConfiguration mCameraUploadsConfig) {
+    public void setCameraUploadsConfig(final CameraUploadsConfiguration mCameraUploadsConfig) {
         this.mCameraUploadsConfig = mCameraUploadsConfig;
     }
 }

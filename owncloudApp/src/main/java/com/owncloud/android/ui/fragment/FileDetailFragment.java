@@ -85,7 +85,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      * @param account      An ownCloud account; needed to start downloads
      * @return New fragment with arguments set
      */
-    public static FileDetailFragment newInstance(OCFile fileToDetail, Account account) {
+    public static FileDetailFragment newInstance(final OCFile fileToDetail, final Account account) {
         FileDetailFragment frag = new FileDetailFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_FILE, fileToDetail);
@@ -107,7 +107,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
         mProgressController = new TransferProgressController((ComponentsGetter) getActivity());
@@ -129,7 +129,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
     }
 
     @Override
-    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final @NotNull LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
         setFile(getArguments().getParcelable(ARG_FILE));
         mAccount = getArguments().getParcelable(ARG_ACCOUNT);
@@ -154,7 +154,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
     }
 
     @Override
-    public void onSaveInstanceState(@NotNull Bundle outState) {
+    public void onSaveInstanceState(final @NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(FileActivity.EXTRA_FILE, getFile());
         outState.putParcelable(FileActivity.EXTRA_ACCOUNT, mAccount);
@@ -181,7 +181,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
     }
 
     @Override
-    public void onFileMetadataChanged(OCFile updatedFile) {
+    public void onFileMetadataChanged(final OCFile updatedFile) {
         if (updatedFile != null) {
             setFile(updatedFile);
         }
@@ -217,7 +217,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      * {@inheritDoc}
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.file_actions_menu, menu);
     }
@@ -226,7 +226,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      * {@inheritDoc}
      */
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
         if (mContainerActivity.getStorageManager() != null) {
@@ -289,7 +289,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share_file: {
             mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
@@ -342,7 +342,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
         case R.id.fdCancelBtn: {
             ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
@@ -371,7 +371,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      *                           {@link FileUploaderBinder#isUploading(Account, OCFile)} return false.
      * @param refresh            If 'true', try to refresh the whole file from the database
      */
-    private void updateFileDetails(boolean forcedTransferring, boolean refresh) {
+    private void updateFileDetails(final boolean forcedTransferring, final boolean refresh) {
         if (readyToShow()) {
             FileDataStorageManager storageManager = mContainerActivity.getStorageManager();
             if (refresh && storageManager != null) {
@@ -389,9 +389,9 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
             // configure UI for depending upon local state of the file
             FileDownloaderBinder downloaderBinder = mContainerActivity.getFileDownloaderBinder();
             FileUploaderBinder uploaderBinder = mContainerActivity.getFileUploaderBinder();
-            if (forcedTransferring ||
-                    (downloaderBinder != null && downloaderBinder.isDownloading(mAccount, file)) ||
-                    (uploaderBinder != null && uploaderBinder.isUploading(mAccount, file))
+            if (forcedTransferring
+                    || (downloaderBinder != null && downloaderBinder.isDownloading(mAccount, file))
+                    || (uploaderBinder != null && uploaderBinder.isUploading(mAccount, file))
                ) {
                 setButtonsForTransferring();
 
@@ -422,7 +422,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      *
      * @param filename to set
      */
-    private void setFilename(String filename) {
+    private void setFilename(final String filename) {
         TextView tv = getView().findViewById(R.id.fdFilename);
         if (tv != null) {
             tv.setText(filename);
@@ -434,7 +434,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      *
      * @param file : An {@link OCFile}
      */
-    private void setFiletype(OCFile file) {
+    private void setFiletype(final OCFile file) {
         String mimetype = file.getMimetype();
         TextView tv = getView().findViewById(R.id.fdType);
         if (tv != null) {
@@ -488,7 +488,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      *
      * @param filesize in bytes to set
      */
-    private void setFilesize(long filesize) {
+    private void setFilesize(final long filesize) {
         TextView tv = getView().findViewById(R.id.fdSize);
         if (tv != null) {
             tv.setText(DisplayUtils.bytesToHumanReadable(filesize, getActivity()));
@@ -500,7 +500,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      *
      * @param milliseconds Unix time to set
      */
-    private void setTimeModified(long milliseconds) {
+    private void setTimeModified(final long milliseconds) {
         TextView tv = getView().findViewById(R.id.fdModified);
         if (tv != null) {
             tv.setText(DisplayUtils.unixTimeToHumanReadable(milliseconds));

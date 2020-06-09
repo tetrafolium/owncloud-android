@@ -61,7 +61,7 @@ public class RenameFileDialogFragment
      * @param file            File to rename.
      * @return Dialog ready to show.
      */
-    public static RenameFileDialogFragment newInstance(OCFile file) {
+    public static RenameFileDialogFragment newInstance(final OCFile file) {
         RenameFileDialogFragment frag = new RenameFileDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_TARGET_FILE, file);
@@ -73,7 +73,7 @@ public class RenameFileDialogFragment
     private OCFile mTargetFile;
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         mTargetFile = getArguments().getParcelable(ARG_TARGET_FILE);
 
         // Inflate the layout for the dialog
@@ -111,7 +111,7 @@ public class RenameFileDialogFragment
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public void onClick(final DialogInterface dialog, final int which) {
         if (which == AlertDialog.BUTTON_POSITIVE) {
             String newFileName =
                 ((TextView) (getDialog().findViewById(R.id.user_input)))
@@ -137,7 +137,7 @@ public class RenameFileDialogFragment
      *
      * @param messageResource       Message to show.
      */
-    private void showSnackMessage(int messageResource) {
+    private void showSnackMessage(final int messageResource) {
         Snackbar snackbar = Snackbar.make(
                                 getActivity().findViewById(android.R.id.content),
                                 messageResource,

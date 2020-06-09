@@ -33,7 +33,7 @@ public class DateUtils {
      * @param days
      * @return
      */
-    public static Date addDaysToDate(Date defaultDate, int days) {
+    public static Date addDaysToDate(final Date defaultDate, final int days) {
 
         Calendar c = Calendar.getInstance();
         c.setTime(defaultDate);

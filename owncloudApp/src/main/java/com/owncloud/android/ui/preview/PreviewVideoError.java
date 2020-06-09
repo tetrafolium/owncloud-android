@@ -34,8 +34,8 @@ public class PreviewVideoError {
     // Error should trigger the preview file parent folder synchronization
     private boolean parentFolderSyncNeeded;
 
-    public PreviewVideoError(String errorMessage, boolean fileSyncNeeded,
-                             boolean parentFolderSyncNeeded) {
+    public PreviewVideoError(final String errorMessage, final boolean fileSyncNeeded,
+                             final boolean parentFolderSyncNeeded) {
 
         this.errorMessage = errorMessage;
         this.fileSyncNeeded = fileSyncNeeded;
@@ -46,7 +46,7 @@ public class PreviewVideoError {
         return errorMessage;
     }
 
-    public void setErrorMessage(String errorMessage) {
+    public void setErrorMessage(final String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
@@ -54,7 +54,7 @@ public class PreviewVideoError {
         return fileSyncNeeded;
     }
 
-    public void setFileSyncNeeded(boolean fileSyncNeeded) {
+    public void setFileSyncNeeded(final boolean fileSyncNeeded) {
         this.fileSyncNeeded = fileSyncNeeded;
     }
 
@@ -62,7 +62,7 @@ public class PreviewVideoError {
         return parentFolderSyncNeeded;
     }
 
-    public void setParentFolderSyncNeeded(boolean parentFolderSyncNeeded) {
+    public void setParentFolderSyncNeeded(final boolean parentFolderSyncNeeded) {
         this.parentFolderSyncNeeded = parentFolderSyncNeeded;
     }
 }

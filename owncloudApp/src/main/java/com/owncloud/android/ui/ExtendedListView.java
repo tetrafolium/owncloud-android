@@ -36,15 +36,15 @@ public class ExtendedListView extends ListView {
 
     private int mPositionToSetAndCenter = 0;
 
-    public ExtendedListView(Context context) {
+    public ExtendedListView(final Context context) {
         super(context);
     }
 
-    public ExtendedListView(Context context, AttributeSet attrs) {
+    public ExtendedListView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ExtendedListView(Context context, AttributeSet attrs, int defStyle) {
+    public ExtendedListView(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -54,7 +54,7 @@ public class ExtendedListView extends ListView {
      *
      */
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
         if (mPositionToSetAndCenter > 0) {
             Timber.v("Centering around position %s", mPositionToSetAndCenter);
@@ -70,7 +70,7 @@ public class ExtendedListView extends ListView {
      *
      * @param position         Position (in the list of items) of the item to center in the visible area.
      */
-    public void setAndCenterSelection(int position) {
+    public void setAndCenterSelection(final int position) {
         mPositionToSetAndCenter = position;
     }
 

@@ -48,8 +48,8 @@ public class PreviewVideoErrorAdapter {
      * @param context
      * @return preview video error after processing the Exoplayer exception
      */
-    public static PreviewVideoError handlePreviewVideoError(ExoPlaybackException error,
-            Context context) {
+    public static PreviewVideoError handlePreviewVideoError(final ExoPlaybackException error,
+            final Context context) {
         switch (error.type) {
         case ExoPlaybackException.TYPE_SOURCE:
             return handlePlayerSourceError(error, context);
@@ -70,8 +70,8 @@ public class PreviewVideoErrorAdapter {
      * @param context
      * @return preview video error after processing the Exoplayer source exception
      */
-    private static PreviewVideoError handlePlayerSourceError(ExoPlaybackException error,
-            Context context) {
+    private static PreviewVideoError handlePlayerSourceError(final ExoPlaybackException error,
+            final Context context) {
 
         //PreviewVideoError previewVideoError;
         final IOException sourceException = error.getSourceException();
@@ -92,8 +92,8 @@ public class PreviewVideoErrorAdapter {
             // trying to access to a part of the video not available now;
             // ALSO: error obtained when the session expired while playing the video. To handle
             // this case, the parent folder is refreshed and login view is shown
-            if (sourceException.getCause() != null &&
-                    sourceException.getCause() instanceof EOFException) {
+            if (sourceException.getCause() != null
+                    && sourceException.getCause() instanceof EOFException) {
                 return new PreviewVideoError(
                            context.getString(R.string.streaming_position_not_available), false, true);
             }
@@ -136,7 +136,7 @@ public class PreviewVideoErrorAdapter {
      * @return preview video error after processing the Exoplayer unexpected exception
      */
     private static PreviewVideoError handlePlayerError(final String errorMessage,
-            Context context) {
+            final Context context) {
         return (errorMessage != null)
                ? new PreviewVideoError(errorMessage, false, false)
                : new PreviewVideoError(

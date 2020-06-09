@@ -59,7 +59,7 @@ public class ConnectivityActionReceiver extends BroadcastReceiver {
     private static final String UNKNOWN_SSID = "<unknown ssid>";
 
     @Override
-    public void onReceive(final Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         // LOG ALL EVENTS:
         Timber.v("action: %s", intent.getAction());
         Timber.v("component: %s", intent.getComponent());
@@ -97,9 +97,9 @@ public class ConnectivityActionReceiver extends BroadcastReceiver {
             String bssid =
                 intent.getStringExtra(WifiManager.EXTRA_BSSID);
             if (networkInfo.isConnected() &&      // not enough; see (*) right below
-                    wifiInfo != null &&
-                    !UNKNOWN_SSID.equals(wifiInfo.getSSID().toLowerCase()) &&
-                    bssid != null
+                    wifiInfo != null
+                    && !UNKNOWN_SSID.equals(wifiInfo.getSSID().toLowerCase())
+                    && bssid != null
                ) {
                 Timber.d("WiFi connected");
 
@@ -154,13 +154,13 @@ public class ConnectivityActionReceiver extends BroadcastReceiver {
          */
     }
 
-    private void wifiConnected(Context context) {
+    private void wifiConnected(final Context context) {
         // for the moment, only recovery of camera uploads, similar to behaviour in release 1.9.1
         if (
-            (PreferenceManager.cameraPictureUploadEnabled(context) &&
-             PreferenceManager.cameraPictureUploadViaWiFiOnly(context)) ||
-            (PreferenceManager.cameraVideoUploadEnabled(context) &&
-             PreferenceManager.cameraVideoUploadViaWiFiOnly(context))
+            (PreferenceManager.cameraPictureUploadEnabled(context)
+             && PreferenceManager.cameraPictureUploadViaWiFiOnly(context))
+            || (PreferenceManager.cameraVideoUploadEnabled(context)
+             && PreferenceManager.cameraVideoUploadViaWiFiOnly(context))
         ) {
 
             Handler h = new Handler(Looper.getMainLooper());

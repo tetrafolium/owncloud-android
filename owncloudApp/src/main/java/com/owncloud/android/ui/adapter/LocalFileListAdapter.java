@@ -58,7 +58,7 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
     private boolean mJustFolders;
     private ListView parentList;
 
-    public LocalFileListAdapter(File directory, boolean justFolders, Context context) {
+    public LocalFileListAdapter(final File directory, final boolean justFolders, final Context context) {
         mContext = context;
         mJustFolders = justFolders;
         swapDirectory(directory);
@@ -70,7 +70,7 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public boolean isEnabled(int position) {
+    public boolean isEnabled(final int position) {
         return true;
     }
 
@@ -80,7 +80,7 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Object getItem(final int position) {
         if (mFiles == null || mFiles.length <= position) {
             return null;
         }
@@ -88,17 +88,17 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return mFiles != null && mFiles.length <= position ? position : -1;
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         return 0;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, final ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) mContext
@@ -216,7 +216,7 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
      *
      * @param directory New file to adapt. Can be NULL, meaning "no content to adapt".
      */
-    public void swapDirectory(File directory) {
+    public void swapDirectory(final File directory) {
         if (directory == null) {
             Timber.e("Null received as directory to swap; ignoring");
             return;
@@ -224,14 +224,14 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
         mFolder = directory;
         mFiles = mFolder.listFiles(new FileFilter() {
             @Override
-            public boolean accept(File file) {
+            public boolean accept(final File file) {
                 return (file.exists() && (!mJustFolders || file.isDirectory()));
             }
         });
         if (mFiles != null) {
             Arrays.sort(mFiles, new Comparator<File>() {
                 @Override
-                public int compare(File lhs, File rhs) {
+                public int compare(final File lhs, final File rhs) {
                     if (lhs.isDirectory() && !rhs.isDirectory()) {
                         return -1;
                     } else if (!lhs.isDirectory() && rhs.isDirectory()) {
@@ -240,7 +240,7 @@ public class LocalFileListAdapter extends BaseAdapter implements ListAdapter {
                     return compareNames(lhs, rhs);
                 }
 
-                private int compareNames(File lhs, File rhs) {
+                private int compareNames(final File lhs, final File rhs) {
                     return lhs.getName().toLowerCase().compareTo(rhs.getName().toLowerCase());
                 }
 

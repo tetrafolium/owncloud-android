@@ -47,7 +47,7 @@ public class UriUtils {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+    public static String getDataColumn(final Context context, final Uri uri, final String selection, final String[] selectionArgs) {
 
         Cursor cursor = null;
         final String column = "_data";
@@ -72,7 +72,7 @@ public class UriUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.
      */
-    public static boolean isExternalStorageDocument(Uri uri) {
+    public static boolean isExternalStorageDocument(final Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
@@ -80,7 +80,7 @@ public class UriUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is DownloadsProvider.
      */
-    public static boolean isDownloadsDocument(Uri uri) {
+    public static boolean isDownloadsDocument(final Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
     }
 
@@ -88,7 +88,7 @@ public class UriUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is MediaProvider.
      */
-    public static boolean isMediaDocument(Uri uri) {
+    public static boolean isMediaDocument(final Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
@@ -96,7 +96,7 @@ public class UriUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is Google Photos.
      */
-    public static boolean isGooglePhotosUri(Uri uri) {
+    public static boolean isGooglePhotosUri(final Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
@@ -105,7 +105,7 @@ public class UriUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri is from a content provider as kind "content://..."
      */
-    public static boolean isContentDocument(Uri uri) {
+    public static boolean isContentDocument(final Uri uri) {
         return uri.toString().startsWith(URI_CONTENT_SCHEME);
     }
 
@@ -115,7 +115,7 @@ public class UriUtils {
      * @param uri       The URI to resolve
      * @return The path in the file system to the content or null if it could not be found (not a file)
      */
-    public static String getLocalPath(Uri uri, Context context) {
+    public static String getLocalPath(final Uri uri, final Context context) {
         // DocumentProvider
         if (DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
@@ -127,8 +127,7 @@ public class UriUtils {
                 if ("primary".equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + "/" + split[1];
                 }
-            }
-            // DownloadsProvider
+            } // DownloadsProvider
             else if (UriUtils.isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
@@ -136,8 +135,7 @@ public class UriUtils {
                                        Long.valueOf(id));
 
                 return UriUtils.getDataColumn(context, contentUri, null, null);
-            }
-            // MediaProvider
+            } // MediaProvider
             else if (UriUtils.isMediaDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
@@ -156,13 +154,11 @@ public class UriUtils {
                 final String[] selectionArgs = new String[] {split[1]};
 
                 return UriUtils.getDataColumn(context, contentUri, selection, selectionArgs);
-            }
-            // Documents providers returned as content://...
+            } // Documents providers returned as content://...
             else if (UriUtils.isContentDocument(uri)) {
                 return uri.toString();
             }
-        }
-        // MediaStore (and general)
+        } // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
             // Return the remote address
@@ -171,15 +167,14 @@ public class UriUtils {
             }
 
             return UriUtils.getDataColumn(context, uri, null, null);
-        }
-        // File
+        } // File
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
         return null;
     }
 
-    public static String getDisplayNameForUri(Uri uri, Context context) {
+    public static String getDisplayNameForUri(final Uri uri, final Context context) {
 
         if (uri == null || context == null) {
             throw new IllegalArgumentException("Received NULL!");
@@ -221,7 +216,7 @@ public class UriUtils {
         return displayName.replaceAll("/", "-");
     }
 
-    private static String getDisplayNameFromContentResolver(Uri uri, Context context) {
+    private static String getDisplayNameFromContentResolver(final Uri uri, final Context context) {
         String displayName = null;
         String mimeType = context.getContentResolver().getType(uri);
         if (mimeType != null) {

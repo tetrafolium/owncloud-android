@@ -68,9 +68,9 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
      * @param requestCode   If >= 0, this code will be returned in onActivityResult().
      */
     public static void startLocalFolderPickerActivityForResult(
-        Activity activity,
-        String startPath,
-        int requestCode
+        final Activity activity,
+        final String startPath,
+        final int requestCode
     ) {
         Intent action = new Intent(activity, LocalFolderPickerActivity.class);
         action.putExtra(LocalFolderPickerActivity.EXTRA_PATH, startPath);
@@ -78,14 +78,14 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         Timber.v("onCreate() start");
         super.onCreate(savedInstanceState);
 
         // set current folder
-        String startPath = (savedInstanceState != null) ?
-                           savedInstanceState.getString(LocalFolderPickerActivity.EXTRA_PATH) :
-                           getIntent().getStringExtra(EXTRA_PATH);
+        String startPath = (savedInstanceState != null)
+                           ? savedInstanceState.getString(LocalFolderPickerActivity.EXTRA_PATH)
+                           : getIntent().getStringExtra(EXTRA_PATH);
         if (startPath != null) {
             mCurrentFolder = new File(startPath);
         }
@@ -112,7 +112,7 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
         mCancelBtn = findViewById(R.id.folder_picker_btn_cancel);
         mCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 setResult(RESULT_CANCELED);
                 finish();
             }
@@ -120,7 +120,7 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
         mChooseBtn = findViewById(R.id.folder_picker_btn_choose);
         mChooseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 // return the path of the current folder
                 Intent data = new Intent();
                 data.putExtra(EXTRA_PATH, mCurrentFolder.getAbsolutePath());
@@ -132,7 +132,7 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
         mHomeBtn.setVisibility(View.VISIBLE);
         mHomeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 mCurrentFolder = Environment.getExternalStorageDirectory();
                 getListFragment().listFolder(mCurrentFolder);
                 updateActionBar();
@@ -179,7 +179,7 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
      * @return          'true' if consumed, 'false' otherwise.
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
         case android.R.id.home: {
@@ -224,7 +224,7 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
      * {@inheritDoc}
      */
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         Timber.v("onSaveInstanceState() start");
         super.onSaveInstanceState(outState);
         outState.putString(LocalFolderPickerActivity.EXTRA_PATH, mCurrentFolder.getAbsolutePath());
@@ -235,7 +235,7 @@ public class LocalFolderPickerActivity extends ToolbarActivity implements LocalF
      * {@inheritDoc}
      */
     @Override
-    public void onFolderClicked(File folder) {
+    public void onFolderClicked(final File folder) {
         if (folder.isDirectory()) {
             mCurrentFolder = folder;
         }

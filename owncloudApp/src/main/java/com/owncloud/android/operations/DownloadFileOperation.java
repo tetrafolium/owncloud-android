@@ -53,14 +53,14 @@ public class DownloadFileOperation extends RemoteOperation {
 
     private DownloadRemoteFileOperation mDownloadOperation;
 
-    public DownloadFileOperation(Account account, OCFile file) {
+    public DownloadFileOperation(final Account account, final OCFile file) {
         if (account == null) {
-            throw new IllegalArgumentException("Illegal null account in DownloadFileOperation " +
-                                               "creation");
+            throw new IllegalArgumentException("Illegal null account in DownloadFileOperation "
+                                               + "creation");
         }
         if (file == null) {
-            throw new IllegalArgumentException("Illegal null file in DownloadFileOperation " +
-                                               "creation");
+            throw new IllegalArgumentException("Illegal null file in DownloadFileOperation "
+                                               + "creation");
         }
 
         mAccount = account;
@@ -119,8 +119,8 @@ public class DownloadFileOperation extends RemoteOperation {
     }
 
     public long getModificationTimestamp() {
-        return (mModificationTimestamp > 0) ? mModificationTimestamp :
-               mFile.getModificationTimestamp();
+        return (mModificationTimestamp > 0) ? mModificationTimestamp
+               : mFile.getModificationTimestamp();
     }
 
     public String getEtag() {
@@ -128,7 +128,7 @@ public class DownloadFileOperation extends RemoteOperation {
     }
 
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         RemoteOperationResult result;
         File newFile;
         boolean moved;
@@ -185,13 +185,13 @@ public class DownloadFileOperation extends RemoteOperation {
         }
     }
 
-    public void addDatatransferProgressListener(OnDatatransferProgressListener listener) {
+    public void addDatatransferProgressListener(final OnDatatransferProgressListener listener) {
         synchronized (mDataTransferListeners) {
             mDataTransferListeners.add(listener);
         }
     }
 
-    public void removeDatatransferProgressListener(OnDatatransferProgressListener listener) {
+    public void removeDatatransferProgressListener(final OnDatatransferProgressListener listener) {
         synchronized (mDataTransferListeners) {
             mDataTransferListeners.remove(listener);
         }

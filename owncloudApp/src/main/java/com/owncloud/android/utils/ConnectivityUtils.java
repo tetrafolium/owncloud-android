@@ -27,7 +27,7 @@ import timber.log.Timber;
 
 public class ConnectivityUtils {
 
-    public static boolean isAppConnectedViaWiFi(Context context) {
+    public static boolean isAppConnectedViaWiFi(final Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         boolean result =
             cm != null && cm.getActiveNetworkInfo() != null
@@ -37,12 +37,12 @@ public class ConnectivityUtils {
         return result;
     }
 
-    public static boolean isAppConnected(Context context) {
+    public static boolean isAppConnected(final Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 
-    public static boolean isNetworkActive(Context context) {
+    public static boolean isNetworkActive(final Context context) {
 
         ConnectivityManager cm = (ConnectivityManager) context.
                                  getSystemService(Context.CONNECTIVITY_SERVICE);

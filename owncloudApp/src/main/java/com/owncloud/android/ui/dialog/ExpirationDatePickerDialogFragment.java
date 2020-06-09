@@ -76,8 +76,8 @@ public class ExpirationDatePickerDialogFragment
      *                              Only will be set if greater or equals than chosenDateInMillis and tomorrow.
      * @return New dialog instance
      */
-    public static ExpirationDatePickerDialogFragment newInstance(long chosenDateInMillis,
-            long maxDateInMillis
+    public static ExpirationDatePickerDialogFragment newInstance(final long chosenDateInMillis,
+            final long maxDateInMillis
                                                                 ) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_CHOSEN_DATE_IN_MILLIS, chosenDateInMillis);
@@ -99,7 +99,7 @@ public class ExpirationDatePickerDialogFragment
      */
     @Override
     @NonNull
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
         // Chosen date received as an argument must be later than tomorrow ; default to tomorrow in other case
         final Calendar chosenDate = Calendar.getInstance();
@@ -124,7 +124,7 @@ public class ExpirationDatePickerDialogFragment
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                          getString(R.string.share_cancel_public_link_button),
         new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(final DialogInterface dialog, final int which) {
                 if (which == DialogInterface.BUTTON_NEGATIVE) {
                     // Do Stuff
                     notifyDatePickerListener(null);
@@ -158,7 +158,7 @@ public class ExpirationDatePickerDialogFragment
      * @param dayOfMonth        Day of the date chosen
      */
     @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
 
         Calendar chosenDate = Calendar.getInstance();
         chosenDate.set(Calendar.YEAR, year);
@@ -179,7 +179,7 @@ public class ExpirationDatePickerDialogFragment
         void onCancelDatePicker();
     }
 
-    public void setDatePickerListener(DatePickerFragmentListener listener) {
+    public void setDatePickerListener(final DatePickerFragmentListener listener) {
         this.datePickerListener = listener;
     }
 
@@ -188,7 +188,7 @@ public class ExpirationDatePickerDialogFragment
      *
      * @param date
      */
-    protected void notifyDatePickerListener(String date) {
+    protected void notifyDatePickerListener(final String date) {
         if (this.datePickerListener != null) {
 
             if (date != null) {

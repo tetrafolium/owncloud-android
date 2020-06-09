@@ -20,7 +20,7 @@ public class PermissionUtil {
      * @param permission The name of the permission being checked.
      * @return <code>true</code> if app has the permission, or <code>false</code> if not.
      */
-    public static boolean checkSelfPermission(Context context, String permission) {
+    public static boolean checkSelfPermission(final Context context, final String permission) {
         return ContextCompat.checkSelfPermission(context, permission)
                != android.content.pm.PackageManager.PERMISSION_GRANTED;
     }
@@ -36,7 +36,7 @@ public class PermissionUtil {
      * @param permission A permission to be requested.
      * @return Whether to show permission rationale UI.
      */
-    public static boolean shouldShowRequestPermissionRationale(Activity activity, String permission) {
+    public static boolean shouldShowRequestPermissionRationale(final Activity activity, final String permission) {
         return ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
     }
 
@@ -45,7 +45,7 @@ public class PermissionUtil {
      *
      * @param activity The target activity.
      */
-    public static void requestWriteExternalStoreagePermission(Activity activity) {
+    public static void requestWriteExternalStoreagePermission(final Activity activity) {
         ActivityCompat.requestPermissions(activity,
                                           new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                           PERMISSIONS_WRITE_EXTERNAL_STORAGE);

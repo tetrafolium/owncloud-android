@@ -30,12 +30,12 @@ public class RemoveChunksFolderOperation extends RemoveFileOperation {
      * @param remotePath RemotePath of the OCFile instance describing the remote file or
      *                   folder to remove from the server
      */
-    public RemoveChunksFolderOperation(String remotePath) {
+    public RemoveChunksFolderOperation(final String remotePath) {
         super(remotePath, false, false);
     }
 
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         RemoveRemoteChunksFolderOperation removeRemoteChunksFolderOperation = new RemoveRemoteChunksFolderOperation(
             mRemotePath
         );

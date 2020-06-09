@@ -28,20 +28,20 @@ import android.widget.TextView;
 
 public class PreferenceWithLongSummary extends Preference {
 
-    public PreferenceWithLongSummary(Context context) {
+    public PreferenceWithLongSummary(final Context context) {
         super(context);
     }
 
-    public PreferenceWithLongSummary(Context context, AttributeSet attrs) {
+    public PreferenceWithLongSummary(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PreferenceWithLongSummary(Context context, AttributeSet attrs, int defStyle) {
+    public PreferenceWithLongSummary(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @Override
-    protected void onBindView(View view) {
+    protected void onBindView(final View view) {
         super.onBindView(view);
         TextView titleView = view.findViewById(android.R.id.summary);
         titleView.setSingleLine(true);

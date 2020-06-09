@@ -71,7 +71,7 @@ public class PatternLockActivity extends AppCompatActivity {
     private PatternLockView mPatternLockView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!MainApp.Companion.isDeveloper()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -149,12 +149,12 @@ public class PatternLockActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onProgress(List<PatternLockView.Dot> list) {
+            public void onProgress(final List<PatternLockView.Dot> list) {
                 Timber.d("Pattern Progress %s", PatternLockUtils.patternToString(mPatternLockView, list));
             }
 
             @Override
-            public void onComplete(List<PatternLockView.Dot> list) {
+            public void onComplete(final List<PatternLockView.Dot> list) {
                 if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction())) {
                     /**
                      * This block gets executed when the pattern has to be set.
@@ -222,7 +222,7 @@ public class PatternLockActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_CONFIRMING_PATTERN, mPatternPresent);
         outState.putString(KEY_PATTERN_STRING, mPatternValue);
@@ -257,8 +257,8 @@ public class PatternLockActivity extends AppCompatActivity {
         return mNewPatternValue != null && mNewPatternValue.equals(mPatternValue);
     }
 
-    private void showErrorAndRestart(int errorMessage, int headerMessage,
-                                     int explanationVisibility) {
+    private void showErrorAndRestart(final int errorMessage, final int headerMessage,
+                                     final int explanationVisibility) {
         mPatternValue = null;
         CharSequence errorSeq = getString(errorMessage);
         Snackbar snackbar = Snackbar.make(
@@ -284,13 +284,13 @@ public class PatternLockActivity extends AppCompatActivity {
      *
      * @param enabled  'True' makes the cancel button available, 'false' hides it.
      */
-    protected void setCancelButtonEnabled(boolean enabled) {
+    protected void setCancelButtonEnabled(final boolean enabled) {
         Button cancelButton = findViewById(R.id.cancel_pattern);
         if (enabled) {
             cancelButton.setVisibility(View.VISIBLE);
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
                     finish();
                 }
             });
@@ -310,10 +310,10 @@ public class PatternLockActivity extends AppCompatActivity {
      * @return              'True' when the key event was processed by this method.
      */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction()) ||
-                    ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
+            if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction())
+                    || ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
                 finish();
             }   // else, do nothing, but report that the key was consumed to stay alive
             return true;

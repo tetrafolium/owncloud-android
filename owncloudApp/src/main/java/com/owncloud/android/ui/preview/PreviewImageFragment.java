@@ -100,9 +100,9 @@ public class PreviewImageFragment extends FileFragment {
      * @return Fragment ready to be used.
      */
     public static PreviewImageFragment newInstance(
-        OCFile file,
-        Account account,
-        boolean ignoreFirstSavedState
+        final OCFile file,
+        final Account account,
+        final boolean ignoreFirstSavedState
     ) {
         PreviewImageFragment frag = new PreviewImageFragment();
         Bundle args = new Bundle();
@@ -131,7 +131,7 @@ public class PreviewImageFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         setFile(args.getParcelable(ARG_FILE));
@@ -146,7 +146,7 @@ public class PreviewImageFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.preview_image_fragment, container, false);
@@ -173,7 +173,7 @@ public class PreviewImageFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mProgressController = new TransferProgressController(mContainerActivity);
         mProgressController.setProgressBar(mProgressBar);
@@ -203,7 +203,7 @@ public class PreviewImageFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(PreviewImageFragment.EXTRA_FILE, getFile());
     }
@@ -228,7 +228,7 @@ public class PreviewImageFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.file_actions_menu, menu);
     }
@@ -237,7 +237,7 @@ public class PreviewImageFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
         if (mContainerActivity.getStorageManager() != null && getFile() != null) {
@@ -289,7 +289,7 @@ public class PreviewImageFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share_file: {
             mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
@@ -361,7 +361,7 @@ public class PreviewImageFragment extends FileFragment {
     }
 
     @Override
-    public void onFileMetadataChanged(OCFile updatedFile) {
+    public void onFileMetadataChanged(final OCFile updatedFile) {
         if (updatedFile != null) {
             setFile(updatedFile);
         }
@@ -399,15 +399,15 @@ public class PreviewImageFragment extends FileFragment {
         .listener(new RequestListener<Drawable>() {
 
             @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
-                                        boolean isFirstResource) {
+            public boolean onLoadFailed(final @Nullable GlideException e, final Object model, final Target<Drawable> target,
+                                        final boolean isFirstResource) {
                 Timber.e(e, "Error loading image");
                 return false;
             }
 
             @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
-                                           DataSource dataSource, boolean isFirstResource) {
+            public boolean onResourceReady(final Drawable resource, final Object model, final Target<Drawable> target,
+                                           final DataSource dataSource, final boolean isFirstResource) {
                 Timber.d("Loading image %s", getFile().getFileName());
                 return false;
             }
@@ -424,7 +424,7 @@ public class PreviewImageFragment extends FileFragment {
      * @param file File to test if can be previewed.
      * @return 'True' if the file can be handled by the fragment.
      */
-    public static boolean canBePreviewed(OCFile file) {
+    public static boolean canBePreviewed(final OCFile file) {
         return (file != null && file.isImage());
     }
 

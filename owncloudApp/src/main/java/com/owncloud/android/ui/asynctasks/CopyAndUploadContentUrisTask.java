@@ -76,11 +76,11 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
      * @return Correct array of parameters to be passed to {@link #execute(Object[])}
      */
     public static Object[] makeParamsToExecute(
-        Account account,
-        Uri[] sourceUris,
-        String[] remotePaths,
-        int behaviour,
-        ContentResolver contentResolver
+        final Account account,
+        final Uri[] sourceUris,
+        final String[] remotePaths,
+        final int behaviour,
+        final ContentResolver contentResolver
     ) {
 
         return new Object[] {
@@ -107,8 +107,8 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
     private final Context mAppContext;
 
     public CopyAndUploadContentUrisTask(
-        OnCopyTmpFilesTaskListener listener,
-        Context context
+        final OnCopyTmpFilesTaskListener listener,
+        final Context context
     ) {
         mListener = new WeakReference<>(listener);
         mAppContext = context.getApplicationContext();
@@ -120,7 +120,7 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
      *                  for further details.
      */
     @Override
-    protected ResultCode doInBackground(Object[] params) {
+    protected ResultCode doInBackground(final Object[] params) {
 
         ResultCode result = ResultCode.UNKNOWN_ERROR;
 
@@ -219,7 +219,7 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
         return result;
     }
 
-    private void requestUpload(Account account, String localPath, String remotePath, int behaviour, String mimeType) {
+    private void requestUpload(final Account account, final String localPath, final String remotePath, final int behaviour, final String mimeType) {
         TransferRequester requester = new TransferRequester();
         requester.uploadNewFile(
             mAppContext,
@@ -234,7 +234,7 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
     }
 
     @Override
-    protected void onPostExecute(ResultCode result) {
+    protected void onPostExecute(final ResultCode result) {
         OnCopyTmpFilesTaskListener listener = mListener.get();
         if (listener != null) {
             listener.onTmpFilesCopied(result);
@@ -271,7 +271,7 @@ public class CopyAndUploadContentUrisTask extends AsyncTask<Object, Void, Result
      *
      * @param listener      New object to report progress via callbacks
      */
-    public void setListener(OnCopyTmpFilesTaskListener listener) {
+    public void setListener(final OnCopyTmpFilesTaskListener listener) {
         mListener = new WeakReference<>(listener);
     }
 

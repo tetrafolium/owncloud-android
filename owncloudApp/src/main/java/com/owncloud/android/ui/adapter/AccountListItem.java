@@ -36,7 +36,7 @@ public class AccountListItem {
      *
      * @param account the account
      */
-    public AccountListItem(Account account) {
+    public AccountListItem(final Account account) {
         mAccount = account;
         mType = TYPE_ACCOUNT;
     }

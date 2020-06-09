@@ -87,7 +87,7 @@ public class DisplayUtils {
      * @param bytes Input file size
      * @return Like something readable like "12 MB"
      */
-    public static String bytesToHumanReadable(long bytes, Context context) {
+    public static String bytesToHumanReadable(final long bytes, final Context context) {
         if (bytes < 0) {
             return context.getString(R.string.common_pending);
 
@@ -105,9 +105,9 @@ public class DisplayUtils {
             ).stripTrailingZeros();
 
             // Unscale only values with ten exponent
-            return (readableResult.scale() < 0 ?
-                    readableResult.setScale(0) :
-                    readableResult
+            return (readableResult.scale() < 0
+                    ? readableResult.setScale(0)
+                    : readableResult
                    ) + " " + sizeSuffixes[attachedSuff];
         }
     }
@@ -119,7 +119,7 @@ public class DisplayUtils {
      * @param mimetype MIME type to convert
      * @return A human friendly version of the MIME type
      */
-    public static String convertMIMEtoPrettyPrint(String mimetype) {
+    public static String convertMIMEtoPrettyPrint(final String mimetype) {
         if (mimeType2HumanReadable.containsKey(mimetype)) {
             return mimeType2HumanReadable.get(mimetype);
         }
@@ -135,15 +135,15 @@ public class DisplayUtils {
      * @param milliseconds that have passed since 01/01/1970
      * @return The human readable time for the users locale
      */
-    public static String unixTimeToHumanReadable(long milliseconds) {
+    public static String unixTimeToHumanReadable(final long milliseconds) {
         Date date = new Date(milliseconds);
         DateFormat df = DateFormat.getDateTimeInstance();
         return df.format(date);
     }
 
     public static int getSeasonalIconId() {
-        if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) >= 354 &&
-                MainApp.Companion.getAppContext().getString(R.string.app_name).equals(OWNCLOUD_APP_NAME)) {
+        if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) >= 354
+                && MainApp.Companion.getAppContext().getString(R.string.app_name).equals(OWNCLOUD_APP_NAME)) {
             return R.drawable.winter_holidays_icon;
         } else {
             return R.mipmap.icon;
@@ -157,7 +157,7 @@ public class DisplayUtils {
      * @param toASCII if true converts from Unicode to ASCII, if false converts from ASCII to Unicode
      * @return the URL containing the converted domain name
      */
-    public static String convertIdn(String url, boolean toASCII) {
+    public static String convertIdn(final String url, final boolean toASCII) {
 
         String urlNoDots = url;
         String dots = "";
@@ -191,13 +191,13 @@ public class DisplayUtils {
      * @param modificationTimestamp the UNIX timestamp of the file modification time.
      * @return a relative time string
      */
-    public static CharSequence getRelativeTimestamp(Context context, long modificationTimestamp) {
+    public static CharSequence getRelativeTimestamp(final Context context, final long modificationTimestamp) {
         return getRelativeDateTimeString(context, modificationTimestamp, DateUtils.SECOND_IN_MILLIS,
                                          DateUtils.WEEK_IN_MILLIS, 0);
     }
 
     public static CharSequence getRelativeDateTimeString(
-        Context c, long time, long minResolution, long transitionResolution, int flags
+        final Context c, final long time, final long minResolution, final long transitionResolution, final int flags
     ) {
 
         CharSequence dateString;
@@ -205,8 +205,7 @@ public class DisplayUtils {
         // in Future
         if (time > System.currentTimeMillis()) {
             return DisplayUtils.unixTimeToHumanReadable(time);
-        }
-        // < 60 seconds -> seconds ago
+        } // < 60 seconds -> seconds ago
         else if ((System.currentTimeMillis() - time) < 60 * 1000) {
             return c.getString(R.string.file_list_seconds_ago);
         } else {
@@ -230,7 +229,7 @@ public class DisplayUtils {
      *
      * @param path
      */
-    public static String getPathWithoutLastSlash(String path) {
+    public static String getPathWithoutLastSlash(final String path) {
 
         // Remove last slash from path
         if (path.length() > 1 && path.charAt(path.length() - 1) == OCFile.PATH_SEPARATOR.charAt(0)) {
@@ -245,7 +244,7 @@ public class DisplayUtils {
      * @param caller Activity calling; needed to get access to the {@link android.view.WindowManager}
      * @return Size in pixels of the screen, or default {@link Point} if caller is null
      */
-    public static Point getScreenSize(Activity caller) {
+    public static Point getScreenSize(final Activity caller) {
         Point size = new Point();
         if (caller != null) {
             Display display = caller.getWindowManager().getDefaultDisplay();
@@ -260,7 +259,7 @@ public class DisplayUtils {
      * @param context  the context relevant for setting the color according to the context's theme
      * @param snackbar the snackbar to be colored
      */
-    public static void colorSnackbar(Context context, Snackbar snackbar) {
+    public static void colorSnackbar(final Context context, final Snackbar snackbar) {
         // Changing action button text color
         snackbar.setActionTextColor(ContextCompat.getColor(context, R.color.white));
     }
@@ -283,10 +282,10 @@ public class DisplayUtils {
      *                        generated instead. USE WITH CARE, probably to be removed in the future.
      */
     public static void showAccountAvatar(
-        Account account,
-        ImageView displayView,
-        float displayRadius,
-        boolean fetchFromServer
+        final Account account,
+        final ImageView displayView,
+        final float displayRadius,
+        final boolean fetchFromServer
     ) {
         if (account != null) {
             // not just accessibility support, used to know what account is bound to each imageView

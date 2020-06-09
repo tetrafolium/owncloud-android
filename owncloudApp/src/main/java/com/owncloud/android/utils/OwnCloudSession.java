@@ -27,13 +27,13 @@ public class OwnCloudSession {
     private String mSessionUrl;
     private int mEntryId;
 
-    public OwnCloudSession(String name, String url, int entryId) {
+    public OwnCloudSession(final String name, final String url, final int entryId) {
         mSessionName = name;
         mSessionUrl = url;
         mEntryId = entryId;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         mSessionName = name;
     }
 
@@ -41,7 +41,7 @@ public class OwnCloudSession {
         return mSessionName;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         mSessionUrl = url;
     }
 

@@ -83,7 +83,7 @@ public class PassCodeActivity extends BaseActivity {
      *
      * @param savedInstanceState    Previously saved state - irrelevant in this case
      */
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         /// protection against screen recording
@@ -157,12 +157,12 @@ public class PassCodeActivity extends BaseActivity {
      *
      * @param enabled       'True' makes the cancel button available, 'false' hides it.
      */
-    protected void setCancelButtonEnabled(boolean enabled) {
+    protected void setCancelButtonEnabled(final boolean enabled) {
         if (enabled) {
             mBCancel.setVisibility(View.VISIBLE);
             mBCancel.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
                     finish();
                 }
             });
@@ -190,7 +190,7 @@ public class PassCodeActivity extends BaseActivity {
         mPassCodeEditTexts[1].setOnKeyListener(new View.OnKeyListener() {
 
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+            public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_DEL && mBChange) {  // TODO WIP: event should be
                     // used to control what's exactly happening with DEL, not any custom field...
                     mPassCodeEditTexts[0].setText("");
@@ -210,7 +210,7 @@ public class PassCodeActivity extends BaseActivity {
         mPassCodeEditTexts[1].setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onFocusChange(final View v, final boolean hasFocus) {
                 /// TODO WIP: should take advantage of hasFocus to reduce processing
                 if (mPassCodeEditTexts[0].getText().toString().equals("")) {  // TODO WIP validation
                     // could be done in a global way, with a single OnFocusChangeListener for all the
@@ -229,7 +229,7 @@ public class PassCodeActivity extends BaseActivity {
         mPassCodeEditTexts[2].setOnKeyListener(new View.OnKeyListener() {
 
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+            public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_DEL && mBChange) {
                     mPassCodeEditTexts[1].requestFocus();
                     if (!mConfirmingPassCode) {
@@ -249,7 +249,7 @@ public class PassCodeActivity extends BaseActivity {
         mPassCodeEditTexts[2].setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onFocusChange(final View v, final boolean hasFocus) {
                 if (mPassCodeEditTexts[0].getText().toString().equals("")) {
                     mPassCodeEditTexts[0].requestFocus();
                 } else if (mPassCodeEditTexts[1].getText().toString().equals("")) {
@@ -267,7 +267,7 @@ public class PassCodeActivity extends BaseActivity {
         mPassCodeEditTexts[3].setOnKeyListener(new View.OnKeyListener() {
 
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+            public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_DEL && mBChange) {
                     mPassCodeEditTexts[2].requestFocus();
                     if (!mConfirmingPassCode) {
@@ -286,7 +286,7 @@ public class PassCodeActivity extends BaseActivity {
         mPassCodeEditTexts[3].setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onFocusChange(final View v, final boolean hasFocus) {
 
                 if (mPassCodeEditTexts[0].getText().toString().equals("")) {
                     mPassCodeEditTexts[0].requestFocus();
@@ -349,8 +349,8 @@ public class PassCodeActivity extends BaseActivity {
         }
     }
 
-    private void showErrorAndRestart(int errorMessage, int headerMessage,
-                                     int explanationVisibility) {
+    private void showErrorAndRestart(final int errorMessage, final int headerMessage,
+                                     final int explanationVisibility) {
         Arrays.fill(mPassCodeDigits, null);
         CharSequence errorSeq = getString(errorMessage);
         Snackbar snackbar = Snackbar.make(
@@ -392,8 +392,8 @@ public class PassCodeActivity extends BaseActivity {
 
         boolean result = true;
         for (int i = 0; i < mPassCodeDigits.length && result; i++) {
-            result = (mPassCodeDigits[i] != null) &&
-                     mPassCodeDigits[i].equals(savedPassCodeDigits[i]);
+            result = (mPassCodeDigits[i] != null)
+                     && mPassCodeDigits[i].equals(savedPassCodeDigits[i]);
         }
         return result;
     }
@@ -433,10 +433,10 @@ public class PassCodeActivity extends BaseActivity {
      * @return              'True' when the key event was processed by this method.
      */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction()) ||
-                    ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
+            if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction())
+                    || ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
                 finish();
             }   // else, do nothing, but report that the key was consumed to stay alive
             return true;
@@ -458,7 +458,7 @@ public class PassCodeActivity extends BaseActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(PassCodeActivity.KEY_CONFIRMING_PASSCODE, mConfirmingPassCode);
         outState.putStringArray(PassCodeActivity.KEY_PASSCODE_DIGITS, mPassCodeDigits);
@@ -477,13 +477,13 @@ public class PassCodeActivity extends BaseActivity {
          * @param lastOne       'True' means that watcher corresponds to the last position of the
          *                      pass code.
          */
-        public PassCodeDigitTextWatcher(int index, boolean lastOne) {
+        public PassCodeDigitTextWatcher(final int index, final boolean lastOne) {
             mIndex = index;
             mLastOne = lastOne;
             if (mIndex < 0) {
                 throw new IllegalArgumentException(
-                    "Invalid index in " + PassCodeDigitTextWatcher.class.getSimpleName() +
-                    " constructor"
+                    "Invalid index in " + PassCodeDigitTextWatcher.class.getSimpleName()
+                    + " constructor"
                 );
             }
         }
@@ -502,7 +502,7 @@ public class PassCodeActivity extends BaseActivity {
          * @param s     Changed text
          */
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(final Editable s) {
             if (s.length() > 0) {
                 if (!mConfirmingPassCode) {
                     mPassCodeDigits[mIndex] = mPassCodeEditTexts[mIndex].getText().toString();
@@ -519,12 +519,12 @@ public class PassCodeActivity extends BaseActivity {
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
             // nothing to do
         }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
             // nothing to do
         }
     }

@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class SecurityUtils {
 
-    public static String stringToMD5Hash(String stringToTransform) {
+    public static String stringToMD5Hash(final String stringToTransform) {
         MessageDigest messageDigest;
         String hash = null;
 

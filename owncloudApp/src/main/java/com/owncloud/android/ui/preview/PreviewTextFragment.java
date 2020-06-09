@@ -74,8 +74,8 @@ public class PreviewTextFragment extends FileFragment {
      * @return Fragment ready to be used.
      */
     public static PreviewTextFragment newInstance(
-        OCFile file,
-        Account account
+        final OCFile file,
+        final Account account
     ) {
         PreviewTextFragment frag = new PreviewTextFragment();
         Bundle args = new Bundle();
@@ -103,8 +103,8 @@ public class PreviewTextFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         Timber.v("onCreateView");
 
@@ -123,7 +123,7 @@ public class PreviewTextFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         OCFile file;
         if (savedInstanceState == null) {
@@ -145,7 +145,7 @@ public class PreviewTextFragment extends FileFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedState) {
+    public void onActivityCreated(final Bundle savedState) {
         super.onActivityCreated(savedState);
         mProgressController = new TransferProgressController(mContainerActivity);
         mProgressController.setProgressBar(mProgressBar);
@@ -155,7 +155,7 @@ public class PreviewTextFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_FILE, getFile());
         outState.putParcelable(EXTRA_ACCOUNT, mAccount);
@@ -182,7 +182,7 @@ public class PreviewTextFragment extends FileFragment {
         private final String DIALOG_WAIT_TAG = "DIALOG_WAIT";
         private final WeakReference<TextView> mTextViewReference;
 
-        private TextLoadAsyncTask(WeakReference<TextView> textView) {
+        private TextLoadAsyncTask(final WeakReference<TextView> textView) {
             mTextViewReference = textView;
         }
 
@@ -192,10 +192,10 @@ public class PreviewTextFragment extends FileFragment {
         }
 
         @Override
-        protected StringWriter doInBackground(java.lang.Object... params) {
+        protected StringWriter doInBackground(final java.lang.Object... params) {
             if (params.length != 1) {
-                throw new IllegalArgumentException("The parameter to " + TextLoadAsyncTask.class.getName() + " must " +
-                                                   "be (1) the file location");
+                throw new IllegalArgumentException("The parameter to " + TextLoadAsyncTask.class.getName() + " must "
+                                                   + "be (1) the file location");
             }
             final String location = (String) params[0];
 
@@ -282,7 +282,7 @@ public class PreviewTextFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.file_actions_menu, menu);
     }
@@ -291,7 +291,7 @@ public class PreviewTextFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
         if (mContainerActivity.getStorageManager() != null) {
@@ -366,7 +366,7 @@ public class PreviewTextFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share_file: {
             mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
@@ -429,7 +429,7 @@ public class PreviewTextFragment extends FileFragment {
     }
 
     @Override
-    public void onFileMetadataChanged(OCFile updatedFile) {
+    public void onFileMetadataChanged(final OCFile updatedFile) {
         if (updatedFile != null) {
             setFile(updatedFile);
         }
@@ -474,7 +474,7 @@ public class PreviewTextFragment extends FileFragment {
      * @param file File to test if can be previewed.
      * @return 'True' if the file can be handled by the fragment.
      */
-    public static boolean canBePreviewed(OCFile file) {
+    public static boolean canBePreviewed(final OCFile file) {
         final List<String> unsupportedTypes = new LinkedList<String>();
         unsupportedTypes.add("text/richtext");
         unsupportedTypes.add("text/rtf");
@@ -483,9 +483,9 @@ public class PreviewTextFragment extends FileFragment {
         unsupportedTypes.add("text/vnd.rn-realtext");
         unsupportedTypes.add("text/vnd.wap.wml");
         unsupportedTypes.add("text/vnd.wap.wmlscript");
-        return (file != null && file.isDown() && file.isText() &&
-                !unsupportedTypes.contains(file.getMimetype()) &&
-                !unsupportedTypes.contains(file.getMimeTypeFromName())
+        return (file != null && file.isDown() && file.isText()
+                && !unsupportedTypes.contains(file.getMimetype())
+                && !unsupportedTypes.contains(file.getMimeTypeFromName())
                );
     }
 

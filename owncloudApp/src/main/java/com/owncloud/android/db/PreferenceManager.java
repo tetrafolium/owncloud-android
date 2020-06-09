@@ -65,7 +65,7 @@ public abstract class PreferenceManager {
 
     public static final String PREF__LEGACY_FINGERPRINT = "set_fingerprint";
 
-    public static void migrateFingerprintToBiometricKey(Context context) {
+    public static void migrateFingerprintToBiometricKey(final Context context) {
         SharedPreferences sharedPref = getDefaultSharedPreferences(context);
 
         // Check if legacy fingerprint key exists, delete it and migrate its value to the new key
@@ -78,23 +78,23 @@ public abstract class PreferenceManager {
         }
     }
 
-    public static boolean cameraPictureUploadEnabled(Context context) {
+    public static boolean cameraPictureUploadEnabled(final Context context) {
         return getDefaultSharedPreferences(context).getBoolean(PREF__CAMERA_PICTURE_UPLOADS_ENABLED, false);
     }
 
-    public static boolean cameraVideoUploadEnabled(Context context) {
+    public static boolean cameraVideoUploadEnabled(final Context context) {
         return getDefaultSharedPreferences(context).getBoolean(PREF__CAMERA_VIDEO_UPLOADS_ENABLED, false);
     }
 
-    public static boolean cameraPictureUploadViaWiFiOnly(Context context) {
+    public static boolean cameraPictureUploadViaWiFiOnly(final Context context) {
         return getDefaultSharedPreferences(context).getBoolean(PREF__CAMERA_PICTURE_UPLOADS_WIFI_ONLY, false);
     }
 
-    public static boolean cameraVideoUploadViaWiFiOnly(Context context) {
+    public static boolean cameraVideoUploadViaWiFiOnly(final Context context) {
         return getDefaultSharedPreferences(context).getBoolean(PREF__CAMERA_VIDEO_UPLOADS_WIFI_ONLY, false);
     }
 
-    public static CameraUploadsConfiguration getCameraUploadsConfiguration(Context context) {
+    public static CameraUploadsConfiguration getCameraUploadsConfiguration(final Context context) {
         CameraUploadsConfiguration result = new CameraUploadsConfiguration();
         SharedPreferences prefs = getDefaultSharedPreferences(context);
         result.setEnabledForPictures(
@@ -152,7 +152,7 @@ public abstract class PreferenceManager {
      * @return path     Absolute path to a folder, as previously stored by {@link #setLastUploadPath(String, Context)},
      * or empty String if never saved before.
      */
-    public static String getLastUploadPath(Context context) {
+    public static String getLastUploadPath(final Context context) {
         return getDefaultSharedPreferences(context).getString(AUTO_PREF__LAST_UPLOAD_PATH, "");
     }
 
@@ -162,7 +162,7 @@ public abstract class PreferenceManager {
      * @param path    Absolute path to a folder.
      * @param context Caller {@link Context}, used to access to shared preferences manager.
      */
-    public static void setLastUploadPath(String path, Context context) {
+    public static void setLastUploadPath(final String path, final Context context) {
         saveStringPreference(AUTO_PREF__LAST_UPLOAD_PATH, path, context);
     }
 
@@ -172,7 +172,7 @@ public abstract class PreferenceManager {
      * @param context Caller {@link Context}, used to access to shared preferences manager.
      * @return sort order     the sort order, default is {@link FileStorageUtils#SORT_NAME} (sort by name)
      */
-    public static int getSortOrder(Context context, int flag) {
+    public static int getSortOrder(final Context context, final int flag) {
         if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
             return getDefaultSharedPreferences(context)
                    .getInt(AUTO_PREF__SORT_ORDER_FILE_DISP, FileStorageUtils.SORT_NAME);
@@ -188,7 +188,7 @@ public abstract class PreferenceManager {
      * @param order   the sort order
      * @param context Caller {@link Context}, used to access to shared preferences manager.
      */
-    public static void setSortOrder(int order, Context context, int flag) {
+    public static void setSortOrder(final int order, final Context context, final int flag) {
         if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
             saveIntPreference(AUTO_PREF__SORT_ORDER_FILE_DISP, order, context);
         } else {
@@ -202,7 +202,7 @@ public abstract class PreferenceManager {
      * @param context Caller {@link Context}, used to access to shared preferences manager.
      * @return ascending order     the ascending order, default is true
      */
-    public static boolean getSortAscending(Context context, int flag) {
+    public static boolean getSortAscending(final Context context, final int flag) {
         if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
             return getDefaultSharedPreferences(context)
                    .getBoolean(AUTO_PREF__SORT_ASCENDING_FILE_DISP, true);
@@ -218,7 +218,7 @@ public abstract class PreferenceManager {
      * @param ascending flag if sorting is ascending or descending
      * @param context   Caller {@link Context}, used to access to shared preferences manager.
      */
-    public static void setSortAscending(boolean ascending, Context context, int flag) {
+    public static void setSortAscending(final boolean ascending, final Context context, final int flag) {
         if (flag == FileStorageUtils.FILE_DISPLAY_SORT) {
             saveBooleanPreference(AUTO_PREF__SORT_ASCENDING_FILE_DISP, ascending, context);
         } else {
@@ -226,25 +226,25 @@ public abstract class PreferenceManager {
         }
     }
 
-    private static void saveBooleanPreference(String key, boolean value, Context context) {
+    private static void saveBooleanPreference(final String key, final boolean value, final Context context) {
         SharedPreferences.Editor appPreferences = getDefaultSharedPreferences(context.getApplicationContext()).edit();
         appPreferences.putBoolean(key, value);
         appPreferences.apply();
     }
 
-    private static void saveStringPreference(String key, String value, Context context) {
+    private static void saveStringPreference(final String key, final String value, final Context context) {
         SharedPreferences.Editor appPreferences = getDefaultSharedPreferences(context.getApplicationContext()).edit();
         appPreferences.putString(key, value);
         appPreferences.apply();
     }
 
-    private static void saveIntPreference(String key, int value, Context context) {
+    private static void saveIntPreference(final String key, final int value, final Context context) {
         SharedPreferences.Editor appPreferences = getDefaultSharedPreferences(context.getApplicationContext()).edit();
         appPreferences.putInt(key, value);
         appPreferences.apply();
     }
 
-    public static SharedPreferences getDefaultSharedPreferences(Context context) {
+    public static SharedPreferences getDefaultSharedPreferences(final Context context) {
         return android.preference.PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
     }
 
@@ -271,7 +271,7 @@ public abstract class PreferenceManager {
             return mEnabledForPictures;
         }
 
-        public void setEnabledForPictures(boolean uploadPictures) {
+        public void setEnabledForPictures(final boolean uploadPictures) {
             mEnabledForPictures = uploadPictures;
         }
 
@@ -279,7 +279,7 @@ public abstract class PreferenceManager {
             return mEnabledForVideos;
         }
 
-        public void setEnabledForVideos(boolean uploadVideos) {
+        public void setEnabledForVideos(final boolean uploadVideos) {
             mEnabledForVideos = uploadVideos;
         }
 
@@ -287,7 +287,7 @@ public abstract class PreferenceManager {
             return mWifiOnlyForPictures;
         }
 
-        public void setWifiOnlyForPictures(boolean wifiOnlyForPictures) {
+        public void setWifiOnlyForPictures(final boolean wifiOnlyForPictures) {
             mWifiOnlyForPictures = wifiOnlyForPictures;
         }
 
@@ -295,7 +295,7 @@ public abstract class PreferenceManager {
             return mWifiOnlyForVideos;
         }
 
-        public void setWifiOnlyForVideos(boolean wifiOnlyForVideos) {
+        public void setWifiOnlyForVideos(final boolean wifiOnlyForVideos) {
             mWifiOnlyForVideos = wifiOnlyForVideos;
         }
 
@@ -303,7 +303,7 @@ public abstract class PreferenceManager {
             return mUploadAccountName;
         }
 
-        public void setUploadAccountName(String uploadAccountName) {
+        public void setUploadAccountName(final String uploadAccountName) {
             mUploadAccountName = uploadAccountName;
         }
 
@@ -311,7 +311,7 @@ public abstract class PreferenceManager {
             return mUploadPathForPictures;
         }
 
-        public void setUploadPathForPictures(String uploadPathForPictures) {
+        public void setUploadPathForPictures(final String uploadPathForPictures) {
             mUploadPathForPictures = uploadPathForPictures;
         }
 
@@ -319,7 +319,7 @@ public abstract class PreferenceManager {
             return mUploadPathForVideos;
         }
 
-        public void setUploadPathForVideos(String uploadPathForVideos) {
+        public void setUploadPathForVideos(final String uploadPathForVideos) {
             mUploadPathForVideos = uploadPathForVideos;
         }
 
@@ -330,7 +330,7 @@ public abstract class PreferenceManager {
             return FileUploader.LOCAL_BEHAVIOUR_FORGET; // "NOTHING
         }
 
-        public void setBehaviourAfterUpload(String behaviourAfterUpload) {
+        public void setBehaviourAfterUpload(final String behaviourAfterUpload) {
             mBehaviourAfterUpload = behaviourAfterUpload;
         }
 
@@ -338,7 +338,7 @@ public abstract class PreferenceManager {
             return mSourcePath;
         }
 
-        public void setSourcePath(String sourcePath) {
+        public void setSourcePath(final String sourcePath) {
             mSourcePath = sourcePath;
         }
     }

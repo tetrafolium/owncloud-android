@@ -57,11 +57,11 @@ public class FileOperationsHelper {
     /// Identifier of operation in progress which result shouldn't be lost
     private long mWaitingForOpId = Long.MAX_VALUE;
 
-    public FileOperationsHelper(FileActivity fileActivity) {
+    public FileOperationsHelper(final FileActivity fileActivity) {
         mFileActivity = fileActivity;
     }
 
-    public void openFile(OCFile file) {
+    public void openFile(final OCFile file) {
         if (file != null) {
             String storagePath = file.getStoragePath();
 
@@ -87,8 +87,8 @@ public class FileOperationsHelper {
                         guessedMimeType
                     );
                     intentForGuessedMimeType.setFlags(
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     );
                 }
             }
@@ -134,7 +134,7 @@ public class FileOperationsHelper {
      *
      * @param file @param file {@link OCFile} which will be shared with internal users
      */
-    public void copyOrSendPrivateLink(OCFile file) {
+    public void copyOrSendPrivateLink(final OCFile file) {
 
         // Parse remoteId
         String privateLink = file.getPrivateLink();
@@ -155,7 +155,7 @@ public class FileOperationsHelper {
      *
      * @param share {@link OCShare} which link will be sent to the app chosen by the user.
      */
-    public void copyOrSendPublicLink(OCShare share) {
+    public void copyOrSendPublicLink(final OCShare share) {
         String link = share.getShareLink();
         if (link.length() <= 0) {
             mFileActivity.showSnackMessage(
@@ -173,7 +173,7 @@ public class FileOperationsHelper {
      *
      * @param file File to share or unshare.
      */
-    public void showShareFile(OCFile file) {
+    public void showShareFile(final OCFile file) {
         Intent intent = new Intent(mFileActivity, ShareActivity.class);
         intent.putExtra(FileActivity.EXTRA_FILE, file);
         intent.putExtra(FileActivity.EXTRA_ACCOUNT, mFileActivity.getAccount());
@@ -181,7 +181,7 @@ public class FileOperationsHelper {
 
     }
 
-    public void sendDownloadedFile(OCFile file) {
+    public void sendDownloadedFile(final OCFile file) {
         if (file != null) {
             Intent sendIntent = new Intent(android.content.Intent.ACTION_SEND);
             // set MimeType
@@ -202,7 +202,7 @@ public class FileOperationsHelper {
         }
     }
 
-    public void syncFiles(Collection<OCFile> files) {
+    public void syncFiles(final Collection<OCFile> files) {
         for (OCFile file : files) {
             syncFile(file);
         }
@@ -213,7 +213,7 @@ public class FileOperationsHelper {
      *
      * @param file The file or folder to synchronize
      */
-    public void syncFile(OCFile file) {
+    public void syncFile(final OCFile file) {
         if (!file.isFolder()) {
             Intent intent = new Intent(mFileActivity, OperationsService.class);
             intent.setAction(OperationsService.ACTION_SYNC_FILE);
@@ -234,13 +234,13 @@ public class FileOperationsHelper {
         }
     }
 
-    public void toggleAvailableOffline(Collection<OCFile> files, boolean isAvailableOffline) {
+    public void toggleAvailableOffline(final Collection<OCFile> files, final boolean isAvailableOffline) {
         for (OCFile file : files) {
             toggleAvailableOffline(file, isAvailableOffline);
         }
     }
 
-    public void toggleAvailableOffline(OCFile file, boolean isAvailableOffline) {
+    public void toggleAvailableOffline(final OCFile file, final boolean isAvailableOffline) {
         if (OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE_PARENT == file.getAvailableOfflineStatus()) {
             /// files descending of an av-offline folder can't be toggled
             mFileActivity.showSnackMessage(
@@ -249,9 +249,9 @@ public class FileOperationsHelper {
 
         } else {
             /// update local property, for file and all its descendents (if folder)
-            OCFile.AvailableOfflineStatus targetAvailableOfflineStatus = isAvailableOffline ?
-                    OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE :
-                    OCFile.AvailableOfflineStatus.NOT_AVAILABLE_OFFLINE;
+            OCFile.AvailableOfflineStatus targetAvailableOfflineStatus = isAvailableOffline
+                    ? OCFile.AvailableOfflineStatus.AVAILABLE_OFFLINE
+                    : OCFile.AvailableOfflineStatus.NOT_AVAILABLE_OFFLINE;
             file.setAvailableOfflineStatus(targetAvailableOfflineStatus);
             boolean success = mFileActivity.getStorageManager().saveLocalAvailableOfflineStatus(file);
 
@@ -276,7 +276,7 @@ public class FileOperationsHelper {
         }
     }
 
-    public void renameFile(OCFile file, String newFilename) {
+    public void renameFile(final OCFile file, final String newFilename) {
         // RenameFile
         Intent service = new Intent(mFileActivity, OperationsService.class);
         service.setAction(OperationsService.ACTION_RENAME);
@@ -295,7 +295,7 @@ public class FileOperationsHelper {
      * @param onlyLocalCopy When 'true' only local copy of the files is removed; otherwise files are also deleted
      *                      in the server.
      */
-    public void removeFiles(Collection<OCFile> files, boolean onlyLocalCopy) {
+    public void removeFiles(final Collection<OCFile> files, final boolean onlyLocalCopy) {
         int countOfFilesToRemove = 0;
         boolean isLastFileToRemove = false;
         for (OCFile file : files) {
@@ -316,7 +316,7 @@ public class FileOperationsHelper {
         mFileActivity.showLoadingDialog(R.string.wait_a_moment);
     }
 
-    public void createFolder(String remotePath, boolean createFullPath) {
+    public void createFolder(final String remotePath, final boolean createFullPath) {
         // Create Folder
         Intent service = new Intent(mFileActivity, OperationsService.class);
         service.setAction(OperationsService.ACTION_CREATE_FOLDER);
@@ -333,7 +333,7 @@ public class FileOperationsHelper {
      *
      * @param file OCFile
      */
-    public void cancelTransference(OCFile file) {
+    public void cancelTransference(final OCFile file) {
         Account account = mFileActivity.getAccount();
         if (file.isFolder()) {
             OperationsService.OperationsServiceBinder opsBinder =
@@ -360,7 +360,7 @@ public class FileOperationsHelper {
      * @param files        Files to move
      * @param targetFolder Folder where the files while be moved into
      */
-    public void moveFiles(Collection<OCFile> files, OCFile targetFolder) {
+    public void moveFiles(final Collection<OCFile> files, final OCFile targetFolder) {
         for (OCFile file : files) {
             Intent service = new Intent(mFileActivity, OperationsService.class);
             service.setAction(OperationsService.ACTION_MOVE_FILE);
@@ -378,7 +378,7 @@ public class FileOperationsHelper {
      * @param files        Files to copy
      * @param targetFolder Folder where the files while be copied into
      */
-    public void copyFiles(Collection<OCFile> files, OCFile targetFolder) {
+    public void copyFiles(final Collection<OCFile> files, final OCFile targetFolder) {
         for (OCFile file : files) {
             Intent service = new Intent(mFileActivity, OperationsService.class);
             service.setAction(OperationsService.ACTION_COPY_FILE);
@@ -394,7 +394,7 @@ public class FileOperationsHelper {
         return mWaitingForOpId;
     }
 
-    public void setOpIdWaitingFor(long waitingForOpId) {
+    public void setOpIdWaitingFor(final long waitingForOpId) {
         mWaitingForOpId = waitingForOpId;
     }
 
@@ -403,7 +403,7 @@ public class FileOperationsHelper {
      *
      * @param account OC account which credentials will be checked.
      */
-    public void checkCurrentCredentials(Account account) {
+    public void checkCurrentCredentials(final Account account) {
         Intent service = new Intent(mFileActivity, OperationsService.class);
         service.setAction(OperationsService.ACTION_CHECK_CURRENT_CREDENTIALS);
         service.putExtra(OperationsService.EXTRA_ACCOUNT, account);
@@ -417,7 +417,7 @@ public class FileOperationsHelper {
      *
      * @param link link to share
      */
-    private void shareLink(String link) {
+    private void shareLink(final String link) {
         Intent intentToShareLink = new Intent(Intent.ACTION_SEND);
         intentToShareLink.putExtra(Intent.EXTRA_TEXT, link);
         intentToShareLink.setType("text/plain");

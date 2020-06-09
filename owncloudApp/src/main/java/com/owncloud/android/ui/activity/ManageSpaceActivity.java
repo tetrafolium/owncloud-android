@@ -45,7 +45,7 @@ public class ManageSpaceActivity extends AppCompatActivity {
     private static final String LIB_FOLDER = "lib";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_space);
 
@@ -70,7 +70,7 @@ public class ManageSpaceActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         boolean retval = true;
         switch (item.getItemId()) {
         case android.R.id.home:
@@ -89,7 +89,7 @@ public class ManageSpaceActivity extends AppCompatActivity {
     private class ClearDataAsynTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(final Void... params) {
 
             boolean result = true;
 
@@ -146,7 +146,7 @@ public class ManageSpaceActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(final Boolean result) {
             super.onPostExecute(result);
             if (!result) {
                 Snackbar snackbar = Snackbar.make(

@@ -94,10 +94,10 @@ public class PreviewAudioFragment extends FileFragment {
      * @return Fragment ready to be used.
      */
     public static PreviewAudioFragment newInstance(
-        OCFile file,
-        Account account,
-        int startPlaybackPosition,
-        boolean autoplay
+        final OCFile file,
+        final Account account,
+        final int startPlaybackPosition,
+        final boolean autoplay
     ) {
         PreviewAudioFragment frag = new PreviewAudioFragment();
         Bundle args = new Bundle();
@@ -128,7 +128,7 @@ public class PreviewAudioFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -137,8 +137,8 @@ public class PreviewAudioFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         Timber.v("onCreateView");
 
@@ -158,7 +158,7 @@ public class PreviewAudioFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Timber.v("onActivityCreated");
 
@@ -209,7 +209,7 @@ public class PreviewAudioFragment extends FileFragment {
      *
      * @param file audio file with potential cover art
      */
-    private void extractAndSetCoverArt(OCFile file) {
+    private void extractAndSetCoverArt(final OCFile file) {
         try {
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             mmr.setDataSource(file.getStoragePath());
@@ -229,7 +229,7 @@ public class PreviewAudioFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         Timber.v("onSaveInstanceState");
 
@@ -262,7 +262,7 @@ public class PreviewAudioFragment extends FileFragment {
     }
 
     @Override
-    public void onFileMetadataChanged(OCFile updatedFile) {
+    public void onFileMetadataChanged(final OCFile updatedFile) {
         if (updatedFile != null) {
             setFile(updatedFile);
         }
@@ -297,7 +297,7 @@ public class PreviewAudioFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.file_actions_menu, menu);
     }
@@ -306,7 +306,7 @@ public class PreviewAudioFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
         FileMenuFilter mf = new FileMenuFilter(
@@ -344,7 +344,7 @@ public class PreviewAudioFragment extends FileFragment {
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share_file: {
             mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
@@ -407,7 +407,7 @@ public class PreviewAudioFragment extends FileFragment {
         super.onStop();
     }
 
-    public void playAudio(boolean restart) {
+    public void playAudio(final boolean restart) {
         OCFile file = getFile();
         if (restart) {
             Timber.d("restarting playback of %s", file.getStoragePath());
@@ -445,7 +445,7 @@ public class PreviewAudioFragment extends FileFragment {
     private class MediaServiceConnection implements ServiceConnection {
 
         @Override
-        public void onServiceConnected(ComponentName component, IBinder service) {
+        public void onServiceConnected(final ComponentName component, final IBinder service) {
             if (getActivity() != null) {
                 if (component.equals(
                             new ComponentName(getActivity(), MediaService.class))) {
@@ -473,7 +473,7 @@ public class PreviewAudioFragment extends FileFragment {
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName component) {
+        public void onServiceDisconnected(final ComponentName component) {
             if (component.equals(new ComponentName(getActivity(), MediaService.class))) {
                 Timber.w("Media service suddenly disconnected");
                 if (mMediaController != null) {
@@ -503,7 +503,7 @@ public class PreviewAudioFragment extends FileFragment {
      * @param file File to test if can be previewed.
      * @return 'True' if the file can be handled by the fragment.
      */
-    public static boolean canBePreviewed(OCFile file) {
+    public static boolean canBePreviewed(final OCFile file) {
         return (file != null && file.isDown() && file.isAudio());
     }
 

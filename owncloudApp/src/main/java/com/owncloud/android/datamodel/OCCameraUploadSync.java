@@ -42,7 +42,7 @@ public class OCCameraUploadSync implements Parcelable {
      * @param picturesLastSync
      * @param videosLastSync
      */
-    public OCCameraUploadSync(long picturesLastSync, long videosLastSync) {
+    public OCCameraUploadSync(final long picturesLastSync, final long videosLastSync) {
 
         if (picturesLastSync < 0) {
             throw new IllegalArgumentException("Pictures last sync must be a positive long");
@@ -57,11 +57,11 @@ public class OCCameraUploadSync implements Parcelable {
         this.mVideosLastSync = videosLastSync;
     }
 
-    protected OCCameraUploadSync(Parcel source) {
+    protected OCCameraUploadSync(final Parcel source) {
         readFromParcel(source);
     }
 
-    public void readFromParcel(Parcel source) {
+    public void readFromParcel(final Parcel source) {
         mId = source.readLong();
         mPicturesLastSync = source.readLong();
         mVideosLastSync = source.readLong();
@@ -69,12 +69,12 @@ public class OCCameraUploadSync implements Parcelable {
 
     public static final Creator<OCCameraUploadSync> CREATOR = new Creator<OCCameraUploadSync>() {
         @Override
-        public OCCameraUploadSync createFromParcel(Parcel source) {
+        public OCCameraUploadSync createFromParcel(final Parcel source) {
             return new OCCameraUploadSync(source);
         }
 
         @Override
-        public OCCameraUploadSync[] newArray(int size) {
+        public OCCameraUploadSync[] newArray(final int size) {
             return new OCCameraUploadSync[size];
         }
     };
@@ -85,7 +85,7 @@ public class OCCameraUploadSync implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeLong(mId);
         dest.writeLong(mPicturesLastSync);
         dest.writeLong(mVideosLastSync);
@@ -95,7 +95,7 @@ public class OCCameraUploadSync implements Parcelable {
         return mId;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.mId = id;
     }
 
@@ -103,7 +103,7 @@ public class OCCameraUploadSync implements Parcelable {
         return mPicturesLastSync;
     }
 
-    public void setPicturesLastSync(long picturesLastSync) {
+    public void setPicturesLastSync(final long picturesLastSync) {
         this.mPicturesLastSync = picturesLastSync;
     }
 
@@ -111,7 +111,7 @@ public class OCCameraUploadSync implements Parcelable {
         return mVideosLastSync;
     }
 
-    public void setVideosLastSync(long videosLastSync) {
+    public void setVideosLastSync(final long videosLastSync) {
         this.mVideosLastSync = videosLastSync;
     }
 }

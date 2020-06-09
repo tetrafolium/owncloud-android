@@ -42,12 +42,12 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
     public static final Parcelable.Creator<OCFile> CREATOR = new Parcelable.Creator<OCFile>() {
 
         @Override
-        public OCFile createFromParcel(Parcel source) {
+        public OCFile createFromParcel(final Parcel source) {
             return new OCFile(source);
         }
 
         @Override
-        public OCFile[] newArray(int size) {
+        public OCFile[] newArray(final int size) {
             return new OCFile[size];
         }
     };
@@ -79,7 +79,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
             return ordinal();
         }
 
-        public static AvailableOfflineStatus fromValue(int value) {
+        public static AvailableOfflineStatus fromValue(final int value) {
             if (value > -1 && value < values().length) {
                 return values()[value];
             } else {
@@ -140,7 +140,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param path The remote path of the file.
      */
-    public OCFile(String path) {
+    public OCFile(final String path) {
         resetData();
         if (path == null || path.length() <= 0 || !path.startsWith(PATH_SEPARATOR)) {
             throw new IllegalArgumentException("Trying to create a OCFile with a non valid remote path: " + path);
@@ -153,7 +153,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param source The source parcel
      */
-    private OCFile(Parcel source) {
+    private OCFile(final Parcel source) {
         mId = source.readLong();
         mParentId = source.readLong();
         mLength = source.readLong();
@@ -184,7 +184,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeLong(mId);
         dest.writeLong(mParentId);
         dest.writeLong(mLength);
@@ -243,7 +243,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      * @return true if it is a folder
      */
     public boolean isFolder() {
-        return mMimeType != null && (mMimeType.equals("DIR") || mMimeType.equals("httpd/unix-directory")) ;
+        return mMimeType != null && (mMimeType.equals("DIR") || mMimeType.equals("httpd/unix-directory"));
     }
 
     /**
@@ -286,7 +286,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mLocalUri;
     }
 
-    public Uri getExposedFileUri(Context context) {
+    public Uri getExposedFileUri(final Context context) {
         if (mLocalPath == null || mLocalPath.length() == 0) {
             return null;
         }
@@ -317,7 +317,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param storage_path to set
      */
-    public void setStoragePath(String storage_path) {
+    public void setStoragePath(final String storage_path) {
         mLocalPath = storage_path;
         mLocalUri = null;
         mExposedFileUri = null;
@@ -337,7 +337,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param creation_timestamp to set
      */
-    public void setCreationTimestamp(long creation_timestamp) {
+    public void setCreationTimestamp(final long creation_timestamp) {
         mCreationTimestamp = creation_timestamp;
     }
 
@@ -359,7 +359,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param modification_timestamp to set
      */
-    public void setModificationTimestamp(long modification_timestamp) {
+    public void setModificationTimestamp(final long modification_timestamp) {
         mModifiedTimestamp = modification_timestamp;
     }
 
@@ -381,7 +381,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param modificationTimestamp to set
      */
-    public void setModificationTimestampAtLastSyncForData(long modificationTimestamp) {
+    public void setModificationTimestampAtLastSyncForData(final long modificationTimestamp) {
         mModifiedTimestampAtLastSyncForData = modificationTimestamp;
     }
 
@@ -401,10 +401,10 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      * Does nothing if the new name is null, empty or includes "/" ; or if the file is the root
      * directory
      */
-    public void setFileName(String name) {
+    public void setFileName(final String name) {
         Timber.d("OCFile name changing from %s", mRemotePath);
-        if (name != null && name.length() > 0 && !name.contains(PATH_SEPARATOR) &&
-                !mRemotePath.equals(ROOT_PATH)) {
+        if (name != null && name.length() > 0 && !name.contains(PATH_SEPARATOR)
+                && !mRemotePath.equals(ROOT_PATH)) {
             String parent = (new File(getRemotePath())).getParent();
             parent = (parent.endsWith(PATH_SEPARATOR)) ? parent : parent + PATH_SEPARATOR;
             mRemotePath = parent + name;
@@ -457,7 +457,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param file_id to set
      */
-    public void setFileId(long file_id) {
+    public void setFileId(final long file_id) {
         mId = file_id;
     }
 
@@ -466,7 +466,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param mimetype to set
      */
-    public void setMimetype(String mimetype) {
+    public void setMimetype(final String mimetype) {
         mMimeType = mimetype;
     }
 
@@ -475,7 +475,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param parent_id to set
      */
-    public void setParentId(long parent_id) {
+    public void setParentId(final long parent_id) {
         mParentId = parent_id;
     }
 
@@ -484,7 +484,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      *
      * @param file_len to set
      */
-    public void setFileLength(long file_len) {
+    public void setFileLength(final long file_len) {
         mLength = file_len;
     }
 
@@ -519,7 +519,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mNeedsUpdateThumbnail;
     }
 
-    public void setNeedsUpdateThumbnail(boolean needsUpdateThumbnail) {
+    public void setNeedsUpdateThumbnail(final boolean needsUpdateThumbnail) {
         mNeedsUpdateThumbnail = needsUpdateThumbnail;
     }
 
@@ -527,7 +527,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mLastSyncDateForProperties;
     }
 
-    public void setLastSyncDateForProperties(long lastSyncDate) {
+    public void setLastSyncDateForProperties(final long lastSyncDate) {
         mLastSyncDateForProperties = lastSyncDate;
     }
 
@@ -535,11 +535,11 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mLastSyncDateForData;
     }
 
-    public void setLastSyncDateForData(long lastSyncDate) {
+    public void setLastSyncDateForData(final long lastSyncDate) {
         mLastSyncDateForData = lastSyncDate;
     }
 
-    public void setAvailableOfflineStatus(AvailableOfflineStatus availableOffline) {
+    public void setAvailableOfflineStatus(final AvailableOfflineStatus availableOffline) {
         mAvailableOfflineStatus = availableOffline;
     }
 
@@ -560,7 +560,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
     }
 
     @Override
-    public int compareTo(@NonNull OCFile another) {
+    public int compareTo(final @NonNull OCFile another) {
         if (isFolder() && another.isFolder()) {
             return getRemotePath().toLowerCase().compareTo(another.getRemotePath().toLowerCase());
         } else if (isFolder()) {
@@ -572,7 +572,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o instanceof OCFile) {
             OCFile that = (OCFile) o;
             return this.mId == that.mId;
@@ -582,8 +582,8 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
 
     @Override
     public String toString() {
-        String asString = "[id=%s, name=%s,  etag=%s, tree_etag=%s, mime=%s, downloaded=%s, local=%s, remote=%s, " +
-                          "parentId=%s, favorite=%s]";
+        String asString = "[id=%s, name=%s,  etag=%s, tree_etag=%s, mime=%s, downloaded=%s, local=%s, remote=%s, "
+                          + "parentId=%s, favorite=%s]";
         asString = String.format(asString, mId, getFileName(), mEtag, mTreeEtag,
                                  mMimeType, isDown(), mLocalPath, mRemotePath, mParentId,
                                  mAvailableOfflineStatus
@@ -595,7 +595,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mEtag;
     }
 
-    public void setEtag(String etag) {
+    public void setEtag(final String etag) {
         mEtag = (etag != null ? etag : "");
     }
 
@@ -603,7 +603,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mTreeEtag;
     }
 
-    public void setTreeEtag(String etag) {
+    public void setTreeEtag(final String etag) {
         mTreeEtag = (etag != null ? etag : "");
     }
 
@@ -611,7 +611,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mSharedByLink;
     }
 
-    public void setSharedViaLink(boolean shareByLink) {
+    public void setSharedViaLink(final boolean shareByLink) {
         mSharedByLink = shareByLink;
     }
 
@@ -655,10 +655,10 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
      * @param   type        Type to match in the file MIME type; it's MUST include the trailing "/"
      * @return              'True' if the file MIME type matches the received parameter in the type part.
      */
-    private boolean isOfType(String type) {
+    private boolean isOfType(final String type) {
         return (
-                   (mMimeType != null && mMimeType.startsWith(type)) ||
-                   getMimeTypeFromName().startsWith(type)
+                   (mMimeType != null && mMimeType.startsWith(type))
+                   || getMimeTypeFromName().startsWith(type)
                );
     }
 
@@ -684,7 +684,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mPermissions;
     }
 
-    public void setPermissions(String permissions) {
+    public void setPermissions(final String permissions) {
         mPermissions = permissions;
     }
 
@@ -692,7 +692,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mRemoteId;
     }
 
-    public void setRemoteId(String remoteId) {
+    public void setRemoteId(final String remoteId) {
         mRemoteId = remoteId;
     }
 
@@ -700,7 +700,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mIsDownloading;
     }
 
-    public void setDownloading(boolean isDownloading) {
+    public void setDownloading(final boolean isDownloading) {
         mIsDownloading = isDownloading;
     }
 
@@ -712,7 +712,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mEtagInConflict != null && mEtagInConflict.length() > 0;
     }
 
-    public void setEtagInConflict(String etagInConflict) {
+    public void setEtagInConflict(final String etagInConflict) {
         mEtagInConflict = etagInConflict;
     }
 
@@ -720,7 +720,7 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mSharedWithSharee;
     }
 
-    public void setSharedWithSharee(boolean shareWithSharee) {
+    public void setSharedWithSharee(final boolean shareWithSharee) {
         mSharedWithSharee = shareWithSharee;
     }
 
@@ -733,11 +733,11 @@ public class OCFile implements Parcelable, Comparable<OCFile> {
         return mPrivateLink;
     }
 
-    public void setPrivateLink(String privateLink) {
+    public void setPrivateLink(final String privateLink) {
         mPrivateLink = (privateLink == null) ? "" : privateLink;
     }
 
-    public void copyLocalPropertiesFrom(OCFile sourceFile) {
+    public void copyLocalPropertiesFrom(final OCFile sourceFile) {
         setParentId(sourceFile.getParentId());
         setFileId(sourceFile.getFileId());
         setAvailableOfflineStatus(sourceFile.getAvailableOfflineStatus());

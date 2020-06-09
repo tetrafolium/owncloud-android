@@ -36,7 +36,7 @@ import timber.log.Timber;
 public class CopyToClipboardActivity extends Activity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         try {

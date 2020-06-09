@@ -48,7 +48,7 @@ public class ActionEditText extends AppCompatEditText {
     private String badgeClickCallback;
     private Rect btn_rect;
 
-    public ActionEditText(Context context, AttributeSet attrs) {
+    public ActionEditText(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         getAttrs(attrs);
         s = optionOneString;
@@ -56,7 +56,7 @@ public class ActionEditText extends AppCompatEditText {
         mButtonRect = new Rect();
     }
 
-    public ActionEditText(Context context, AttributeSet attrs, int defStyle) {
+    public ActionEditText(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         getAttrs(attrs);
         s = optionOneString;
@@ -65,7 +65,7 @@ public class ActionEditText extends AppCompatEditText {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
 
         Paint p = getPaint();
@@ -94,7 +94,7 @@ public class ActionEditText extends AppCompatEditText {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(final MotionEvent event) {
         int touchX = (int) event.getX();
         int touchY = (int) event.getY();
         boolean r = super.onTouchEvent(event);
@@ -128,7 +128,7 @@ public class ActionEditText extends AppCompatEditText {
         return r;
     }
 
-    private void getAttrs(AttributeSet attr) {
+    private void getAttrs(final AttributeSet attr) {
         TypedArray a = getContext().obtainStyledAttributes(attr,
                        R.styleable.ActionEditText);
         optionOneString = a

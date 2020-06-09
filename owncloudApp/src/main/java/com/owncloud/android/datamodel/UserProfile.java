@@ -33,7 +33,7 @@ public class UserProfile {
     private UserAvatar mAvatar;
     private UserQuota mQuota;
 
-    public UserProfile(String accountName, String userId, String displayName, String email) {
+    public UserProfile(final String accountName, final String userId, final String displayName, final String email) {
         mAccountName = accountName;
         mUserId = userId;
         mDisplayName = displayName;
@@ -62,7 +62,7 @@ public class UserProfile {
         return mAvatar;
     }
 
-    public void setAvatar(UserAvatar avatar) {
+    public void setAvatar(final UserAvatar avatar) {
         mAvatar = avatar;
     }
 
@@ -71,7 +71,7 @@ public class UserProfile {
         return mQuota;
     }
 
-    public void setQuota(UserQuota quota) {
+    public void setQuota(final UserQuota quota) {
         this.mQuota = quota;
     }
 
@@ -81,7 +81,7 @@ public class UserProfile {
         private String mMimeType;
         private String mEtag;
 
-        public UserAvatar(String cacheKey, String mimeType, String etag) {
+        public UserAvatar(final String cacheKey, final String mimeType, final String etag) {
             mCacheKey = cacheKey;
             mMimeType = mimeType;
             mEtag = etag;
@@ -107,7 +107,7 @@ public class UserProfile {
         private long mTotal;
         private long mUsed;
 
-        public UserQuota(long free, double relative, long total, long used) {
+        public UserQuota(final long free, final double relative, final long total, final long used) {
             mFree = free;
             mRelative = relative;
             mTotal = total;

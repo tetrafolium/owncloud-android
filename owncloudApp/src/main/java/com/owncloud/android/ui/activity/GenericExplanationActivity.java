@@ -47,15 +47,15 @@ import java.util.ArrayList;
  */
 public class GenericExplanationActivity extends AppCompatActivity {
 
-    public static final String EXTRA_LIST = GenericExplanationActivity.class.getCanonicalName() +
-                                            ".EXTRA_LIST";
-    public static final String EXTRA_LIST_2 = GenericExplanationActivity.class.getCanonicalName() +
-            ".EXTRA_LIST_2";
-    public static final String MESSAGE = GenericExplanationActivity.class.getCanonicalName() +
-                                         ".MESSAGE";
+    public static final String EXTRA_LIST = GenericExplanationActivity.class.getCanonicalName()
+                                            + ".EXTRA_LIST";
+    public static final String EXTRA_LIST_2 = GenericExplanationActivity.class.getCanonicalName()
+            + ".EXTRA_LIST_2";
+    public static final String MESSAGE = GenericExplanationActivity.class.getCanonicalName()
+                                         + ".MESSAGE";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
@@ -93,15 +93,15 @@ public class GenericExplanationActivity extends AppCompatActivity {
         ArrayList<String> mList;
         ArrayList<String> mList2;
 
-        ExplanationListAdapterView(Context context, ArrayList<String> list,
-                                   ArrayList<String> list2) {
+        ExplanationListAdapterView(final Context context, final ArrayList<String> list,
+                                   final ArrayList<String> list2) {
             super(context, android.R.layout.two_line_list_item, android.R.id.text1, list);
             mList = list;
             mList2 = list2;
         }
 
         @Override
-        public boolean isEnabled(int position) {
+        public boolean isEnabled(final int position) {
             return false;
         }
 
@@ -109,11 +109,11 @@ public class GenericExplanationActivity extends AppCompatActivity {
          * {@inheritDoc}
          */
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
             if (view != null) {
-                if (mList2 != null && mList2.size() > 0 && position >= 0 &&
-                        position < mList2.size()) {
+                if (mList2 != null && mList2.size() > 0 && position >= 0
+                        && position < mList2.size()) {
                     TextView text2 = view.findViewById(android.R.id.text2);
                     if (text2 != null) {
                         text2.setText(mList2.get(position));

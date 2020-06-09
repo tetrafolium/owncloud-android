@@ -46,13 +46,13 @@ public class CreateFolderOperation extends SyncOperation {
      * @param createFullPath        'True' means that all the ancestor folders should be created
      *                              if don't exist yet.
      */
-    public CreateFolderOperation(String remotePath, boolean createFullPath) {
+    public CreateFolderOperation(final String remotePath, final boolean createFullPath) {
         mRemotePath = remotePath;
         mCreateFullPath = createFullPath;
     }
 
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult run(final OwnCloudClient client) {
         CreateRemoteFolderOperation createRemoteFolderOperation = new CreateRemoteFolderOperation(
             mRemotePath,
             mCreateFullPath
@@ -84,7 +84,7 @@ public class CreateFolderOperation extends SyncOperation {
     private OCFile saveFolderInDB() {
         OCFile newDir = null;
         if (mCreateFullPath && getStorageManager().
-                getFileByPath(FileStorageUtils.getParentPath(mRemotePath)) == null) {// When parent
+                getFileByPath(FileStorageUtils.getParentPath(mRemotePath)) == null) { // When parent
             // of remote path
             // is not created
             String[] subFolders = mRemotePath.split("/");

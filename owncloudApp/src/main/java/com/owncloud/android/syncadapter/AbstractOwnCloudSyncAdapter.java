@@ -53,13 +53,13 @@ public abstract class AbstractOwnCloudSyncAdapter extends
 
     private OwnCloudClient mClient = null;
 
-    public AbstractOwnCloudSyncAdapter(Context context, boolean autoInitialize) {
+    public AbstractOwnCloudSyncAdapter(final Context context, final boolean autoInitialize) {
         super(context, autoInitialize);
         this.setAccountManager(AccountManager.get(context));
     }
 
-    public AbstractOwnCloudSyncAdapter(Context context, boolean autoInitialize,
-                                       boolean allowParallelSyncs) {
+    public AbstractOwnCloudSyncAdapter(final Context context, final boolean autoInitialize,
+                                       final boolean allowParallelSyncs) {
         super(context, autoInitialize, allowParallelSyncs);
         this.setAccountManager(AccountManager.get(context));
     }
@@ -68,7 +68,7 @@ public abstract class AbstractOwnCloudSyncAdapter extends
         return accountManager;
     }
 
-    public void setAccountManager(AccountManager accountManager) {
+    public void setAccountManager(final AccountManager accountManager) {
         this.accountManager = accountManager;
     }
 
@@ -76,7 +76,7 @@ public abstract class AbstractOwnCloudSyncAdapter extends
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(final Account account) {
         this.account = account;
     }
 
@@ -84,11 +84,11 @@ public abstract class AbstractOwnCloudSyncAdapter extends
         return mContentProviderClient;
     }
 
-    public void setContentProviderClient(ContentProviderClient contentProvider) {
+    public void setContentProviderClient(final ContentProviderClient contentProvider) {
         this.mContentProviderClient = contentProvider;
     }
 
-    public void setStorageManager(FileDataStorageManager storage_manager) {
+    public void setStorageManager(final FileDataStorageManager storage_manager) {
         mStoreManager = storage_manager;
     }
 

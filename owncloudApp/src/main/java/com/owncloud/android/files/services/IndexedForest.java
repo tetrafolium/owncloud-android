@@ -50,7 +50,7 @@ public class IndexedForest<V> {
         V mPayload = null;
 
         // payload is optional
-        public Node(String key, V payload) {
+        public Node(final String key, final V payload) {
             if (key == null) {
                 throw new IllegalArgumentException("Argument key MUST NOT be null");
             }
@@ -74,12 +74,12 @@ public class IndexedForest<V> {
             return mPayload;
         }
 
-        public void addChild(Node<V> child) {
+        public void addChild(final Node<V> child) {
             mChildren.add(child);
             child.setParent(this);
         }
 
-        private void setParent(Node<V> parent) {
+        private void setParent(final Node<V> parent) {
             mParent = parent;
         }
 
@@ -87,7 +87,7 @@ public class IndexedForest<V> {
             return mChildren.size() > 0;
         }
 
-        public void removeChild(Node<V> removed) {
+        public void removeChild(final Node<V> removed) {
             mChildren.remove(removed);
         }
 
@@ -96,7 +96,7 @@ public class IndexedForest<V> {
         }
     }
 
-    public /* synchronized */ Pair<String, String> putIfAbsent(String accountName, String remotePath, V value) {
+    public /* synchronized */ Pair<String, String> putIfAbsent(final String accountName, final String remotePath, final V value) {
         String targetKey = buildKey(accountName, remotePath);
 
         Node<V> valuedNode = new Node(targetKey, value);
@@ -141,7 +141,7 @@ public class IndexedForest<V> {
         }
     }
 
-    public Pair<V, String> removePayload(String accountName, String remotePath) {
+    public Pair<V, String> removePayload(final String accountName, final String remotePath) {
         String targetKey = buildKey(accountName, remotePath);
         Node<V> target = mMap.get(targetKey);
         if (target != null) {
@@ -153,7 +153,7 @@ public class IndexedForest<V> {
         return new Pair<V, String>(null, null);
     }
 
-    public /* synchronized */ Pair<V, String> remove(String accountName, String remotePath) {
+    public /* synchronized */ Pair<V, String> remove(final String accountName, final String remotePath) {
         String targetKey = buildKey(accountName, remotePath);
         Node<V> firstRemoved = mMap.remove(targetKey);
         String unlinkedFrom = null;
@@ -186,7 +186,7 @@ public class IndexedForest<V> {
         return new Pair<V, String>(null, null);
     }
 
-    private void removeDescendants(Node<V> removed) {
+    private void removeDescendants(final Node<V> removed) {
         Iterator<Node<V>> childrenIt = removed.getChildren().iterator();
         Node<V> child = null;
         while (childrenIt.hasNext()) {
@@ -196,12 +196,12 @@ public class IndexedForest<V> {
         }
     }
 
-    public boolean contains(String accountName, String remotePath) {
+    public boolean contains(final String accountName, final String remotePath) {
         String targetKey = buildKey(accountName, remotePath);
         return mMap.containsKey(targetKey);
     }
 
-    public /* synchronized */ V get(String key) {
+    public /* synchronized */ V get(final String key) {
         Node<V> node = mMap.get(key);
         if (node != null) {
             return node.getPayload();
@@ -210,7 +210,7 @@ public class IndexedForest<V> {
         }
     }
 
-    public V get(String accountName, String remotePath) {
+    public V get(final String accountName, final String remotePath) {
         String key = buildKey(accountName, remotePath);
         return get(key);
     }
@@ -219,7 +219,7 @@ public class IndexedForest<V> {
      * Remove the elements that contains account as a part of its key
      * @param accountName
      */
-    public void remove(String accountName) {
+    public void remove(final String accountName) {
         Iterator<String> it = mMap.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();
@@ -236,7 +236,7 @@ public class IndexedForest<V> {
      * @param accountName   Local name of the ownCloud account where the file to download is stored.
      * @param remotePath    Path of the file in the server.
      */
-    public String buildKey(String accountName, String remotePath) {
+    public String buildKey(final String accountName, final String remotePath) {
         return accountName + remotePath;
     }
 }

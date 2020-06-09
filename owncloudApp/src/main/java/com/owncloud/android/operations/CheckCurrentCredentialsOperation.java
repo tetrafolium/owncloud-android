@@ -37,7 +37,7 @@ public class CheckCurrentCredentialsOperation extends SyncOperation<Account> {
 
     private Account mAccount;
 
-    public CheckCurrentCredentialsOperation(Account account) {
+    public CheckCurrentCredentialsOperation(final Account account) {
         if (account == null) {
             throw new IllegalArgumentException("NULL account");
         }
@@ -45,7 +45,7 @@ public class CheckCurrentCredentialsOperation extends SyncOperation<Account> {
     }
 
     @Override
-    protected RemoteOperationResult<Account> run(OwnCloudClient client) {
+    protected RemoteOperationResult<Account> run(final OwnCloudClient client) {
         if (!getStorageManager().getAccount().name.equals(mAccount.name)) {
             return new RemoteOperationResult<>(new IllegalStateException(
                                                    "Account to validate is not the account connected to!"));

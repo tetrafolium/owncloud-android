@@ -45,7 +45,7 @@ public class DiskLruImageCache {
 
     //public DiskLruImageCache( Context context,String uniqueName, int diskCacheSize,
     public DiskLruImageCache(
-        File diskCacheDir, int diskCacheSize, CompressFormat compressFormat, int quality
+        final File diskCacheDir, final int diskCacheSize, final CompressFormat compressFormat, final int quality
     ) throws IOException {
 
         mDiskCache = DiskLruCache.open(
@@ -55,7 +55,7 @@ public class DiskLruImageCache {
         mCompressQuality = quality;
     }
 
-    private boolean writeBitmapToFile(Bitmap bitmap, DiskLruCache.Editor editor)
+    private boolean writeBitmapToFile(final Bitmap bitmap, final DiskLruCache.Editor editor)
     throws IOException {
         OutputStream out = null;
         try {
@@ -68,7 +68,7 @@ public class DiskLruImageCache {
         }
     }
 
-    public void put(String key, Bitmap data) {
+    public void put(final String key, final Bitmap data) {
 
         DiskLruCache.Editor editor = null;
         String validKey = convertToValidKey(key);
@@ -82,17 +82,17 @@ public class DiskLruImageCache {
                 mDiskCache.flush();
                 editor.commit();
                 if (MainApp.Companion.isDeveloper()) {
-                    Timber.d( "cache_test_DISK_ image put on disk cache %s", validKey );
+                    Timber.d("cache_test_DISK_ image put on disk cache %s", validKey);
                 }
             } else {
                 editor.abort();
                 if (MainApp.Companion.isDeveloper()) {
-                    Timber.d( "cache_test_DISK_ ERROR on: image put on disk cache %s", validKey );
+                    Timber.d("cache_test_DISK_ ERROR on: image put on disk cache %s", validKey);
                 }
             }
         } catch (IOException e) {
             if (MainApp.Companion.isDeveloper()) {
-                Timber.d( "cache_test_DISK_ ERROR on: image put on disk cache %s", validKey );
+                Timber.d("cache_test_DISK_ ERROR on: image put on disk cache %s", validKey);
             }
             try {
                 if (editor != null) {
@@ -104,7 +104,7 @@ public class DiskLruImageCache {
 
     }
 
-    public Bitmap getBitmap(String key) {
+    public Bitmap getBitmap(final String key) {
 
         Bitmap bitmap = null;
         DiskLruCache.Snapshot snapshot = null;
@@ -137,7 +137,7 @@ public class DiskLruImageCache {
 
     }
 
-    private String convertToValidKey(String key) {
+    private String convertToValidKey(final String key) {
         return Integer.toString(key.hashCode());
     }
 
@@ -145,7 +145,7 @@ public class DiskLruImageCache {
      * Remove passed key from cache
      * @param key
      */
-    public void removeKey(String key) {
+    public void removeKey(final String key) {
         String validKey = convertToValidKey(key);
         try {
             mDiskCache.remove(validKey);

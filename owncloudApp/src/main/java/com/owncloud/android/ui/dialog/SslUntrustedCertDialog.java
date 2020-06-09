@@ -62,7 +62,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     private ErrorViewAdapter mErrorViewAdapter = null;
     private CertificateViewAdapter mCertificateViewAdapter = null;
 
-    public static SslUntrustedCertDialog newInstanceForEmptySslError(SslError error, SslErrorHandler handler) {
+    public static SslUntrustedCertDialog newInstanceForEmptySslError(final SslError error, final SslErrorHandler handler) {
         if (error == null) {
             throw new IllegalArgumentException("Trying to create instance with parameter error == null");
         }
@@ -76,7 +76,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
         return dialog;
     }
 
-    public static SslUntrustedCertDialog newInstanceForFullSslError(CertificateCombinedException sslException) {
+    public static SslUntrustedCertDialog newInstanceForFullSslError(final CertificateCombinedException sslException) {
         if (sslException == null) {
             throw new IllegalArgumentException("Trying to create instance with parameter sslException == null");
         }
@@ -87,8 +87,8 @@ public class SslUntrustedCertDialog extends DialogFragment {
         return dialog;
     }
 
-    public static SslUntrustedCertDialog newInstanceForFullSslError(X509Certificate cert, SslError error,
-            SslErrorHandler handler) {
+    public static SslUntrustedCertDialog newInstanceForFullSslError(final X509Certificate cert, final SslError error,
+            final SslErrorHandler handler) {
         if (cert == null) {
             throw new IllegalArgumentException("Trying to create instance with parameter cert == null");
         }
@@ -107,7 +107,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(final Activity activity) {
         Timber.d("onAttach");
         super.onAttach(activity);
         if (!(activity instanceof OnSslUntrustedCertListener)) {
@@ -116,7 +116,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         Timber.d("onCreate, savedInstanceState is %s", savedInstanceState);
         super.onCreate(savedInstanceState);
         setRetainInstance(true);    // force to keep the state of the fragment on configuration changes (such as
@@ -126,7 +126,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         Timber.d("onCreateView, savedInstanceState is %s", savedInstanceState);
         // Create a view by inflating desired layout
         if (mView == null) {
@@ -147,7 +147,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
         details.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 View detailsScroll = mView.findViewById(R.id.details_scroll);
                 if (detailsScroll.getVisibility() == View.VISIBLE) {
                     detailsScroll.setVisibility(View.GONE);
@@ -166,7 +166,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         Timber.d("onCreateDialog, savedInstanceState is %s", savedInstanceState);
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -185,7 +185,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     private class OnCertificateNotTrusted implements OnClickListener {
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             getDialog().cancel();
             if (mHandler != null) {
                 mHandler.cancel();
@@ -197,7 +197,7 @@ public class SslUntrustedCertDialog extends DialogFragment {
     private class OnCertificateTrusted implements OnClickListener {
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             dismiss();
             if (mHandler != null) {
                 mHandler.proceed();

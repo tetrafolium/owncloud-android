@@ -34,7 +34,7 @@ public class ErrorShowActivity extends BaseActivity {
     TextView mError;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.e("ErrorShowActivity was called. See above for StackTrace.");
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));

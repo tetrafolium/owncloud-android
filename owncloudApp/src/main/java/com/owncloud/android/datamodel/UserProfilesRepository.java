@@ -59,7 +59,7 @@ public class UserProfilesRepository {
      *
      * @param userProfile           User profile.
      */
-    public void update(UserProfile userProfile) {
+    public void update(final UserProfile userProfile) {
 
         SQLiteDatabase database = getSqLiteDatabase();
 
@@ -178,7 +178,7 @@ public class UserProfilesRepository {
      * @return Information about a user avatar bound to an OC account, or NULL if
      *                              there is no avatar for the given account.
      */
-    public UserProfile.UserAvatar getAvatar(String accountName) {
+    public UserProfile.UserAvatar getAvatar(final String accountName) {
         UserProfile.UserAvatar avatar = null;
         Cursor c = null;
 
@@ -213,7 +213,7 @@ public class UserProfilesRepository {
         return avatar;
     }
 
-    public UserProfile.UserQuota getQuota(String accountName) {
+    public UserProfile.UserQuota getQuota(final String accountName) {
         UserProfile.UserQuota userQuota = null;
         Cursor c = null;
         try {
@@ -251,7 +251,7 @@ public class UserProfilesRepository {
         return userQuota;
     }
 
-    public void deleteAvatar(String accountName) {
+    public void deleteAvatar(final String accountName) {
         try {
             getSqLiteDatabase().delete(
                 ProviderMeta.ProviderTableMeta.USER_AVATARS__TABLE_NAME,
@@ -265,7 +265,7 @@ public class UserProfilesRepository {
         }
     }
 
-    private boolean avatarExists(UserProfile userProfile) {
+    private boolean avatarExists(final UserProfile userProfile) {
         boolean exists;
         Cursor c = null;
         try {
@@ -285,7 +285,7 @@ public class UserProfilesRepository {
         return exists;
     }
 
-    private boolean quotaExists(UserProfile userProfile) {
+    private boolean quotaExists(final UserProfile userProfile) {
         boolean exists;
         Cursor c = null;
         try {

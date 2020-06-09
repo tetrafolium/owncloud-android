@@ -643,18 +643,14 @@ public class GridViewWithHeaderAndFooter extends GridView {
       final int adapterViewTypeStart =
           mAdapter == null ? 0 : mAdapter.getViewTypeCount() - 1;
       int type = AdapterView.ITEM_VIEW_TYPE_HEADER_OR_FOOTER;
-      if (mCachePlaceHoldView) {
-        // Header
-        if (position < numHeadersAndPlaceholders) {
-          if (position == 0) {
-            if (mCacheFirstHeaderView) {
-              type = adapterViewTypeStart + mHeaderViewInfos.size() +
-                     mFooterViewInfos.size() + 1 + 1;
-            }
-          }
-          if (position % mNumColumns != 0) {
-            type = adapterViewTypeStart + (position / mNumColumns + 1);
-          }
+      // Header
+      if ((mCachePlaceHoldView) && (position < numHeadersAndPlaceholders)) {
+        if ((position == 0) && (mCacheFirstHeaderView)) {
+          type = adapterViewTypeStart + mHeaderViewInfos.size() +
+                 mFooterViewInfos.size() + 1 + 1;
+        }
+        if (position % mNumColumns != 0) {
+          type = adapterViewTypeStart + (position / mNumColumns + 1);
         }
       }
 

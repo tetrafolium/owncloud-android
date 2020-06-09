@@ -878,18 +878,17 @@ public class Preferences extends PreferenceActivity {
         // Allow to use biometric lock since Pattern lock has been enabled
         enableBiometric();
       }
-    } else if (requestCode == ACTION_CONFIRM_PATTERN &&
-               resultCode == RESULT_OK) { // Disable pattern
-      if (data.getBooleanExtra(PatternLockActivity.KEY_CHECK_RESULT, false)) {
-        mAppPrefs.edit()
-            .putBoolean(PatternLockActivity.PREFERENCE_SET_PATTERN, false)
-            .apply();
-        showSnackMessage(R.string.pattern_removed);
+    } else // Disable pattern
+    if ((requestCode == ACTION_CONFIRM_PATTERN &&
+               resultCode == RESULT_OK) && (data.getBooleanExtra(PatternLockActivity.KEY_CHECK_RESULT, false))) {
+      mAppPrefs.edit()
+          .putBoolean(PatternLockActivity.PREFERENCE_SET_PATTERN, false)
+          .apply();
+      showSnackMessage(R.string.pattern_removed);
 
-        // Do not allow to use biometric lock since Pattern lock has been
-        // disabled
-        disableBiometric(getString(R.string.prefs_biometric_summary));
-      }
+      // Do not allow to use biometric lock since Pattern lock has been
+      // disabled
+      disableBiometric(getString(R.string.prefs_biometric_summary));
     }
   }
 

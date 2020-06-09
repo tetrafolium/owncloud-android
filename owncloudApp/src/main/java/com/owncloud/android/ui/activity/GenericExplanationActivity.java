@@ -113,13 +113,11 @@ public class GenericExplanationActivity extends AppCompatActivity {
     public View getView(final int position, final View convertView,
                         final ViewGroup parent) {
       View view = super.getView(position, convertView, parent);
-      if (view != null) {
-        if (mList2 != null && mList2.size() > 0 && position >= 0 &&
-            position < mList2.size()) {
-          TextView text2 = view.findViewById(android.R.id.text2);
-          if (text2 != null) {
-            text2.setText(mList2.get(position));
-          }
+      if ((view != null) && (mList2 != null && mList2.size() > 0 && position >= 0 &&
+            position < mList2.size())) {
+        TextView text2 = view.findViewById(android.R.id.text2);
+        if (text2 != null) {
+          text2.setText(mList2.get(position));
         }
       }
       return view;

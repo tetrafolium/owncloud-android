@@ -412,13 +412,11 @@ public class FileActivity extends DrawerActivity
                                    final RemoteOperationResult result) {
     invalidateOptionsMenu();
     OCFile syncedFile = operation.getLocalFile();
-    if (!result.isSuccess()) {
-      if (result.getCode() == ResultCode.SYNC_CONFLICT) {
-        Intent i = new Intent(this, ConflictsResolveActivity.class);
-        i.putExtra(ConflictsResolveActivity.EXTRA_FILE, syncedFile);
-        i.putExtra(ConflictsResolveActivity.EXTRA_ACCOUNT, getAccount());
-        startActivity(i);
-      }
+    if ((!result.isSuccess()) && (result.getCode() == ResultCode.SYNC_CONFLICT)) {
+      Intent i = new Intent(this, ConflictsResolveActivity.class);
+      i.putExtra(ConflictsResolveActivity.EXTRA_FILE, syncedFile);
+      i.putExtra(ConflictsResolveActivity.EXTRA_ACCOUNT, getAccount());
+      startActivity(i);
     }
   }
 

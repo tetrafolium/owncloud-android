@@ -449,20 +449,18 @@ public class PreviewAudioFragment extends FileFragment {
     @Override
     public void onServiceConnected(final ComponentName component,
                                    final IBinder service) {
-      if (getActivity() != null) {
-        if (component.equals(
-                new ComponentName(getActivity(), MediaService.class))) {
-          Timber.d("Media service connected");
-          mMediaServiceBinder = (MediaServiceBinder)service;
-          if (mMediaServiceBinder != null) {
-            prepareMediaController();
-            playAudio(false);
-            Timber.d(
-                "Successfully bound to MediaService, MediaController ready");
+      if ((getActivity() != null) && (component.equals(
+                new ComponentName(getActivity(), MediaService.class)))) {
+        Timber.d("Media service connected");
+        mMediaServiceBinder = (MediaServiceBinder)service;
+        if (mMediaServiceBinder != null) {
+          prepareMediaController();
+          playAudio(false);
+          Timber.d(
+              "Successfully bound to MediaService, MediaController ready");
 
-          } else {
-            Timber.e("Unexpected response from MediaService while binding");
-          }
+        } else {
+          Timber.e("Unexpected response from MediaService while binding");
         }
       }
     }

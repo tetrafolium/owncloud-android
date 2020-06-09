@@ -97,31 +97,29 @@ public class ActionEditText extends AppCompatEditText {
     int touchX = (int)event.getX();
     int touchY = (int)event.getY();
     boolean r = super.onTouchEvent(event);
-    if (event.getAction() == MotionEvent.ACTION_UP) {
-      if (btn_rect.contains(touchX, touchY)) {
-        if (s.equals(optionTwoString)) {
-          s = optionOneString;
-        } else {
-          s = optionTwoString;
+    if ((event.getAction() == MotionEvent.ACTION_UP) && (btn_rect.contains(touchX, touchY))) {
+      if (s.equals(optionTwoString)) {
+        s = optionOneString;
+      } else {
+        s = optionTwoString;
+      }
+      if (badgeClickCallback != null) {
+        @SuppressWarnings("rawtypes") Class[] paramtypes = new Class[2];
+        paramtypes[0] = android.view.View.class;
+        paramtypes[1] = String.class;
+        Method method;
+        try {
+
+          method = getContext().getClass().getMethod(badgeClickCallback,
+                                                     paramtypes);
+          method.invoke(getContext(), this, s);
+
+        } catch (NoSuchMethodException | IllegalArgumentException |
+                 IllegalAccessException | InvocationTargetException e) {
+          Timber.e(e);
         }
-        if (badgeClickCallback != null) {
-          @SuppressWarnings("rawtypes") Class[] paramtypes = new Class[2];
-          paramtypes[0] = android.view.View.class;
-          paramtypes[1] = String.class;
-          Method method;
-          try {
 
-            method = getContext().getClass().getMethod(badgeClickCallback,
-                                                       paramtypes);
-            method.invoke(getContext(), this, s);
-
-          } catch (NoSuchMethodException | IllegalArgumentException |
-                   IllegalAccessException | InvocationTargetException e) {
-            Timber.e(e);
-          }
-
-          invalidate();
-        }
+        invalidate();
       }
     }
     return r;

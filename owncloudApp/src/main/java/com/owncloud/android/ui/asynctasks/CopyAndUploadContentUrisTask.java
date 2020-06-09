@@ -186,10 +186,8 @@ public class CopyAndUploadContentUrisTask
       // clean
       if (fullTempPath != null) {
         File f = new File(fullTempPath);
-        if (f.exists()) {
-          if (!f.delete()) {
-            Timber.e("Could not delete temporary file %s", fullTempPath);
-          }
+        if ((f.exists()) && (!f.delete())) {
+          Timber.e("Could not delete temporary file %s", fullTempPath);
         }
       }
 

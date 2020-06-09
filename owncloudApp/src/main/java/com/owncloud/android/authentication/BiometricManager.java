@@ -74,24 +74,22 @@ public class BiometricManager {
 
   public void onActivityStarted(final Activity activity) {
 
-    if (!sExemptOfBiometricActivites.contains(activity.getClass())) {
+    
+    if ((!sExemptOfBiometricActivites.contains(activity.getClass())) && (biometricShouldBeRequested())) {
 
-      if (biometricShouldBeRequested()) {
-
-        if (isHardwareDetected() && hasEnrolledBiometric()) {
-          // Use biometric lock
-          Intent i = new Intent(MainApp.Companion.getAppContext(),
-                                BiometricActivity.class);
-          activity.startActivity(i);
-        } else if (PassCodeManager.getPassCodeManager().isPassCodeEnabled()) {
-          // Cancel biometric lock and use passcode unlock method
-          PassCodeManager.getPassCodeManager().onBiometricCancelled(activity);
-          mVisibleActivitiesCounter++;
-        } else if (PatternManager.getPatternManager().isPatternEnabled()) {
-          // Cancel biometric lock and use pattern unlock method
-          PatternManager.getPatternManager().onBiometricCancelled(activity);
-          mVisibleActivitiesCounter++;
-        }
+      if (isHardwareDetected() && hasEnrolledBiometric()) {
+        // Use biometric lock
+        Intent i = new Intent(MainApp.Companion.getAppContext(),
+                              BiometricActivity.class);
+        activity.startActivity(i);
+      } else if (PassCodeManager.getPassCodeManager().isPassCodeEnabled()) {
+        // Cancel biometric lock and use passcode unlock method
+        PassCodeManager.getPassCodeManager().onBiometricCancelled(activity);
+        mVisibleActivitiesCounter++;
+      } else if (PatternManager.getPatternManager().isPatternEnabled()) {
+        // Cancel biometric lock and use pattern unlock method
+        PatternManager.getPatternManager().onBiometricCancelled(activity);
+        mVisibleActivitiesCounter++;
       }
     }
 

@@ -319,7 +319,7 @@ protected void saveIndexAndTopPosition(final int index) {
 @Override
 public void onItemClick(final AdapterView<?> parent, final View view,
                         final int position, final long id) {
-	// to be @overriden
+	// to be @overridden
 }
 
 @Override

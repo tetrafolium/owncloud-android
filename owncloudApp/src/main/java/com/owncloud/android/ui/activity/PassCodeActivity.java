@@ -178,7 +178,7 @@ protected void setCancelButtonEnabled(final boolean enabled) {
 }
 
 /**
- * Binds the appropiate listeners to the input boxes receiving each digit of
+ * Binds the appropriate listeners to the input boxes receiving each digit of
  * the pass code.
  */
 protected void setTextListeners() {

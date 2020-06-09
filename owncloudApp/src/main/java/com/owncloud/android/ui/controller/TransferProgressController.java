@@ -139,7 +139,7 @@ public void stopListeningProgressFor(final OCFile file,
 /**
  * Implementation of {@link OnDatatransferProgressListener}, called from
  * {@link FileUploader} or
- * {@link FileDownloader} to report the trasnfer progress of a monitored file.
+ * {@link FileDownloader} to report the transfer progress of a monitored file.
  *
  * @param progressRate              Bytes transferred from the previous call.
  * @param totalTransferredSoFar     Total of bytes transferred so far.

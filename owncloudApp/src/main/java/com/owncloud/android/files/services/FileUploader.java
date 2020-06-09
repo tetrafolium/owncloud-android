@@ -92,7 +92,7 @@ import timber.log.Timber;
  * Files to be uploaded are stored persistently using {@link
  * UploadsStorageManager}. <p> On next invocation of {@link FileUploader}
  * uploaded files which previously failed will be uploaded again until either
- * upload succeeded or a fatal error occured. <p> Every file passed to this
+ * upload succeeded or a fatal error occurred. <p> Every file passed to this
  * service is uploaded. No filtering is performed.
  */
 public class FileUploader extends Service

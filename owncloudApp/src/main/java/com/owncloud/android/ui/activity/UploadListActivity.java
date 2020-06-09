@@ -78,7 +78,7 @@ protected void onCreate(final Bundle savedInstanceState) {
 	View rightFragmentContainer = findViewById(R.id.right_fragment_container);
 	rightFragmentContainer.setVisibility(View.GONE);
 
-	// this activity has no file really bound, it's for mulitple accounts at the
+	// this activity has no file really bound, it's for multiple accounts at the
 	// same time; should no inherit from FileActivity; moreover, some behaviours
 	// inherited from FileActivity should be delegated to Fragments; but that's
 	// other story
@@ -201,7 +201,7 @@ public boolean onOptionsItemSelected(final MenuItem item) {
 		uploadListFragment.updateUploads();
 		break;
 
-	case R.id.action_clear_successfull_uploads:
+	case R.id.action_clear_successful_uploads:
 		storageManager = new UploadsStorageManager(getContentResolver());
 		storageManager.clearSuccessfulUploads();
 		uploadListFragment.updateUploads();

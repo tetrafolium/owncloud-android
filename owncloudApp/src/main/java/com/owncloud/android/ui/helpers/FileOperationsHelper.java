@@ -422,7 +422,7 @@ public void setOpIdWaitingFor(final long waitingForOpId) {
 }
 
 /**
- * Starts a check of the currenlty stored credentials for the given account.
+ * Starts a check of the currently stored credentials for the given account.
  *
  * @param account OC account which credentials will be checked.
  */

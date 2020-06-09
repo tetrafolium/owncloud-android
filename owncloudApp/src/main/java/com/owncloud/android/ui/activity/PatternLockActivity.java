@@ -99,7 +99,7 @@ protected void onCreate(final Bundle savedInstanceState) {
 		/**
 		 * This block is executed when the user opens the app after setting the
 		 * pattern lock this block takes the pattern input by the user and check
-		 * it with the pattern intially set by the user.
+		 * it with the pattern initially set by the user.
 		 */
 		mPatternHeader.setText(R.string.pattern_enter_pattern);
 		mPatternExplanation.setVisibility(View.INVISIBLE);
@@ -146,7 +146,7 @@ protected void onCreate(final Bundle savedInstanceState) {
 }
 
 /**
- * Binds the appropiate listener to the pattern view.
+ * Binds the appropriate listener to the pattern view.
  */
 protected void setPatternListener() {
 	mPatternLockView.addPatternLockListener(new PatternLockViewListener() {
@@ -200,7 +200,7 @@ private void processPattern() {
 		/**
 		 * This block is executed when the user opens the app after setting the
 		 * pattern lock this block takes the pattern input by the user and check
-		 * it with the pattern intially set by the user.
+		 * it with the pattern initially set by the user.
 		 */
 		if (checkPattern()) {
 			finish();

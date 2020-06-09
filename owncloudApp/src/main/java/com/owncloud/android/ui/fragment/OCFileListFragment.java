@@ -105,7 +105,7 @@ private static final String KEY_FILE = MY_PACKAGE + ".extra.FILE";
 private static final String KEY_FILE_LIST_OPTION = "FILE_LIST_OPTION";
 private static final String KEY_FAB_EVER_CLICKED = "FAB_EVER_CLICKED";
 
-private static final String GRID_IS_PREFERED_PREFERENCE = "gridIsPrefered";
+private static final String GRID_IS_PREFERRED_PREFERENCE = "gridIsPrefered";
 
 private static String DIALOG_CREATE_FOLDER = "DIALOG_CREATE_FOLDER";
 
@@ -1197,7 +1197,7 @@ private boolean isGridViewPreferred(final OCFile file) {
 			mContainerActivity.getStorageManager();
 
 		SharedPreferences setting = requireActivity().getSharedPreferences(
-			GRID_IS_PREFERED_PREFERENCE, Context.MODE_PRIVATE);
+			GRID_IS_PREFERRED_PREFERENCE, Context.MODE_PRIVATE);
 
 		if (setting.contains(String.valueOf(fileToTest.getFileId()))) {
 			return setting.getBoolean(String.valueOf(fileToTest.getFileId()),
@@ -1264,7 +1264,7 @@ public void setGridAsPreferred() {
 
 private void saveGridAsPreferred(final boolean setGrid) {
 	SharedPreferences setting = requireActivity().getSharedPreferences(
-		GRID_IS_PREFERED_PREFERENCE, Context.MODE_PRIVATE);
+		GRID_IS_PREFERRED_PREFERENCE, Context.MODE_PRIVATE);
 
 	SharedPreferences.Editor editor = setting.edit();
 	editor.putBoolean(String.valueOf(mFile.getFileId()), setGrid);

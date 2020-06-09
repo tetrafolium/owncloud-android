@@ -688,7 +688,7 @@ private void updateNotification(final String content) {
  * The system will avoid finishing the service as much as possible when
  * resources as low.
  *
- * A notification must be created to keep the user aware of the existance of
+ * A notification must be created to keep the user aware of the existence of
  * the service.
  */
 private void setUpAsForeground(final String content) {

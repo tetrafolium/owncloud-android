@@ -93,8 +93,8 @@ public View onCreateView(final LayoutInflater inflater,
 public boolean onChildClick(final ExpandableListView parent, final View v,
                             final int groupPosition, final int childPosition,
                             final long id) {
-	// to be @overriden
-	Timber.w("onChildClick(). This method should be overriden!");
+	// to be @overridden
+	Timber.w("onChildClick(). This method should be overridden!");
 	return false;
 }
 }
